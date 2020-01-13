@@ -1,0 +1,98 @@
+@import "utils/libs";
+@import "utils/vars";
+@import "utils/mixins";
+@import "utils/fonts";
+
+
+body {
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	font-size: 20px;
+}
+
+.theMainBox {
+	position: relative;
+	width: 100%;
+	height: 800px;
+	margin: 0 auto;
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: flex-start;
+	justify-content: center;
+	padding-top: 70px;
+}
+
+section {
+	position: relative;
+	margin: 20px 25px;
+}
+
+.infoDesk {
+	display: flex;
+	flex-direction: column;
+}
+
+.textHead {
+	position: relative;
+	font-family: $theMainfont, sans-serif;
+	font-size: 30px;
+	color: $headTextColor;
+	text-align: center;
+	height: 34px;
+}
+
+.textHead:before, .textHead:after {
+	position: absolute;
+	content: "";
+	display: block;
+	width: 100%;
+	height: 1px;
+	background-color: #6b8a90;
+}
+
+
+@import "actions";
+@import "list";
+@import "calendar";
+
+
+// html {
+// 	font-size: $mainFontSize;
+// 	height: 100%;
+
+// 	@media screen and (max-width: 1920px) {
+// 		font-size: rem(20)
+// 	}
+
+// 	@media screen and (max-width: 1280px) {
+// 		font-size: rem(16)
+// 	}
+
+// 	@media screen and (max-width: 978px) {
+// 		font-size: rem(14)
+// 	}
+// }
+
+// section, .section {
+// 	position: relative;
+// 	padding: 40px 0;
+
+// 	@media screen and (max-width: 1920px) {
+// 		 padding: 36px 0;
+// 	}
+
+// 	@media screen and (max-width: 1280px) {
+// 		 padding: 28px 0;
+// 	}
+
+// 	@media screen and (max-width: 978px) {
+// 		 padding: 20px 0;
+// 	}
+// }
+
+

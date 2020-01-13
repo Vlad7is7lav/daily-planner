@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+	
+		<link href="1.css" rel="stylesheet">
+	
+		<link href="assets/css/app.8ac2e1a9742280b8dc0a.css" rel="stylesheet">
+	
+
+	<link href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" rel="stylesheet">
+</head>
+<body style="background: url(assets/img/MultLightGreen.jpg) center center fixed no-repeat">
+	<div class="theMainBox">
+		<section class="infoDesk">
+			<div class="infoDesk_weather">
+				<div class="infodDesk_weatherName textHead"> Weather API</div>
+				<div class="infoDesk_weatherAPI"> Weather will be here</div>
+			</div>
+			<div class="infoDesk_clock">
+				<div class="infoDesk_clockName textHead"> Clock Canvas</div>
+				<div class="infoDesk_clockSVG"></div>
+			</div>
+		</section>
+
+		<section class="events">
+			<div class="eventsName textHead">Events</div>
+			<div class="events_block">
+				<div class="tabs">	
+					<!-- Tabs line  -->			
+				</div>
+				<div class="tabs_content">
+					<!-- Tasks list -->
+				</div>
+				<!-- <div>
+					<div><input type="radio" name="radioItems" id="radio-1"></div>	
+					<label>Завершить все</label>	
+				</div> -->				
+			</div>
+			<div class="events_filters">
+				<div class="no-filter addItem"><i class="far fa-plus-square"></i></div>
+
+				<div class="filter filter_allTasks">
+					<input type="checkbox" id="all" value="all">
+					<label for="all">All</label>
+				</div>
+				<div class="filter filter_completed">
+					<input type="checkbox" id="completed" value="completed">
+					<label for="completed">Completed</label>
+				</div>
+				<div class="filter filter_act">
+					<input type="checkbox" id="unacted" value="unacted">
+					<label for="unacted">Unacted</label>
+				</div>
+			</div>
+		</section>
+
+		<section class="calendar">
+			<div class="calendarDate textHead">
+				<div class="calendarDate_year">2019</div>
+				<div class="selectYear">
+					<div class="cells">2018</div>
+					<div class="cells">2019</div>
+					<div class="cells">2020</div>
+					<div class="cells">2021</div>
+					<div class="cells">2022</div>
+					<div class="cells">2023</div>
+				</div>	
+				<div class="calendarDate_month"></div>
+				<div class="selectMonth">
+					<div class="cellsM" data-month="0">Jan</div>
+					<div class="cellsM" data-month="1">Feb</div>
+					<div class="cellsM" data-month="2">Mar</div>
+					<div class="cellsM" data-month="3">Apr</div>
+					<div class="cellsM" data-month="4">May</div>
+					<div class="cellsM" data-month="5">June</div>
+					<div class="cellsM" data-month="6">July</div>
+					<div class="cellsM" data-month="7">Aug</div>
+					<div class="cellsM" data-month="8">Sep</div>
+					<div class="cellsM" data-month="9">Oct</div>
+					<div class="cellsM" data-month="10">Nov</div>
+					<div class="cellsM" data-month="11">Dec</div>
+				</div>					
+			</div>
+			<div class="calendarBlock">
+				<table>
+					<thead>
+						<tr>
+							<th>Sun</th>
+							<th>Mon</th>
+							<th>Tue</th>
+							<th>Wed</th>
+							<th>Thu</th>
+							<th>Fri</th>
+							<th>Sat</th>
+						</tr>
+					</thead>
+					<tbody id="days">
+						
+					</tbody>
+				</table>
+			</div>
+		</section>
+
+	</div>
+
+
+	
+	
+
+
+
+	
+	<script src="assets/js/vendors.8ac2e1a9742280b8dc0a.js"></script>
+	
+	<script src="assets/js/app.8ac2e1a9742280b8dc0a.js"></script>
+	
+</body>
+</html>
