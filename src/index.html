@@ -112,7 +112,8 @@
 	<% } %>
 	
 	<script type="text/javascript">
-		function completed(self) {
+		function completed(self, from) {
+			if (from) self.checked = false;
 			let items = document.querySelectorAll('section.active .tabs_content_list_item');
 			if (items.length == 0) return;
 			let unacted = document.getElementById('unacted');
@@ -137,11 +138,9 @@
 
 		function unacted(self, from) {
 
-			if (from) {
-				self.checked = false;
+			if (from) self.checked = false;
+			
 
-			}
-			console.log(self, self.checked);
 			let items = document.querySelectorAll('section.active .tabs_content_list_item');
 			if (items.length == 0) return;
 			

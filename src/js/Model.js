@@ -8,26 +8,40 @@ class Model {
 	}
 
 	addTaskList(taskList) {
-		if (this.getTaskList(taskList.id) === undefined) {
+		let isObj = this.getTaskList(taskList.id);
+		if (isObj === undefined) {
 			this.state.push(taskList);
-		}
-		this.updateTaskList(taskList)		
+			return taskList;
+		} else if (taskList.tasks.length == isObj.tasks.length) {
+			this.updateTaskList(taskList);
+			return 'EDIT'
+		} else {
+			isObj.tasks.push(taskList.tasks[taskList.tasks.length-1]);
+		}		
+
+		console.log(this.state, 'add');
+		return taskList
 		
 		// let js = JSON.stringify(this.state);
 		// let jsparsed = JSON.parse(js);
 
-
-		return taskList; //  в taskList попадает объект
+		 //  в taskList попадает объект
 	}
 
 	updateTaskList(taskList) {
-		const isObj = this.getTaskList(taskList.id);
+		let isObj = this.getTaskList(taskList.id);
+		console.log(isObj.tasks, taskList.tasks);
 		isObj.tasks = taskList.tasks;
-		console.log(this.state);
+		console.log(this.state,'upd');
 
 		return taskList
+	}
 
-		// isObjTasks.forEach((element, index) => element == data.tasks[prop]);
+	deleteItem(item) {
+		let isObj = this.getTaskList(item.id);
+		isObj.tasks.splice(item.index, 1);
+		console.log(this.state, 'rem');
+		return this.state;
 	}
 }
 

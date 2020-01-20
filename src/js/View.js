@@ -160,6 +160,9 @@ class View extends EventEmitter {
 	
 
 	hCreateTab(event, data) {
+		//скорее всего вызов будет такой hCreatetab(event, data, id) если есть id 
+		// то вместо кода ниже просто создать таб с id так как id это дата 
+		// и после этого createSection а затем createItem(task) через цикл for of для каждого item из {tasks}
 	  // Check date in this.state
 	  // const check = this.controller.checkDate() // Check if date has already created and located on the server
 
@@ -247,7 +250,8 @@ class View extends EventEmitter {
 	}
 
 	// Creating ToDo Elements
-	createItem() {
+	createItem() { // createItem(data) если есть data = tasks from DB or state
+		//всё указанное ниже + label.innerText = task
 		let currentULSection = document.querySelector('section.active > .tabs_content_list');
 
 		if(currentULSection.querySelectorAll('input').length > 18) return alert('Free version allows you create only 18 tasks');
@@ -283,12 +287,16 @@ class View extends EventEmitter {
 	}
 
 	hdeleteItem(e) {
-		let target = e.target;
-		while (target.tagName != 'LI') {
-			target = target.parentNode;
-		}
-		target.remove();
-		// this.CLRAddToDo();
+		const id = this.id;
+		// let target = e.target
+		// while(target.tagName != 'DIV') {
+		// 	target = target.parentNode;
+		// }
+		// const itemLabelText = target.nextElementSibling.innerText;
+		const labelsCollection = [...document.querySelectorAll('section.active .item_delete i')];
+		let indexItem = labelsCollection.indexOf(e.target); // get index of removing element
+		this.emit('deleteItem', {'id': id, 'index': indexItem}, e);
+
 	}
 
 	catch_focusOut(e) {
@@ -303,11 +311,40 @@ class View extends EventEmitter {
 			label.innerText = value;
 			label.classList.remove('label_Hide');
 
+			// проверить есть ли следующий элемент после input, если есть то это editItem и остановить выполнение
+			// может быть сделать переменную flag чтобы не проверять следующий элемент
+			// и скорее всего отсюда вызать this.emit update
+			// в ctrl+Click необходимо проверить есть ли флаг, если да, то вызвать 
+
 				// this combination of comparisons allows stop function if first item is emptied or e.target.value === text in label 
 				// or if we use (e.ctrlKey & e.keyCode) because in this case e.target.value and prevLabelText are equal.
 			if ((itemAmount <= 1) && e.target.value === '' || e.target.value === prevLabelText) return; 
-			this.CLRAddToDo();
+			
+			this.CLRAddToDo(e);
 		}
+	}
+
+	addItem(event) {
+		event.target.classList.add('input_hide'); //перенес в addItem
+		event.target.previousElementSibling.classList.remove('label_Hide');
+	}
+
+	deleteItem(event) {
+		let target = event.target;
+		while (target.tagName != 'LI') {
+			target = target.parentNode;
+		}
+		target.remove();
+	}
+
+	updateItem(event) {
+		let input = e.target;
+		input.value = input.value.trim();
+		let value = input.value;
+		let label = input.previousElementSibling;
+		input.classList.add('input_hide');
+		label.innerText = value;
+		label.classList.remove('label_Hide');
 	}
 
 	hAddItem(event) {
@@ -316,6 +353,7 @@ class View extends EventEmitter {
 		let input = e.target;
 		let value = input.value;
 		let label = input.previousElementSibling;
+		
 		// let inputsCollection = e.target.closest('.tabs_content_list').querySelectorAll('input');
 		// let inputsArray = Array.from(e.target.closest('.tabs_content_list').querySelectorAll('input'));
 
@@ -331,16 +369,22 @@ class View extends EventEmitter {
 			return 
 		}
 
+		
+
 		else if (e.ctrlKey & e.keyCode == 13) {	
+			//check if empty
+			if (!e.target.value) return console.log('Введите задачу');
 			if (value != label.innerText) {	// check if text didn't change
 				let trimValue = event.target.value.trim();
 				event.target.value = event.target.value.trim();
 				label.innerText = trimValue;
-				this.CLRAddToDo();
+				this.CLRAddToDo(e);
+			} else {
+				e.target.classList.add('input_hide');
+				e.target.previousElementSibling.classList.remove('label_Hide');
 			}
+
 			
-			input.classList.add('input_hide');
-			label.classList.remove('label_Hide');
 			return;
 		}
 
@@ -370,29 +414,26 @@ class View extends EventEmitter {
 
 		else if (e.keyCode == 13) {
 			event.preventDefault();
-			let inputs = document.querySelectorAll('section.active > .tabs_content_list input');
+			if (!e.target.value) return console.log('Введите задачу');
+			// !!! описать анимацию появления сообщения "Введите задачу"
+
+			const inputs = document.querySelectorAll('section.active > .tabs_content_list input');
 
 			// Clear empty space before and after
 			let trimValue = event.target.value.trim();
 			event.target.value = trimValue;
-			//
 
-			if (!this.itemIsEmpty(e.target)) {
-				console.log("Всплю окно \"Добавьте задачу\" ");
-
-				// !!! описать анимацию появления сообщения "Введите задачу"
-
-				return;
-			} else {
-				for (let element of inputs) {
-					if(!this.itemIsEmpty(element)) {						
-						element.classList.remove('input_hide');
-						element.previousSibling.classList.add('label_Hide');
-						element.focus();
-						return;
-					}
+			// this.CLRAddToDo(e);
+			 
+			for (let element of inputs) {
+				if(!this.itemIsEmpty(element)) {						
+					element.classList.remove('input_hide');
+					element.previousSibling.classList.add('label_Hide');
+					element.focus();
+					return;
 				}
 			}
+			
 
 			this.createItem();
 			this.itemOut(2, event);
@@ -403,14 +444,14 @@ class View extends EventEmitter {
 
 	// Funciton itemOut(k). When we leave input or move to another input. Parameter k - indicates which input (last or before last) we need.
 	itemOut(k, event) {
-		let inputs = document.querySelectorAll('section.active > .tabs_content_list input');
-		let lastLI = inputs[inputs.length-k].previousElementSibling;
-		let lastInputs = inputs[inputs.length-k]
+		const inputs = document.querySelectorAll('section.active > .tabs_content_list input');
+		const lastLI = inputs[inputs.length-k].previousElementSibling;
+		const lastInputs = inputs[inputs.length-k]
 		lastInputs.classList.add('input_hide');
 		lastLI.classList.remove('label_Hide');
 		lastLI.innerText = inputs[inputs.length-k].value;
 		lastInputs.blur();
-		let lastPlus = lastLI.previousElementSibling;
+		const lastPlus = lastLI.previousElementSibling;
 
 		if (k === 2) {
 			let lastPlus = lastLI.previousElementSibling;
@@ -426,7 +467,10 @@ class View extends EventEmitter {
 				return
 			}
 
-		label_.style.textDecoration = 'line-through'
+		label_.style.textDecoration = 'line-through';
+		// Проверить условие зачеркнуто или нет задание и присвоить'completed' true или false
+		// вызвать функцию this.emit('updateTodo', {'id': id, 'index': indexItem, 'completed' : completed}, e);
+
 		return;
 			
 		} else {
@@ -453,8 +497,8 @@ class View extends EventEmitter {
 		let target = cTab || event.target;
 		if (cTab) target.classList.remove("active");
 		
-		let tab = document.querySelectorAll('.tabs > .tab');
-		let content = document.querySelectorAll('.tabs_content > .tab_content');
+		const tab = document.querySelectorAll('.tabs > .tab');
+		const content = document.querySelectorAll('.tabs_content > .tab_content');
 
 		if(target.className == 'tab') {
 		  // Remove class active from tab
@@ -481,22 +525,31 @@ class View extends EventEmitter {
 		}
 	}
 
-		test() {
-		console.log("test done well")
-	}
+	CLRAddToDo(event) {
+		// event.preventDefault() //stop sending data
 
-	CLRAddToDo() {
-		let id = this.id;
-		let tasks = [];
-		let labelsCollection = document.querySelectorAll('section.active > .tabs_content_list label');
+		// collect data for saving in DB through a bunch of controller and model
+		const id = this.id;
+		const tasks = [];
+		const labelsCollection = document.querySelectorAll('section.active > .tabs_content_list label');
 		[...labelsCollection].forEach( function(element, index) {
-			tasks.push(element.innerText)
+			tasks.push(element.innerText) // tasks.push( {element.innerText, false/true})
 		});
 
-		this.emit('addToDo', {'id': id, 'tasks': tasks, 'completed': false});
+		
+
+		// call function addToDo (controller) through emit;
+		this.emit('addToDo', {'id': id, 'tasks': tasks, 'completed': false}, event);
+		// const checkOK = this.emit('addToDo', {'id': id, 'tasks': tasks, 'completed': false}, event);
+	}
+
+	test() {
+		console.log("test done well");
 	}
 
 };
+
+
 
 const view = new View();
 

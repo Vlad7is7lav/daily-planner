@@ -60,12 +60,13 @@ class EventEmitter {
 		this.events[type].push(callback);
 	}
 
-	emit(type, arg) {
+	emit(type, ...args) {
 		if (this.events[type]) {
-			this.events[type].forEach(callback => callback(arg));
+			this.events[type].forEach(callback => callback(args[0], args[1]));
 		}
 	}
 }
+
 
 
 export { makeMonth, createElement, EventEmitter };
