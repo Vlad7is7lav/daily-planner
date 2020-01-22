@@ -8,7 +8,7 @@ class Controller {
 		view.test();
 
 		this.view.on('addToDo', this.addTodo.bind(this));
-		this.view.on('updateTodo', this.updateTodo.bind(this));
+		this.view.on('updateItem', this.updateItem.bind(this));
 		this.view.on('deleteItem', this.deleteItem.bind(this));
 	}
 
@@ -16,26 +16,27 @@ class Controller {
 
 		const section = this.model.addTaskList({ // after execution we get tasklist
 			id: taskList.id,
-			tasks: taskList.tasks, // <- внутри tasks должен быть массив объектов с task и completed равным true или false)
+			tasks: taskList.tasks // <- внутри tasks должен быть массив объектов с task и completed равным true или false)
 			// completed: taskList.completed
 		});
 
-		if (section == 'EDIT') return;
 		this.view.addItem(event);
 		// return OK or FALSE (FALSE if data wasn't sent)
 		// this.view.addItem(event);
 	}
 
-	updateTodo(taskList, event) {
-		if (this.model.getTaskList(taskList.id)) {
+	updateItem(item, e) {
+		if (this.model.getTaskList(item.id)) {
 
-			const section = this.model.updateTaskList({ // after execution we get tasklist
-				id: taskList.id,
-				tasks: taskList.tasks, // <- внутри tasks должен быть массив объектов с task и completed равным true или false)
-				// completed: taskList.completed
+			const updatedItem = this.model.updateItem({ // after execution we get tasklist
+				id: item.id,
+				index: item.index, // <- внутри tasks должен быть массив объектов с task и completed равным true или false)
+				task: item.task
+				// completed: item.completed
 			});			
 		}
-		// this.view.deleteItem(event);
+
+		this.view.updateItem(e);
 	}
 
 	deleteItem(item, e) {
@@ -48,14 +49,6 @@ class Controller {
 
 		this.view.deleteItem(e);
 	}
-
-
-
-	// checkDate(id) {
-	// 	const check = this.model.getTaskList(id);
-	// если нашел по id, то отобразить таб с этой датой, секцию и задачи.
-	// 	return check;
-	// }
 }
 
 const controller = new Controller(model, view);

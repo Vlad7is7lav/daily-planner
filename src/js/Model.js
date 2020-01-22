@@ -12,9 +12,6 @@ class Model {
 		if (isObj === undefined) {
 			this.state.push(taskList);
 			return taskList;
-		} else if (taskList.tasks.length == isObj.tasks.length) {
-			this.updateTaskList(taskList);
-			return 'EDIT'
 		} else {
 			isObj.tasks.push(taskList.tasks[taskList.tasks.length-1]);
 		}		
@@ -28,13 +25,13 @@ class Model {
 		 //  в taskList попадает объект
 	}
 
-	updateTaskList(taskList) {
-		let isObj = this.getTaskList(taskList.id);
-		console.log(isObj.tasks, taskList.tasks);
-		isObj.tasks = taskList.tasks;
+	updateItem(item) {
+		let isObj = this.getTaskList(item.id);
+		isObj.tasks[item.index] = item.task;
+		console.log(isObj.tasks, item.task);
 		console.log(this.state,'upd');
 
-		return taskList
+		return this.state
 	}
 
 	deleteItem(item) {

@@ -15,6 +15,7 @@ class View extends EventEmitter {
 		this.varsObject = {}; //look in onload() function
 		this.id = '';
 		this.eventListeners = null;
+		this.editFlag = false;
 
 		this.initilise();
 	}
@@ -288,18 +289,21 @@ class View extends EventEmitter {
 
 	hdeleteItem(e) {
 		const id = this.id;
-		// let target = e.target
-		// while(target.tagName != 'DIV') {
-		// 	target = target.parentNode;
-		// }
-		// const itemLabelText = target.nextElementSibling.innerText;
 		const labelsCollection = [...document.querySelectorAll('section.active .item_delete i')];
 		let indexItem = labelsCollection.indexOf(e.target); // get index of removing element
 		this.emit('deleteItem', {'id': id, 'index': indexItem}, e);
+	}
 
+	hupdateItem(e) {
+		console.log(e.target);
+		const id = this.id;
+		const labelsCollection = [...document.querySelectorAll('section.active input')];
+		let indexItem = labelsCollection.indexOf(e.target);
+		this.emit('updateItem', {'id': id, 'index': indexItem, 'task': e.target.value}, e);
 	}
 
 	catch_focusOut(e) {
+
 		if(e.type == 'focusout') { // && e.relatedTarget == null  
 			let input = e.target;
 			input.value = input.value.trim()  // Clear empty space before and after
@@ -311,14 +315,19 @@ class View extends EventEmitter {
 			label.innerText = value;
 			label.classList.remove('label_Hide');
 
+			if (this.editFlag === true) {
+				this.editFlag = false;
+
+			}
+
 			// проверить есть ли следующий элемент после input, если есть то это editItem и остановить выполнение
 			// может быть сделать переменную flag чтобы не проверять следующий элемент
 			// и скорее всего отсюда вызать this.emit update
-			// в ctrl+Click необходимо проверить есть ли флаг, если да, то вызвать 
+			// в ctrl+Click необходимо проверить есть ли флаг edit, если да, то ничего не вызывать
 
+			if ((itemAmount <= 1) && e.target.value === '' || e.target.value === prevLabelText) return;
 				// this combination of comparisons allows stop function if first item is emptied or e.target.value === text in label 
 				// or if we use (e.ctrlKey & e.keyCode) because in this case e.target.value and prevLabelText are equal.
-			if ((itemAmount <= 1) && e.target.value === '' || e.target.value === prevLabelText) return; 
 			
 			this.CLRAddToDo(e);
 		}
@@ -337,7 +346,7 @@ class View extends EventEmitter {
 		target.remove();
 	}
 
-	updateItem(event) {
+	updateItem(e) {
 		let input = e.target;
 		input.value = input.value.trim();
 		let value = input.value;
@@ -369,11 +378,16 @@ class View extends EventEmitter {
 			return 
 		}
 
-		
-
 		else if (e.ctrlKey & e.keyCode == 13) {	
 			//check if empty
+			// проверка флага на edit а не на добавление
 			if (!e.target.value) return console.log('Введите задачу');
+
+			if (this.editFlag === true) {
+				this.hupdateItem(e);
+				return;
+			}
+
 			if (value != label.innerText) {	// check if text didn't change
 				let trimValue = event.target.value.trim();
 				event.target.value = event.target.value.trim();
@@ -382,15 +396,15 @@ class View extends EventEmitter {
 			} else {
 				e.target.classList.add('input_hide');
 				e.target.previousElementSibling.classList.remove('label_Hide');
-			}
-
-			
+			}			
 			return;
 		}
 
 		else if (e.type == 'click') {
+
 			if (e.target.classList == "far fa-plus-square") {
 				let inputs = document.querySelectorAll('section.active > .tabs_content_list input');
+
 				for (let element of inputs) {
 					if(!this.itemIsEmpty(element)) {						
 						element.classList.remove('input_hide');
@@ -399,6 +413,7 @@ class View extends EventEmitter {
 						return;
 					}
 				}
+
 				this.createItem();
 				return;
 			}
@@ -409,7 +424,6 @@ class View extends EventEmitter {
 				return;
 			}
 			return
- 
 		}
 
 		else if (e.keyCode == 13) {
@@ -422,8 +436,6 @@ class View extends EventEmitter {
 			// Clear empty space before and after
 			let trimValue = event.target.value.trim();
 			event.target.value = trimValue;
-
-			// this.CLRAddToDo(e);
 			 
 			for (let element of inputs) {
 				if(!this.itemIsEmpty(element)) {						
@@ -434,7 +446,6 @@ class View extends EventEmitter {
 				}
 			}
 			
-
 			this.createItem();
 			this.itemOut(2, event);
 			flag = 1;
@@ -455,7 +466,6 @@ class View extends EventEmitter {
 
 		if (k === 2) {
 			let lastPlus = lastLI.previousElementSibling;
-			// lastPlus.lastElementChild.remove();
 		}
 	}
 
@@ -474,6 +484,7 @@ class View extends EventEmitter {
 		return;
 			
 		} else {
+			this.editFlag = true;
 			input_.classList.remove('input_hide');
 			label_.classList.add('label_Hide');
 			input_.focus();
