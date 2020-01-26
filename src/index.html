@@ -53,6 +53,7 @@
 					<input type="checkbox" onchange="unacted(this)" id="unacted" value="unacted">
 					<label for="unacted">Unacted</label>
 				</div>
+				<button id="push">Push</button>
 			</div>
 		</section>
 
@@ -162,6 +163,86 @@
 					item.style.display = '';
 				}
 			}
+		}
+
+		window.addEventListener("DOMContentLoaded", ready);
+
+		function ready() {
+			window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+			if (!window.indexedDB) {
+				window.alert('Ваш браузер не поддерживает indexedDB. Обновите браузер или используйте другой.');
+			}
+			var db = null;
+
+			const BDname = "testDB1";
+
+			const request = indexedDB.open(BDname, 1);
+
+			request.onerror = (event) => {
+				window.alert('Что-то пошло не так. Не могу создать базу данных!')
+			};
+
+			request.onsuccess = (event) => {
+				db = event.target.result;
+
+				db.onversionchange = () => {
+					db.close;
+					alert("База данных устарела, пожалуста, перезагрузите страницу.");
+				}
+			};
+
+			request.onerror = (event) => {
+				//выводим ошибку
+				window.alert('Database error' + event.target.errorCode);
+			}
+
+			request.onupgradeneeded = (event) => {
+				db = event.target.result;
+
+				if (!db.objectStoreNames.contains('daily1')) { // if there's no "books" store
+				    db.createObjectStore('daily1', {keyPath: "id"}); // create it
+				}
+
+				
+
+
+				// // Создаем хранилище объектов для этой базы данных
+				// var objectStore = db.createObjectStore(BDname, { keyPath: "myKey" });
+			}
+
+			request.onblocked = function() {
+			  // есть другое соединение к той же базе
+			  // и оно не было закрыто после срабатывания на нём db.onversionchange
+			};
+
+			// function addTask() {
+
+			// 	const tx = db.transaction(["daily1"], "readwrite");
+			// 	const store = tx.objectStore('daily1');
+
+			// 	var req = store.add({
+			// 		"id": "12.01.2020",
+			// 		"task": "Разобраться с БД"
+			// 	});
+			// }
+
+			let btn = document.getElementById('push');
+			btn.addEventListener("click", addNote);
+
+			function addNote() {
+				console.log(db, IDBDatabase)
+				const tx = db.transaction("daily1", "readwrite");
+				const store = tx.objectStore('daily1');
+
+				var req = store.add({
+				"id": "12.01.2020",
+				"task": "Разобраться с БД"
+			});
+			}
+
+			
+
+
 		}
 	</script>
 

@@ -38,15 +38,15 @@ class View extends EventEmitter {
 	}
 
 	addEventListeners() {
-		let tabs = document.querySelector('.tabs');
+		const tabs = document.querySelector('.tabs');
 		tabs.addEventListener('click', this.changeTab.bind(this)); // watch when click active on 'tab' for choice
 		this.varsObject.calendarDate_year.addEventListener('click', this.openSelectYear.bind(this)); // watch when click active on 'year' for choice
 		this.varsObject.calendarDate_month.addEventListener('click', this.openSelectMonth.bind(this)); // watch when click active on 'month' for choice
 
 		let currentElem = null;
-		let calendarBlock = document.querySelector(".calendarBlock");
-		let table = document.querySelector("table");
-		let tdCells = document.getElementsByTagName('td');
+		// let calendarBlock = document.querySelector(".calendarBlock");
+		const table = document.querySelector("table");
+		const tdCells = document.getElementsByTagName('td');
 
 
 		document.addEventListener('click', this.closeSelected.bind(this));
@@ -55,7 +55,7 @@ class View extends EventEmitter {
 		table.addEventListener('mouseover', (event) => {
 			if (currentElem) return 
 
-			let target = event.target.closest('td');
+			const target = event.target.closest('td');
 
 			if (!target) return;
 
@@ -119,8 +119,8 @@ class View extends EventEmitter {
 	closeSelected(event) {
 		// event.preventDefault();
 		let target = event.target;
-		const year = this.varsObject.calendarDate_year;
-		const month = this.varsObject.calendarDate_month;
+		let year = this.varsObject.calendarDate_year;
+		let month = this.varsObject.calendarDate_month;
 		let month_number;
 
 		if (this.flag != 1) return;
@@ -151,7 +151,7 @@ class View extends EventEmitter {
 
 	changeDate(year, month) {
 		let daysBlock = document.getElementById("days");
-		let text = makeMonth(year, month); 						// external funciton makeMonth() from file 'addition.js'
+		const text = makeMonth(year, month); 						// external funciton makeMonth() from file 'addition.js'
 		this.varsObject.calendarDate_month.setAttribute("data-month", month);
 		this.varsObject.calendarDate_month.innerText = this.months[month];
 		this.varsObject.calendarDate_year.innerText = year;
@@ -168,15 +168,15 @@ class View extends EventEmitter {
 	  // const check = this.controller.checkDate() // Check if date has already created and located on the server
 
 	  // Creating Tabs
-		let sections = document.querySelectorAll('.tabs_content > section');
-		let tab = document.querySelectorAll('.tabs > .tab');
+		const sections = document.querySelectorAll('.tabs_content > section');
+		const tab = document.querySelectorAll('.tabs > .tab');
 		let day = event.target.parentElement.textContent;
 		let year = document.querySelector(".calendarDate_year").textContent;
 		let month = +(document.querySelector(".calendarDate_month").getAttribute("data-month")) + 1;
 		let tabsArray = Array.prototype.slice.call(tab);
 
-		let inputUnacted = document.getElementById('unacted');
-		let inputCompleted = document.getElementById('completed');
+		const inputUnacted = document.getElementById('unacted');
+		const inputCompleted = document.getElementById('completed');
 		completed(inputCompleted, false);
 		unacted(inputUnacted, true);
 
@@ -238,7 +238,7 @@ class View extends EventEmitter {
 	createSection() {
 		let elemSection = createElement("section", {className : 'tab_content active'});
 		let elemUL = createElement("ul", {className : 'tabs_content_list'});
-		let tabs_content = document.querySelector(".tabs_content");
+		const tabs_content = document.querySelector(".tabs_content");
 		elemSection.appendChild(elemUL);
 		tabs_content.insertBefore(elemSection, tabs_content.firstElementChild);
 
@@ -253,7 +253,7 @@ class View extends EventEmitter {
 	// Creating ToDo Elements
 	createItem() { // createItem(data) если есть data = tasks from DB or state
 		//всё указанное ниже + label.innerText = task
-		let currentULSection = document.querySelector('section.active > .tabs_content_list');
+		const currentULSection = document.querySelector('section.active > .tabs_content_list');
 
 		if(currentULSection.querySelectorAll('input').length > 18) return alert('Free version allows you create only 18 tasks');
 
@@ -267,7 +267,7 @@ class View extends EventEmitter {
 		elemLI.appendChild(elemLIinput);
 		currentULSection.appendChild(elemLI);
 
-		let inputs = currentULSection.querySelectorAll('input'); // Find all input in section
+		const inputs = currentULSection.querySelectorAll('input'); // Find all input in section
 		inputs[inputs.length-1].focus(); 						// Add the last input focus()
 
 		return this.todoEventListeners(elemLI);
@@ -295,29 +295,42 @@ class View extends EventEmitter {
 	}
 
 	hupdateItem(e) {
-		console.log(e.target);
 		const id = this.id;
-		const labelsCollection = [...document.querySelectorAll('section.active input')];
-		let indexItem = labelsCollection.indexOf(e.target);
+		const inputCollection = [...document.querySelectorAll('section.active input')];
+		let indexItem = inputCollection.indexOf(e.target);
 		this.emit('updateItem', {'id': id, 'index': indexItem, 'task': e.target.value}, e);
+	}
+
+	hupdateCompState(e, complete) {
+		const id = this.id;
+		const labelsCollection = [...document.querySelectorAll('section.active label')];
+		let indexItem = labelsCollection.indexOf(e.target);
+		this.emit('updateCompState', {'id': id, 'index': indexItem, 'complete': complete}, e);
 	}
 
 	catch_focusOut(e) {
 
-		if(e.type == 'focusout') { // && e.relatedTarget == null  
+		if(e.type == 'focusout') { // && e.relatedTarget == null 
+			if (e.target.value == '') {
+				e.target.parentNode.remove();
+				return;
+			} 
+
 			let input = e.target;
 			input.value = input.value.trim()  // Clear empty space before and after
 			let value = input.value;
 			let label = input.previousElementSibling;
+
 			let prevLabelText = label.innerText;
-			let itemAmount = e.target.closest('ul').querySelectorAll('input').length;
+			const itemAmount = e.target.closest('ul').querySelectorAll('input').length;
 			input.classList.add('input_hide');
 			label.innerText = value;
 			label.classList.remove('label_Hide');
 
 			if (this.editFlag === true) {
 				this.editFlag = false;
-
+				this.hupdateItem(e);
+				return;
 			}
 
 			// проверить есть ли следующий элемент после input, если есть то это editItem и остановить выполнение
@@ -362,12 +375,13 @@ class View extends EventEmitter {
 		let input = e.target;
 		let value = input.value;
 		let label = input.previousElementSibling;
-		
-		// let inputsCollection = e.target.closest('.tabs_content_list').querySelectorAll('input');
-		// let inputsArray = Array.from(e.target.closest('.tabs_content_list').querySelectorAll('input'));
 
 		if (e.keyCode == 27) {
 			event.preventDefault();
+			if (label.innerText == '') {
+				e.target.parentNode.remove();
+				return;
+			}
 			input.value = label.innerText;
 			input.classList.add('input_hide');
 			label.classList.remove('label_Hide');
@@ -379,7 +393,6 @@ class View extends EventEmitter {
 		}
 
 		else if (e.ctrlKey & e.keyCode == 13) {	
-			//check if empty
 			// проверка флага на edit а не на добавление
 			if (!e.target.value) return console.log('Введите задачу');
 
@@ -413,7 +426,6 @@ class View extends EventEmitter {
 						return;
 					}
 				}
-
 				this.createItem();
 				return;
 			}
@@ -472,17 +484,22 @@ class View extends EventEmitter {
 	editItem(input_, label_, event) {
 		if (event.target.tagName === 'I') return
 		else if (event.ctrlKey & event.type == 'click') {
+			
 			if (label_.style.textDecoration == 'line-through') {
 				label_.style.textDecoration = 'none';
-				return
+				label_.setAttribute('data-complete', 'false');	
+			} else {
+				label_.style.textDecoration = 'line-through';
+				label_.setAttribute('data-complete', 'true');
 			}
+			// const e = event.target.nextElementSibling;
+			let complete = label_.getAttribute('data-complete');
+			this.hupdateCompState(event, complete);
+			return;
 
-		label_.style.textDecoration = 'line-through';
 		// Проверить условие зачеркнуто или нет задание и присвоить'completed' true или false
 		// вызвать функцию this.emit('updateTodo', {'id': id, 'index': indexItem, 'completed' : completed}, e);
-
-		return;
-			
+		
 		} else {
 			this.editFlag = true;
 			input_.classList.remove('input_hide');
@@ -502,7 +519,10 @@ class View extends EventEmitter {
 	changeTab(event, cTab) {
 
 		// check if click on active tab
-		if(event.target.classList == 'tab active') return
+		if (event != null) {
+			if(event.target.classList == 'tab active') return;
+		}
+		
 
 		let k = 0;
 		let target = cTab || event.target;
@@ -543,14 +563,12 @@ class View extends EventEmitter {
 		const id = this.id;
 		const tasks = [];
 		const labelsCollection = document.querySelectorAll('section.active > .tabs_content_list label');
-		[...labelsCollection].forEach( function(element, index) {
-			tasks.push(element.innerText) // tasks.push( {element.innerText, false/true})
+		[...labelsCollection].forEach(function(element, index) {
+			tasks.push({'item': element.innerText, 'completed': false}) // tasks.push( {element.innerText, false/true})
 		});
 
-		
-
 		// call function addToDo (controller) through emit;
-		this.emit('addToDo', {'id': id, 'tasks': tasks, 'completed': false}, event);
+		this.emit('addToDo', {'id': id, 'tasks': tasks}, event);
 		// const checkOK = this.emit('addToDo', {'id': id, 'tasks': tasks, 'completed': false}, event);
 	}
 

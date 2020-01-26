@@ -14,7 +14,7 @@ class Model {
 			return taskList;
 		} else {
 			isObj.tasks.push(taskList.tasks[taskList.tasks.length-1]);
-		}		
+		}
 
 		console.log(this.state, 'add');
 		return taskList
@@ -27,9 +27,19 @@ class Model {
 
 	updateItem(item) {
 		let isObj = this.getTaskList(item.id);
-		isObj.tasks[item.index] = item.task;
-		console.log(isObj.tasks, item.task);
+		isObj.tasks[item.index]['item'] = item.task;
+		console.log(isObj.tasks[item.index]['item']);
 		console.log(this.state,'upd');
+
+		return this.state
+	}
+
+	updateComp(item) {
+		let isObj = this.getTaskList(item.id);
+		let isObjComplete = isObj.tasks[item.index];
+		isObjComplete['completed'] = item.completed;
+		console.log(isObjComplete);
+		console.log(this.state,'updComp');
 
 		return this.state
 	}

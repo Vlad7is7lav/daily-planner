@@ -10,14 +10,14 @@ class Controller {
 		this.view.on('addToDo', this.addTodo.bind(this));
 		this.view.on('updateItem', this.updateItem.bind(this));
 		this.view.on('deleteItem', this.deleteItem.bind(this));
+		this.view.on('updateCompState', this.updateCompState.bind(this))
 	}
 
 	addTodo(taskList, event) {
 
 		const section = this.model.addTaskList({ // after execution we get tasklist
 			id: taskList.id,
-			tasks: taskList.tasks // <- внутри tasks должен быть массив объектов с task и completed равным true или false)
-			// completed: taskList.completed
+			tasks: taskList.tasks, // <- внутри tasks должен быть массив объектов с task и completed равным true или false)
 		});
 
 		this.view.addItem(event);
@@ -37,6 +37,19 @@ class Controller {
 		}
 
 		this.view.updateItem(e);
+	}
+
+	updateCompState(item, e) {
+		if (this.model.getTaskList(item.id)) {
+
+			const updatedItem = this.model.updateComp({ // after execution we get tasklist
+				id: item.id,
+				index: item.index, // <- внутри tasks должен быть массив объектов с task и completed равным true или false)
+				completed: item.complete
+			});			
+		}
+
+		// this.view.updateCompState(e);
 	}
 
 	deleteItem(item, e) {
