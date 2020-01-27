@@ -32,7 +32,9 @@ class View extends EventEmitter {
 		window.onload = () => {
 			let currentDate = new Date();
 			this.changeDate(currentDate.getFullYear(), currentDate.getMonth());
+			this.emit('openBD');
 		}
+
 
 		
 	}
@@ -308,8 +310,28 @@ class View extends EventEmitter {
 		this.emit('updateCompState', {'id': id, 'index': indexItem, 'complete': complete}, e);
 	}
 
-	catch_focusOut(e) {
+	CLRAddToDo(e) {
+		// event.preventDefault() //stop sending data
 
+		// collect data for saving in DB through a bunch of controller and model
+		const id = this.id;
+		const tasks = [];
+		const labelsCollection = [...document.querySelectorAll('section.active > .tabs_content_list input')];
+		let indexItem = labelsCollection.indexOf(e.target);
+		console.log(indexItem);	
+		const element = labelsCollection[indexItem].value;	
+		this.emit('addToDo', {'id': id, index: indexItem, item: element, completed: false}, e)
+
+		// [...labelsCollection].forEach(function(element, index) {
+		// 	tasks.push({'item': element.innerText, 'completed': false}) // tasks.push( {element.innerText, false/true})
+		// });
+
+		// call function addToDo (controller) through emit;
+		// this.emit('addToDo', {'id': id, 'tasks': tasks}, event);
+		// const checkOK = this.emit('addToDo', {'id': id, 'tasks': tasks, 'completed': false}, event);
+	}
+
+	catch_focusOut(e) {
 		if(e.type == 'focusout') { // && e.relatedTarget == null 
 			if (e.target.value == '') {
 				e.target.parentNode.remove();
@@ -327,11 +349,13 @@ class View extends EventEmitter {
 			label.innerText = value;
 			label.classList.remove('label_Hide');
 
-			if (this.editFlag === true) {
+			if (this.editFlag === true && e.target.value != prevLabelText) {
 				this.editFlag = false;
 				this.hupdateItem(e);
 				return;
 			}
+
+			this.editFlag = false;
 
 			// проверить есть ли следующий элемент после input, если есть то это editItem и остановить выполнение
 			// может быть сделать переменную flag чтобы не проверять следующий элемент
@@ -378,8 +402,8 @@ class View extends EventEmitter {
 
 		if (e.keyCode == 27) {
 			event.preventDefault();
-			if (label.innerText == '') {
-				e.target.parentNode.remove();
+			if (value == '') {
+				e.target.blur();
 				return;
 			}
 			input.value = label.innerText;
@@ -496,9 +520,6 @@ class View extends EventEmitter {
 			let complete = label_.getAttribute('data-complete');
 			this.hupdateCompState(event, complete);
 			return;
-
-		// Проверить условие зачеркнуто или нет задание и присвоить'completed' true или false
-		// вызвать функцию this.emit('updateTodo', {'id': id, 'index': indexItem, 'completed' : completed}, e);
 		
 		} else {
 			this.editFlag = true;
@@ -556,22 +577,6 @@ class View extends EventEmitter {
 		}
 	}
 
-	CLRAddToDo(event) {
-		// event.preventDefault() //stop sending data
-
-		// collect data for saving in DB through a bunch of controller and model
-		const id = this.id;
-		const tasks = [];
-		const labelsCollection = document.querySelectorAll('section.active > .tabs_content_list label');
-		[...labelsCollection].forEach(function(element, index) {
-			tasks.push({'item': element.innerText, 'completed': false}) // tasks.push( {element.innerText, false/true})
-		});
-
-		// call function addToDo (controller) through emit;
-		this.emit('addToDo', {'id': id, 'tasks': tasks}, event);
-		// const checkOK = this.emit('addToDo', {'id': id, 'tasks': tasks, 'completed': false}, event);
-	}
-
 	test() {
 		console.log("test done well");
 	}
@@ -582,4 +587,7 @@ class View extends EventEmitter {
 
 const view = new View();
 
+
+
 export default view;
+
