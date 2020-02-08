@@ -11,13 +11,20 @@ class Controller {
 		this.view.on('updateItem', this.updateItem.bind(this));
 		this.view.on('deleteItem', this.deleteItem.bind(this));
 		this.view.on('updateCompState', this.updateCompState.bind(this));
-		this.view.on('openBD', this.openBD.bind(this))
+		this.view.on('openBD', this.openBD.bind(this));
+		this.view.on('getDates', this.getDates.bind(this));
+		this.view.on('checkData', this.checkDataM.bind(this));
 	}
 
 	openBD() {
 		const db = this.model.openDBNow();
 		console.log(1);
 
+	}
+
+	checkDataM(id) {
+		let data = this.model.getTaskList(id);
+		this.view.hCreateTab(data);
 	}
 
 	addTodo(taskList, event) {
@@ -31,8 +38,6 @@ class Controller {
 		}, taskList.index);
 
 		this.view.addItem(event);
-		// return OK or FALSE (FALSE if data wasn't sent)
-		// this.view.addItem(event);
 	}
 
 	updateItem(item, e) {
@@ -71,6 +76,24 @@ class Controller {
 		}
 
 		this.view.deleteItem(e);
+	}
+
+	getDates(month, year) {
+
+		month = 1 + (+month);		
+		if (month < 10) month = `0${month}`;
+		let ym = `${month}.${year}`;
+		
+		let newData = this.model.datesFromState();
+		let tdCollection = [...document.querySelectorAll('tbody td')];
+		tdCollection.forEach(item => {
+			let itemText = item.textContent.toString();
+			if (item.textContent.length == 1) itemText = `0${item.textContent}`;
+			if(newData.indexOf(`${itemText}.${ym}`) >= 0) {
+				item.classList.add('circleOn');
+				item.setAttribute('data-task', 'true');
+			}
+		})
 	}
 }
 

@@ -34,9 +34,6 @@ class View extends EventEmitter {
 			this.changeDate(currentDate.getFullYear(), currentDate.getMonth());
 			this.emit('openBD');
 		}
-
-
-		
 	}
 
 	addEventListeners() {
@@ -50,9 +47,7 @@ class View extends EventEmitter {
 		const table = document.querySelector("table");
 		const tdCells = document.getElementsByTagName('td');
 
-
 		document.addEventListener('click', this.closeSelected.bind(this));
-
 
 		table.addEventListener('mouseover', (event) => {
 			if (currentElem) return 
@@ -158,11 +153,34 @@ class View extends EventEmitter {
 		this.varsObject.calendarDate_month.innerText = this.months[month];
 		this.varsObject.calendarDate_year.innerText = year;
 		daysBlock.innerHTML = text;
+		let tdCollection = [...document.querySelectorAll('tbody td')];
+
+		for(let x of tdCollection) {
+			if (x.innerText != '') {
+				x.addEventListener('click', this.checkDayTask.bind(this));
+			}
+		}
+
+		this.emit('getDates', month, year);
+	}
+
+	checkDayTask(event) {
+		const year = this.varsObject.calendarDate_year.innerText;
+		let month = 1 + +(this.varsObject.calendarDate_month.getAttribute("data-month"));
+		if (month < 10) month = '0' + month;
+		let day = event.target.innerText;
+		if (day.length < 2) day = '0' + day;
+		const id = `${day}.${month}.${year}`;
+		this.emit('checkData', id);
+		console.log(id);
 	}
 
 	
 
 	hCreateTab(event, data) {
+		if (data) {
+
+		}
 		//скорее всего вызов будет такой hCreatetab(event, data, id) если есть id 
 		// то вместо кода ниже просто создать таб с id так как id это дата 
 		// и после этого createSection а затем createItem(task) через цикл for of для каждого item из {tasks}
@@ -203,7 +221,6 @@ class View extends EventEmitter {
 
 		//if getid true
 		// то автоматически через контроллер вызывается createItem для каждой задачи этого дня
-
 
 		if (sections != null) {
 			Array.prototype.slice.call(sections).forEach( function(element, index) {
@@ -294,6 +311,7 @@ class View extends EventEmitter {
 		const labelsCollection = [...document.querySelectorAll('section.active .item_delete i')];
 		let indexItem = labelsCollection.indexOf(e.target); // get index of removing element
 		this.emit('deleteItem', {'id': id, 'index': indexItem}, e);
+		this.isTask(labelsCollection, true);
 	}
 
 	hupdateItem(e) {
@@ -310,25 +328,17 @@ class View extends EventEmitter {
 		this.emit('updateCompState', {'id': id, 'index': indexItem, 'complete': complete}, e);
 	}
 
-	CLRAddToDo(e) {
+	hAddToDo(e) {
 		// event.preventDefault() //stop sending data
-
-		// collect data for saving in DB through a bunch of controller and model
 		const id = this.id;
 		const tasks = [];
 		const labelsCollection = [...document.querySelectorAll('section.active > .tabs_content_list input')];
 		let indexItem = labelsCollection.indexOf(e.target);
 		console.log(indexItem);	
 		const element = labelsCollection[indexItem].value;	
-		this.emit('addToDo', {'id': id, index: indexItem, item: element, completed: false}, e)
+		this.emit('addToDo', {'id': id, 'index': indexItem, 'item': element, 'completed': false}, e);
+		this.isTask(labelsCollection);
 
-		// [...labelsCollection].forEach(function(element, index) {
-		// 	tasks.push({'item': element.innerText, 'completed': false}) // tasks.push( {element.innerText, false/true})
-		// });
-
-		// call function addToDo (controller) through emit;
-		// this.emit('addToDo', {'id': id, 'tasks': tasks}, event);
-		// const checkOK = this.emit('addToDo', {'id': id, 'tasks': tasks, 'completed': false}, event);
 	}
 
 	catch_focusOut(e) {
@@ -357,22 +367,18 @@ class View extends EventEmitter {
 
 			this.editFlag = false;
 
-			// проверить есть ли следующий элемент после input, если есть то это editItem и остановить выполнение
-			// может быть сделать переменную flag чтобы не проверять следующий элемент
-			// и скорее всего отсюда вызать this.emit update
-			// в ctrl+Click необходимо проверить есть ли флаг edit, если да, то ничего не вызывать
-
 			if ((itemAmount <= 1) && e.target.value === '' || e.target.value === prevLabelText) return;
 				// this combination of comparisons allows stop function if first item is emptied or e.target.value === text in label 
 				// or if we use (e.ctrlKey & e.keyCode) because in this case e.target.value and prevLabelText are equal.
 			
-			this.CLRAddToDo(e);
+			this.hAddToDo(e);
 		}
 	}
 
 	addItem(event) {
 		event.target.classList.add('input_hide'); //перенес в addItem
 		event.target.previousElementSibling.classList.remove('label_Hide');
+		
 	}
 
 	deleteItem(event) {
@@ -391,6 +397,26 @@ class View extends EventEmitter {
 		input.classList.add('input_hide');
 		label.innerText = value;
 		label.classList.remove('label_Hide');
+	}
+
+	isTask(labelsCollection, del) {
+		let tdCollection = [...document.querySelectorAll('tbody td')];
+		
+		const nDay = this.id.split('', 2).join('');
+		if (labelsCollection.length <= 1 & !del) {
+			console.log(labelsCollection.length);
+			for (let x of tdCollection) {
+				if (x.innerText === nDay) {
+					x.classList.add('circleOn');
+				}
+			}
+		} else if (labelsCollection.length === 1 & del) {
+			for (let x of tdCollection) {
+				if (x.innerText === nDay) {
+					x.classList.remove('circleOn');
+				}
+			}
+		}
 	}
 
 	hAddItem(event) {
@@ -429,7 +455,7 @@ class View extends EventEmitter {
 				let trimValue = event.target.value.trim();
 				event.target.value = event.target.value.trim();
 				label.innerText = trimValue;
-				this.CLRAddToDo(e);
+				this.hAddToDo(e);
 			} else {
 				e.target.classList.add('input_hide');
 				e.target.previousElementSibling.classList.remove('label_Hide');
@@ -584,10 +610,7 @@ class View extends EventEmitter {
 };
 
 
-
 const view = new View();
-
-
 
 export default view;
 

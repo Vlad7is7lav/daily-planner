@@ -8,7 +8,7 @@
 	
 		<link href="1.css" rel="stylesheet">
 	
-		<link href="assets/css/app.8ac2e1a9742280b8dc0a.css" rel="stylesheet">
+		<link href="assets/css/app.ddd6ebae74a8b71fef91.css" rel="stylesheet">
 	
 
 	<link href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" rel="stylesheet">
@@ -42,19 +42,20 @@
 			</div>
 			<div class="events_filters">
 				<div class="no-filter addItem"><i class="far fa-plus-square"></i></div>
-
-				<div class="filter filter_allTasks">
-					<input type="checkbox" id="all" value="all">
+				<!-- <div class="filter filter_allTasks">
+					<input type="checkbox" onclick="allTask()" id="all" value="all">
 					<label for="all">All</label>
-				</div>
+				</div> -->
+
 				<div class="filter filter_completed">
-					<input type="checkbox" id="completed" value="completed">
-					<label for="completed">Completed</label>
+					<input type="checkbox" onchange="completed(this)" id="completed" value="completed">
+					<label class="completed" for="completed">Completed</label>
 				</div>
 				<div class="filter filter_act">
-					<input type="checkbox" id="unacted" value="unacted">
+					<input type="checkbox" onchange="unacted(this)" id="unacted" value="unacted">
 					<label for="unacted">Unacted</label>
 				</div>
+				<button id="push">Push</button>
 			</div>
 		</section>
 
@@ -110,13 +111,133 @@
 
 	
 	
+	<script src="assets/js/vendors.ddd6ebae74a8b71fef91.js"></script>
+	
+	<script src="assets/js/app.ddd6ebae74a8b71fef91.js"></script>
+	
+	
+	<script type="text/javascript">
+		function completed(self, from) {
+			if (from) self.checked = false;
+			let items = document.querySelectorAll('section.active .tabs_content_list_item');
+			if (items.length == 0) return;
+			let unacted = document.getElementById('unacted');
+			
+			if (unacted.checked == true) unacted.checked = false;
+			if (self.checked == true) {
+
+				for(let item of items) {
+					var label = item.querySelector('label');
+					if (label.style.textDecoration != 'line-through') {
+						item.style.display = 'none';
+					} else {
+						item.style.display = '';
+					}
+				}
+			} else {
+				for(let item of items) {
+					item.style.display = '';
+				}
+			}
+		}
+
+		function unacted(self, from) {
+
+			if (from) self.checked = false;
+			
+
+			let items = document.querySelectorAll('section.active .tabs_content_list_item');
+			if (items.length == 0) return;
+			
+			let completed = document.getElementById('completed');
+
+			if (completed.checked == true) completed.checked = false;
+			if (self.checked == true) {
+				
+				for(let item of items) {
+					var label = item.querySelector('label');
+					if (label.style.textDecoration == 'line-through') {
+						item.style.display = 'none';
+					} else {
+						item.style.display = '';
+					}
+				}
+			} else {
+				for(let item of items) {
+					item.style.display = '';
+				}
+			}
+		}
+
+		// window.addEventListener("DOMContentLoaded", ready);
+
+		// function ready() {
+		// 	// window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+		// 	// if (!window.indexedDB) {
+		// 	// 	window.alert('Ваш браузер не поддерживает indexedDB. Обновите браузер или используйте другой.');
+		// 	// }
+		// 	// var db = null;
+
+		// 	// const BDname = "testDB1";
+
+		// 	// const request = indexedDB.open(BDname, 1);
+
+		// 	// request.onerror = (event) => {
+		// 	// 	window.alert('Что-то пошло не так. Не могу создать базу данных!')
+		// 	// };
+
+		// 	// request.onsuccess = (event) => {
+		// 	// 	db = event.target.result;
+
+		// 	// 	db.onversionchange = () => {
+		// 	// 		db.close;
+		// 	// 		alert("База данных устарела, пожалуста, перезагрузите страницу.");
+		// 	// 	}
+		// 	// };
+
+		// 	// request.onerror = (event) => {
+		// 	// 	//выводим ошибку
+		// 	// 	window.alert('Database error' + event.target.errorCode);
+		// 	// }
+
+		// 	// request.onupgradeneeded = (event) => {
+		// 	// 	db = event.target.result;
+
+		// 	// 	if (!db.objectStoreNames.contains('daily1')) { // if there's no "books" store
+		// 	// 	    db.createObjectStore('daily1', {keyPath: "id"}); // create it
+		// 	// 	}
+
+				
 
 
+		// 	// 	// // Создаем хранилище объектов для этой базы данных
+		// 	// 	// var objectStore = db.createObjectStore(BDname, { keyPath: "myKey" });
+		// 	// }
 
-	
-	<script src="assets/js/vendors.8ac2e1a9742280b8dc0a.js"></script>
-	
-	<script src="assets/js/app.8ac2e1a9742280b8dc0a.js"></script>
-	
+		// 	// request.onblocked = function() {
+		// 	//   // есть другое соединение к той же базе
+		// 	//   // и оно не было закрыто после срабатывания на нём db.onversionchange
+		// 	// };
+
+		// 	// let btn = document.getElementById('push');
+		// 	// btn.addEventListener("click", addNote);
+
+		// 	// function addNote() {
+		// 	// 	console.log(db, IDBDatabase)
+		// 	// 	const tx = db.transaction("daily1", "readwrite");
+		// 	// 	const store = tx.objectStore('daily1');
+
+		// 	// 	var req = store.add({
+		// 	// 	"id": "12.01.2020",
+		// 	// 	"task": "Разобраться с БД"
+		// 	// });
+		// 	// }
+
+			
+
+
+		// }
+	</script>
+
 </body>
 </html>
