@@ -171,16 +171,15 @@ class View extends EventEmitter {
 		let day = event.target.innerText;
 		if (day.length < 2) day = '0' + day;
 		const id = `${day}.${month}.${year}`;
-		this.emit('checkData', id);
-		console.log(id);
+		this.emit('checkData', id, event);
+		console.log(id, day, 'daytask');
 	}
 
 	
 
 	hCreateTab(event, data) {
-		if (data) {
-
-		}
+		event.stopPropagation();
+		
 		//скорее всего вызов будет такой hCreatetab(event, data, id) если есть id 
 		// то вместо кода ниже просто создать таб с id так как id это дата 
 		// и после этого createSection а затем createItem(task) через цикл for of для каждого item из {tasks}
@@ -188,11 +187,13 @@ class View extends EventEmitter {
 	  // const check = this.controller.checkDate() // Check if date has already created and located on the server
 
 	  // Creating Tabs
+
+		
+
 		const sections = document.querySelectorAll('.tabs_content > section');
 		const tab = document.querySelectorAll('.tabs > .tab');
-		let day = event.target.parentElement.textContent;
-		let year = document.querySelector(".calendarDate_year").textContent;
-		let month = +(document.querySelector(".calendarDate_month").getAttribute("data-month")) + 1;
+		
+		
 		let tabsArray = Array.prototype.slice.call(tab);
 
 		const inputUnacted = document.getElementById('unacted');
@@ -200,16 +201,30 @@ class View extends EventEmitter {
 		completed(inputCompleted, false);
 		unacted(inputUnacted, true);
 
-		
+		if (data) {
+			console.log('createtab');
+			this.id = data.id;
+		} else {
+			let year = document.querySelector(".calendarDate_year").textContent;
+			let month = +(document.querySelector(".calendarDate_month").getAttribute("data-month")) + 1;
+			let day = event.target.parentElement.textContent;
+			if (day < 10) {day = '0' + day};
+			if (month < 10) {month = '0' + month};
+			this.id = `${day}.${month}.${year}`;
+		}
 
 	  // Add '0' before number of month or day
-		if (month < 10) {month = '0' + month};
-		if (day < 10) {day = '0' + day};
+		
+		
 	  //
+	  
+
+	  // this.id = data.id || `${day}.${month}.${year}`;
+	  console.log(this.id, 'crtab');
 
 	  // Check if this day already open in tabs
 		for (let i = 0; i < tabsArray.length; i++) {
-			if (tabsArray[i].textContent == `${day}.${month}.${year}`) {
+			if (tabsArray[i].textContent == this.id) {
 				tabsArray[i].classList.add("active");
 				this.changeTab(null, tabsArray[i]);
 				return
@@ -217,7 +232,7 @@ class View extends EventEmitter {
 			tabsArray[i].classList.remove("active");
 		}
 
-		this.id = `${day}.${month}.${year}`;
+		
 
 		//if getid true
 		// то автоматически через контроллер вызывается createItem для каждой задачи этого дня
@@ -250,7 +265,15 @@ class View extends EventEmitter {
 	//Call f createSection for creating List(Section)
 		this.createSection();
 	//Call f createItem for creating task item
-		this.createItem();	
+
+		if (data) {
+			for(let task of data.tasks) {
+				this.createItem(task.item);
+			}
+		} else {
+			this.createItem();	
+		}
+		
 	}
 
 	//Creating section for tasks
@@ -270,24 +293,49 @@ class View extends EventEmitter {
 	}
 
 	// Creating ToDo Elements
-	createItem() { // createItem(data) если есть data = tasks from DB or state
+	createItem(item) { // createItem(data) если есть data = tasks from DB or state
 		//всё указанное ниже + label.innerText = task
+		let className;
 		const currentULSection = document.querySelector('section.active > .tabs_content_list');
 
 		if(currentULSection.querySelectorAll('input').length > 18) return alert('Free version allows you create only 18 tasks');
-
+		if (item != undefined) {
+			className = {
+				'li': 'tabs_content_list_item',
+				'label': '',
+				'input': 'textfield input_hide'
+			}
+		}
+		else {
+			className = {
+			'li': 'tabs_content_list_item',
+			'label': 'label_Hide',
+			'input': 'textfield'
+			}
+		}
 		currentULSection.querySelectorAll('input').length;
-		let elemLI = createElement("li", {className : 'tabs_content_list_item'});
-		let elemLILabel = createElement("label", {className : 'label_Hide'});
-		let elemLIinput = createElement('input', {type : 'text', className : 'textfield'});
+		// let elemLI = createElement("li", {'className' : 'tabs_content_list_item'});
+		// let elemLILabel = createElement("label", {'className' : 'label_Hide'}, item);
+
+		// let elemLIinput = createElement('input', {type : 'text', 'className' : 'textfield'}, item);
+		let elemLI = createElement("li", {'className' : className['li']});
+		let elemLILabel = createElement("label", {'className' : className['label']}, item);
+
+		let elemLIinput = createElement('input', {type : 'text', 'className' : className['input']}, item);
 		elemLI.innerHTML = "<div class=\"item_delete\"><i class=\"fas fa-times\"></i></div></li>";
 
 		elemLI.appendChild(elemLILabel);
+
 		elemLI.appendChild(elemLIinput);
+		console.log(elemLIinput);
+
 		currentULSection.appendChild(elemLI);
+		
+
 
 		const inputs = currentULSection.querySelectorAll('input'); // Find all input in section
 		inputs[inputs.length-1].focus(); 						// Add the last input focus()
+
 
 		return this.todoEventListeners(elemLI);
 	}
@@ -402,7 +450,10 @@ class View extends EventEmitter {
 	isTask(labelsCollection, del) {
 		let tdCollection = [...document.querySelectorAll('tbody td')];
 		
-		const nDay = this.id.split('', 2).join('');
+		let nDay = this.id.slice(0, 2);
+		if(this.id.slice(0, 2) < 10) {nDay = this.id.slice(1, 2)};
+
+		console.log(nDay, 'nday');
 		if (labelsCollection.length <= 1 & !del) {
 			console.log(labelsCollection.length);
 			for (let x of tdCollection) {
@@ -410,9 +461,10 @@ class View extends EventEmitter {
 					x.classList.add('circleOn');
 				}
 			}
-		} else if (labelsCollection.length === 1 & del) {
+		} else if (labelsCollection.length <= 1 & del) {
 			for (let x of tdCollection) {
 				if (x.innerText === nDay) {
+					console.log(labelsCollection.length, 'cOn');
 					x.classList.remove('circleOn');
 				}
 			}
@@ -467,6 +519,7 @@ class View extends EventEmitter {
 
 			if (e.target.classList == "far fa-plus-square") {
 				let inputs = document.querySelectorAll('section.active > .tabs_content_list input');
+				console.log(inputs);
 
 				for (let element of inputs) {
 					if(!this.itemIsEmpty(element)) {						
@@ -549,6 +602,7 @@ class View extends EventEmitter {
 		
 		} else {
 			this.editFlag = true;
+			input_.value = label_.innerText;
 			input_.classList.remove('input_hide');
 			label_.classList.add('label_Hide');
 			input_.focus();

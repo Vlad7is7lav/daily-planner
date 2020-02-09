@@ -20,6 +20,7 @@ class Model {
 		// 		resolve(result)				
 		// 	}
 		// })
+		
 		this.state.forEach( function(element, index) {
 			console.log(element, id, element.id == id.toString())
 		});

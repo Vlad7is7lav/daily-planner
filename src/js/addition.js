@@ -44,7 +44,15 @@ function createElement(elem, options, text) {
 			element[prop] = options[prop];
 		}
 
-		if (text) element.textContent = text;
+		if (text) {
+			if(elem == 'input') {
+				element.value = text;
+			} else {
+				element.textContent = text
+			}
+		};
+
+		// if (text) element.textContent = text;
 		return element
 	}
 

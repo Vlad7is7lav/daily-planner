@@ -20,7 +20,9 @@
 			</div>
 			<div class="infoDesk_clock">
 				<div class="infoDesk_clockName textHead"> Clock Canvas</div>
-				<div class="infoDesk_clockSVG"></div>
+				<div class="infoDesk_clockSVG">
+					<canvas id="canvas" width="200" height="200"></canvas>
+				</div>
 			</div>
 		</section>
 
@@ -165,74 +167,82 @@
 			}
 		}
 
-		// window.addEventListener("DOMContentLoaded", ready);
+		let canvas = document.getElementById('canvas');
+		canvas.width = 220;
+		canvas.height = 220;
+		var ctx = canvas.getContext('2d');
+		var ctr = canvas.getContext('2d');
+		ctx.strokeStyle = '#5f8087';
+		ctx.lineWidth = 4;
+		ctx.lineCap = 'round';
+		ctx.shadowBlur = 2;
+		ctx.shadowColor = '#d2f4fb'
+		var n = 0;
+		var n2 = 1;
+		var baseX = 100;
+		var baseY = 100;
+		var r1 = 60;
+		var curAngle = 0;
 
-		// function ready() {
-		// 	// window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-		// 	// if (!window.indexedDB) {
-		// 	// 	window.alert('Ваш браузер не поддерживает indexedDB. Обновите браузер или используйте другой.');
-		// 	// }
-		// 	// var db = null;
+		function degToRad(degr) {
+			let factor = Math.PI/180;
+			return degr*factor;
+		}
 
-		// 	// const BDname = "testDB1";
+		function renderTime() {
+			let now = new Date();
+			let today = now.toDateString();
+			let time = now.toLocaleTimeString();
+			let hours = now.getHours();
+			let minutes = now.getMinutes();
+			let seconds = now.getSeconds();
+			let milliseconds = now.getMilliseconds();
+			let newSeconds = seconds + (milliseconds/1000);
 
-		// 	// const request = indexedDB.open(BDname, 1);
-
-		// 	// request.onerror = (event) => {
-		// 	// 	window.alert('Что-то пошло не так. Не могу создать базу данных!')
-		// 	// };
-
-		// 	// request.onsuccess = (event) => {
-		// 	// 	db = event.target.result;
-
-		// 	// 	db.onversionchange = () => {
-		// 	// 		db.close;
-		// 	// 		alert("База данных устарела, пожалуста, перезагрузите страницу.");
-		// 	// 	}
-		// 	// };
-
-		// 	// request.onerror = (event) => {
-		// 	// 	//выводим ошибку
-		// 	// 	window.alert('Database error' + event.target.errorCode);
-		// 	// }
-
-		// 	// request.onupgradeneeded = (event) => {
-		// 	// 	db = event.target.result;
-
-		// 	// 	if (!db.objectStoreNames.contains('daily1')) { // if there's no "books" store
-		// 	// 	    db.createObjectStore('daily1', {keyPath: "id"}); // create it
-		// 	// 	}
-
-				
+			//Background
+			// ctx.fillStyle = '#71929c';
+			// ctx.fillRect(0,0,200,200);
 
 
-		// 	// 	// // Создаем хранилище объектов для этой базы данных
-		// 	// 	// var objectStore = db.createObjectStore(BDname, { keyPath: "myKey" });
-		// 	// }
+			//Hours
+			ctx.beginPath();
+			ctx.arc(100,100,97,degToRad(270), degToRad((hours*15) - 180));
+			ctx.stroke();
+			n++;
+			n2 = n2*1.05;
 
-		// 	// request.onblocked = function() {
-		// 	//   // есть другое соединение к той же базе
-		// 	//   // и оно не было закрыто после срабатывания на нём db.onversionchange
-		// 	// };
+			let vx = r1*Math.cos(curAngle);
+			let vy = r1*Math.sin(curAngle);
+			ctr.beginPath()
+			ctr.arc(baseX + vx,baseY + vy,20, 0, 360);
+			// ctr.moveTo(60, 40);
+			// ctr.arc(40,40,20, 0, 360);
 
-		// 	// let btn = document.getElementById('push');
-		// 	// btn.addEventListener("click", addNote);
+			ctr.stroke();
 
-		// 	// function addNote() {
-		// 	// 	console.log(db, IDBDatabase)
-		// 	// 	const tx = db.transaction("daily1", "readwrite");
-		// 	// 	const store = tx.objectStore('daily1');
-
-		// 	// 	var req = store.add({
-		// 	// 	"id": "12.01.2020",
-		// 	// 	"task": "Разобраться с БД"
-		// 	// });
-		// 	// }
-
-			
+			curAngle += degToRad((milliseconds*6) - 180);
 
 
-		// }
+			//Minutes
+			ctx.beginPath();
+			ctx.arc(100,100,80,degToRad(270), degToRad((minutes*6) - 180));
+			ctx.stroke();
+
+
+			//Seconds
+			ctx.beginPath();
+			ctx.arc(100,100,65,degToRad(270), degToRad((newSeconds*6) - 180));
+			ctx.stroke();
+
+
+			//Date
+
+
+			//Time
+		}
+
+		setInterval(renderTime, 1000);
+
 	</script>
 
 </body>

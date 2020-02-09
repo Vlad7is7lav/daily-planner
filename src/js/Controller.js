@@ -22,9 +22,9 @@ class Controller {
 
 	}
 
-	checkDataM(id) {
+	checkDataM(id, event) {
 		let data = this.model.getTaskList(id);
-		this.view.hCreateTab(data);
+		if(data) this.view.hCreateTab(event, data);
 	}
 
 	addTodo(taskList, event) {
