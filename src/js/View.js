@@ -1,6 +1,4 @@
-// import controller from './Controller.js';
 import { makeMonth, createElement, EventEmitter } from './addition.js';
-
 
 class View extends EventEmitter {
 	constructor() {
@@ -179,21 +177,10 @@ class View extends EventEmitter {
 
 	hCreateTab(event, data) {
 		event.stopPropagation();
-		
-		//скорее всего вызов будет такой hCreatetab(event, data, id) если есть id 
-		// то вместо кода ниже просто создать таб с id так как id это дата 
-		// и после этого createSection а затем createItem(task) через цикл for of для каждого item из {tasks}
-	  // Check date in this.state
-	  // const check = this.controller.checkDate() // Check if date has already created and located on the server
-
-	  // Creating Tabs
-
-		
 
 		const sections = document.querySelectorAll('.tabs_content > section');
 		const tab = document.querySelectorAll('.tabs > .tab');
-		
-		
+				
 		let tabsArray = Array.prototype.slice.call(tab);
 
 		const inputUnacted = document.getElementById('unacted');
@@ -208,16 +195,14 @@ class View extends EventEmitter {
 			let year = document.querySelector(".calendarDate_year").textContent;
 			let month = +(document.querySelector(".calendarDate_month").getAttribute("data-month")) + 1;
 			let day = event.target.parentElement.textContent;
+
+			// Add '0' before number of month or day
 			if (day < 10) {day = '0' + day};
 			if (month < 10) {month = '0' + month};
+	  		//
+
 			this.id = `${day}.${month}.${year}`;
 		}
-
-	  // Add '0' before number of month or day
-		
-		
-	  //
-	  
 
 	  // this.id = data.id || `${day}.${month}.${year}`;
 	  console.log(this.id, 'crtab');
@@ -231,11 +216,6 @@ class View extends EventEmitter {
 			}
 			tabsArray[i].classList.remove("active");
 		}
-
-		
-
-		//if getid true
-		// то автоматически через контроллер вызывается createItem для каждой задачи этого дня
 
 		if (sections != null) {
 			Array.prototype.slice.call(sections).forEach( function(element, index) {
@@ -268,7 +248,7 @@ class View extends EventEmitter {
 
 		if (data) {
 			for(let task of data.tasks) {
-				this.createItem(task.item);
+				this.createItem(task);
 			}
 		} else {
 			this.createItem();	
@@ -293,13 +273,13 @@ class View extends EventEmitter {
 	}
 
 	// Creating ToDo Elements
-	createItem(item) { // createItem(data) если есть data = tasks from DB or state
+	createItem(task) { // createItem(data) если есть data = tasks from DB or state
 		//всё указанное ниже + label.innerText = task
 		let className;
 		const currentULSection = document.querySelector('section.active > .tabs_content_list');
 
 		if(currentULSection.querySelectorAll('input').length > 18) return alert('Free version allows you create only 18 tasks');
-		if (item != undefined) {
+		if (task != undefined) {
 			className = {
 				'li': 'tabs_content_list_item',
 				'label': '',
@@ -312,30 +292,28 @@ class View extends EventEmitter {
 			'label': 'label_Hide',
 			'input': 'textfield'
 			}
+			task = {item: ''};
 		}
+
 		currentULSection.querySelectorAll('input').length;
 		// let elemLI = createElement("li", {'className' : 'tabs_content_list_item'});
 		// let elemLILabel = createElement("label", {'className' : 'label_Hide'}, item);
 
 		// let elemLIinput = createElement('input', {type : 'text', 'className' : 'textfield'}, item);
 		let elemLI = createElement("li", {'className' : className['li']});
-		let elemLILabel = createElement("label", {'className' : className['label']}, item);
-
-		let elemLIinput = createElement('input', {type : 'text', 'className' : className['input']}, item);
+		let elemLILabel = createElement("label", {'className' : className['label']}, task.item);
+		let elemLIinput = createElement('input', {type : 'text', 'className' : className['input']}, task.item);
 		elemLI.innerHTML = "<div class=\"item_delete\"><i class=\"fas fa-times\"></i></div></li>";
 
+		if (task.completed == true) elemLILabel.style.textDecoration = 'line-through';
+		
 		elemLI.appendChild(elemLILabel);
-
 		elemLI.appendChild(elemLIinput);
 		console.log(elemLIinput);
-
 		currentULSection.appendChild(elemLI);
 		
-
-
 		const inputs = currentULSection.querySelectorAll('input'); // Find all input in section
 		inputs[inputs.length-1].focus(); 						// Add the last input focus()
-
 
 		return this.todoEventListeners(elemLI);
 	}
@@ -349,8 +327,7 @@ class View extends EventEmitter {
 		i.addEventListener('click', this.hdeleteItem.bind(this)); 				// if click -> add new 'li' (check if old 'li' empty)
 		input.addEventListener('keydown', this.hAddItem.bind(this)); 			// if input in focus and push 'enter' -> add new 'li' (check if old 'li' empty)
 		input.addEventListener('focusout', this.catch_focusOut.bind(this));
-		// li.addEventListener('click', this.hEditItem.bind(this)); // if click == ctrl+click -> cross out the word,  
-																// else track keyup click without moving and go inside to edit item
+
 		return item;
 	}
 
@@ -656,15 +633,7 @@ class View extends EventEmitter {
 			}
 		}
 	}
-
-	test() {
-		console.log("test done well");
-	}
-
 };
 
-
-const view = new View();
-
-export default view;
+export default View;
 

@@ -5,7 +5,6 @@ class Controller {
 	constructor(model, view) {
 		this.model = model;
 		this.view = view;
-		view.test();
 
 		this.view.on('addToDo', this.addTodo.bind(this));
 		this.view.on('updateItem', this.updateItem.bind(this));
@@ -97,6 +96,4 @@ class Controller {
 	}
 }
 
-const controller = new Controller(model, view);
-
-export default controller;
+export default Controller;

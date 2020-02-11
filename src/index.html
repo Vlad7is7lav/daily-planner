@@ -168,22 +168,28 @@
 		}
 
 		let canvas = document.getElementById('canvas');
-		canvas.width = 220;
-		canvas.height = 220;
+		canvas.width = 270;
+		canvas.height = 270;
 		var ctx = canvas.getContext('2d');
 		var ctr = canvas.getContext('2d');
 		ctx.strokeStyle = '#5f8087';
-		ctx.lineWidth = 4;
-		ctx.lineCap = 'round';
-		ctx.shadowBlur = 2;
-		ctx.shadowColor = '#d2f4fb'
-		var n = 0;
-		var n2 = 1;
-		var baseX = 100;
-		var baseY = 100;
-		var r1 = 60;
-		var curAngle = 0;
+		ctx.lineWidth = 3;
 
+		ctr.lineWidth = 2;
+		ctx.lineCap = 'round';
+		ctx.shadowBlur = 6;
+		ctx.shadowColor = '#d2f4fb'
+		var baseX = 135;
+		var baseY = 135;
+		var baseX1 = 135;
+		var baseY1 = 135;
+		var baseX2 = 135;
+		var baseY2 = 135;
+		var r1 = 110;
+		var r2 = 85;
+		var r3 = 60;
+		var curAngle = 0;
+			// curAngle += 0.010472;
 		function degToRad(degr) {
 			let factor = Math.PI/180;
 			return degr*factor;
@@ -197,51 +203,88 @@
 			let minutes = now.getMinutes();
 			let seconds = now.getSeconds();
 			let milliseconds = now.getMilliseconds();
-			let newSeconds = seconds + (milliseconds/1000);
+			let newSeconds = (seconds + (milliseconds/1000)).toFixed(1);
+			let rad = (degToRad((newSeconds*0.6/0.1) - 90)).toFixed(6);
+			let radMinutes = (degToRad((minutes*6) - 90));
+			let radHours = (degToRad((hours*6) + 90));
+			// console.log(rad, 1);
+
 
 			//Background
 			// ctx.fillStyle = '#71929c';
 			// ctx.fillRect(0,0,200,200);
+			let vx = r1*Math.cos(rad);
+			let vy = r1*Math.sin(rad);
+			let vx1 = r2*Math.cos(radMinutes);
+			let vy1 = r2*Math.sin(radMinutes);
+			let vx2 = r3*Math.cos(radHours);
+			let vy2 = r3*Math.sin(radHours);
 
 
 			//Hours
-			ctx.beginPath();
-			ctx.arc(100,100,97,degToRad(270), degToRad((hours*15) - 180));
-			ctx.stroke();
-			n++;
-			n2 = n2*1.05;
 
-			let vx = r1*Math.cos(curAngle);
-			let vy = r1*Math.sin(curAngle);
-			ctr.beginPath()
-			ctr.arc(baseX + vx,baseY + vy,20, 0, 360);
-			// ctr.moveTo(60, 40);
-			// ctr.arc(40,40,20, 0, 360);
 
+			ctx.clearRect(0,0, canvas.width, canvas.width);
+			ctx.lineWidth = 2;
+			ctr.beginPath();
+			ctr.setLineDash([9, 15]);
+			ctr.arc(baseX,baseY,r1,0, 360);
+
+			ctr.moveTo(baseX+r2,baseX);
+			ctr.arc(baseX,baseY,r2,0, 360);
+
+			ctr.moveTo(baseX+r3,baseX);
+			ctr.arc(baseX,baseY,r3,0, 360);
 			ctr.stroke();
 
-			curAngle += degToRad((milliseconds*6) - 180);
-
-
-			//Minutes
+			ctr.setLineDash([0, 0]);
+			ctx.lineWidth = 6;
 			ctx.beginPath();
-			ctx.arc(100,100,80,degToRad(270), degToRad((minutes*6) - 180));
+			ctx.arc(baseX1 + vx1,baseY1 + vy1,7, 0, 360);
+			ctx.fillStyle = '#5f8087'
+			ctx.stroke();	
+			ctx.fill();
+
+
+
+			ctx.beginPath();
+			ctx.arc(baseX2 + vx2,baseY2 + vy2,9, 0, 360);
+			ctx.fillStyle = '#5f8087'
+			ctx.stroke();	
+			ctx.fill();
+
+			// Seconds
+			
+			ctx.beginPath();
+			ctx.arc(baseX + vx,baseY + vy,4, 0, 360);
+			// ctx.closePath();
+			ctx.fillStyle = '#5f8087'
+			
+			ctx.stroke();
+			// ctx.closePath();
+			ctx.fill();
+
+
+			// ctr.font="20px Segoe Print"
+			// ctr.fillText('n', baseX + vx - 10,baseY + vy + 4);
+
+			
+
+			
+
+
+			//Center
+			ctx.beginPath();
+			ctx.arc(baseX,baseX,2,0, 360);
 			ctx.stroke();
 
 
-			//Seconds
-			ctx.beginPath();
-			ctx.arc(100,100,65,degToRad(270), degToRad((newSeconds*6) - 180));
-			ctx.stroke();
-
-
-			//Date
-
-
-			//Time
+			 window.requestAnimationFrame(renderTime)
 		}
 
-		setInterval(renderTime, 1000);
+		renderTime();
+
+		// setInterval(renderTime, 100);
 
 	</script>
 

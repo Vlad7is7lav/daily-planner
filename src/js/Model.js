@@ -162,19 +162,7 @@ class Model {
 			const show = (value) => {console.log(value)}
 
 		};
-
-		// function addNote() {
-		// 	const tx = this.db.transaction("daily1", "readwrite");
-		// 	const store = tx.objectStore('daily1');
-
-		// 	var req = store.add({
-		// 		"id": "18.01.2020",
-		// 		"task": "Разобраться с БД3"
-		// 	});
-		// };
 	};
-
-
 }
 
 const data = [
@@ -210,6 +198,6 @@ const data = [
 			 ]
 
 
-const model = new Model(data);
 
-export default model;
+
+export default Model;
