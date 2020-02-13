@@ -14,6 +14,17 @@
 	// background-color: #5e8289;
 }
 
+
+
 #canvas {
-	margin-top: 10px;
+	margin-top: -10px;
+	z-index: 4;
+	position: absolute;
 } 
+
+#circle {
+	margin-top: -10px;
+	z-index: 1;
+	position: absolute;
+}
+

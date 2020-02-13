@@ -19,9 +19,11 @@
 				<div class="infoDesk_weatherAPI"> Weather will be here</div>
 			</div>
 			<div class="infoDesk_clock">
-				<div class="infoDesk_clockName textHead"> Clock Canvas</div>
+				<div class="infoDesk_clockName textHead"> Clock </div>
 				<div class="infoDesk_clockSVG">
+					
 					<canvas id="canvas" width="200" height="200"></canvas>
+					<canvas id="circle" width="200" height="200"></canvas>
 				</div>
 			</div>
 		</section>
@@ -34,18 +36,10 @@
 				</div>
 				<div class="tabs_content">
 					<!-- Tasks list -->
-				</div>
-				<!-- <div>
-					<div><input type="radio" name="radioItems" id="radio-1"></div>	
-					<label>Завершить все</label>	
-				</div> -->				
+				</div>				
 			</div>
 			<div class="events_filters">
 				<div class="no-filter addItem"><i class="far fa-plus-square"></i></div>
-				<!-- <div class="filter filter_allTasks">
-					<input type="checkbox" onclick="allTask()" id="all" value="all">
-					<label for="all">All</label>
-				</div> -->
 
 				<div class="filter filter_completed">
 					<input type="checkbox" onchange="completed(this)" id="completed" value="completed">
@@ -167,124 +161,121 @@
 			}
 		}
 
-		let canvas = document.getElementById('canvas');
-		canvas.width = 270;
-		canvas.height = 270;
-		var ctx = canvas.getContext('2d');
-		var ctr = canvas.getContext('2d');
-		ctx.strokeStyle = '#5f8087';
-		ctx.lineWidth = 3;
+		// let canvas = document.getElementById('canvas');
+		// let circle = document.getElementById('circle');
+		// canvas.width = 270;
+		// canvas.height = 270;
+		// [circle.width, circle.height] = [270, 270];
 
-		ctr.lineWidth = 2;
-		ctx.lineCap = 'round';
-		ctx.shadowBlur = 6;
-		ctx.shadowColor = '#d2f4fb'
-		var baseX = 135;
-		var baseY = 135;
-		var baseX1 = 135;
-		var baseY1 = 135;
-		var baseX2 = 135;
-		var baseY2 = 135;
-		var r1 = 110;
-		var r2 = 85;
-		var r3 = 60;
-		var curAngle = 0;
-			// curAngle += 0.010472;
-		function degToRad(degr) {
-			let factor = Math.PI/180;
-			return degr*factor;
-		}
+		// var ctx = canvas.getContext('2d');
+		// var ctr = circle.getContext('2d');
+		// ctx.strokeStyle = ctr.strokeStyle = '#5f8087';
+		// ctx.lineCap = 'round';
+		// ctx.shadowBlur = ctr.shadowBlur = 6;
+		// ctx.shadowColor = ctr.shadowColor = '#d2f4fb'
+		// var baseX = 135;
+		// var baseY = 135;
+		// var r1 = 110;
+		// var r2 = 85;
+		// var r3 = 60;
+		// // curAngle += 0.010472;
 
-		function renderTime() {
-			let now = new Date();
-			let today = now.toDateString();
-			let time = now.toLocaleTimeString();
-			let hours = now.getHours();
-			let minutes = now.getMinutes();
-			let seconds = now.getSeconds();
-			let milliseconds = now.getMilliseconds();
-			let newSeconds = (seconds + (milliseconds/1000)).toFixed(1);
-			let rad = (degToRad((newSeconds*0.6/0.1) - 90)).toFixed(6);
-			let radMinutes = (degToRad((minutes*6) - 90));
-			let radHours = (degToRad((hours*6) + 90));
-			// console.log(rad, 1);
+		// function degToRad(degr) {
+		// 	let factor = Math.PI/180;
+		// 	return degr*factor;
+		// }
 
+		// function renderCircle() {
+		// 	let now = new Date();
+		// 	let time = now.toString().slice(0, 3);
+		// 	let day = now.getDate();
 
-			//Background
-			// ctx.fillStyle = '#71929c';
-			// ctx.fillRect(0,0,200,200);
-			let vx = r1*Math.cos(rad);
-			let vy = r1*Math.sin(rad);
-			let vx1 = r2*Math.cos(radMinutes);
-			let vy1 = r2*Math.sin(radMinutes);
-			let vx2 = r3*Math.cos(radHours);
-			let vy2 = r3*Math.sin(radHours);
+		// 	ctr.lineWidth = 2;
+		// 	//start draw circles
+		// 	ctr.beginPath();
+		// 	ctr.setLineDash([9, 15]);
+		// 	// draw "circle"
+		// 	ctr.arc(baseX,baseY,r1,0, 360);
+		// 	// go to the minutes "circle"
+		// 	ctr.moveTo(baseX+r2,baseX);
+		// 	ctr.arc(baseX,baseY,r2,0, 360);
+		// 	// go to the hours "circle"
+		// 	ctr.moveTo(baseX+r3,baseX);
+		// 	ctr.arc(baseX,baseY,r3,0, 360);
+		// 	ctr.stroke();
 
+		// 	ctr.fillStyle = '#1d71c5';
+		// 	ctr.font="21px Segoe Print"
+		// 	ctr.fillText(time + '/' + day,90, 159);
+		// }
 
-			//Hours
+		// function renderTime() {
+		// 	let now = new Date();
+		// 	let year = now.getFullYear();
+		// 	let day = now.getDate();
+		// 	let hours = now.getHours();
+		// 	let hoursFull = now.getHours();
+		// 	let minutes = now.getMinutes();
+		// 	let seconds = now.getSeconds();
+		// 	let milliseconds = now.getMilliseconds();
+		// 	let newSeconds = (seconds + (milliseconds/1000)).toFixed(1);
+		// 	let rad = (degToRad((newSeconds*0.6/0.1) - 90)).toFixed(6);
+		// 	let radMinutes = (degToRad((minutes*6) - 90));
+		// 	let radHours = (degToRad((hours*6) + 90));
 
-
-			ctx.clearRect(0,0, canvas.width, canvas.width);
-			ctx.lineWidth = 2;
-			ctr.beginPath();
-			ctr.setLineDash([9, 15]);
-			ctr.arc(baseX,baseY,r1,0, 360);
-
-			ctr.moveTo(baseX+r2,baseX);
-			ctr.arc(baseX,baseY,r2,0, 360);
-
-			ctr.moveTo(baseX+r3,baseX);
-			ctr.arc(baseX,baseY,r3,0, 360);
-			ctr.stroke();
-
-			ctr.setLineDash([0, 0]);
-			ctx.lineWidth = 6;
-			ctx.beginPath();
-			ctx.arc(baseX1 + vx1,baseY1 + vy1,7, 0, 360);
-			ctx.fillStyle = '#5f8087'
-			ctx.stroke();	
-			ctx.fill();
-
-
-
-			ctx.beginPath();
-			ctx.arc(baseX2 + vx2,baseY2 + vy2,9, 0, 360);
-			ctx.fillStyle = '#5f8087'
-			ctx.stroke();	
-			ctx.fill();
-
-			// Seconds
+		// 	// getting coordinates
+		// 	let vx = r1*Math.cos(rad);
+		// 	let vy = r1*Math.sin(rad);
+		// 	let vx1 = r2*Math.cos(radMinutes);
+		// 	let vy1 = r2*Math.sin(radMinutes);
+		// 	let vx2 = r3*Math.cos(radHours);
+		// 	let vy2 = r3*Math.sin(radHours);
 			
-			ctx.beginPath();
-			ctx.arc(baseX + vx,baseY + vy,4, 0, 360);
-			// ctx.closePath();
-			ctx.fillStyle = '#5f8087'
+		// 	// clear canvas 
+		// 	ctx.clearRect(0,0, canvas.width, canvas.width);
+		// 	ctr.setLineDash([0, 0]);
+		// 	ctx.lineWidth = 6;
+
+		// 	// Seconds
+		// 	ctx.beginPath();
+		// 	ctx.fillStyle = '#5f8087'
+		// 	ctx.arc(baseX + vx,baseY + vy,4, 0, 360);
+		// 	ctx.closePath();
+		// 	ctx.stroke();
+		// 	ctx.fill();
+
+		// 	// Minutes
+		// 	ctx.beginPath();
+		// 	ctx.arc(baseX + vx1,baseY + vy1,7, 0, 360);
+		// 	ctx.stroke();	
+		// 	ctx.fill();
+
+		// 	// Hours
+		// 	ctx.beginPath();
+		// 	ctx.arc(baseX + vx2,baseY + vy2,9, 0, 360);
+		// 	ctx.stroke();	
+		// 	ctx.fill();
+
+		// 	//Center
+		// 	ctx.beginPath();
+		// 	ctx.arc(baseX,baseX,1,0, 360);
+		// 	ctx.stroke();
+
+		// 	//Time and Date
+		// 	ctx.fillStyle = '#1d71c5'
+		// 	ctx.font="21px Segoe Print"
+		// 	if(minutes < 10) minutes = '0'+minutes;
+		// 	if(hoursFull < 10) hoursFull = '0'+minutes;
+		// 	ctx.fillText(hoursFull + ':' + minutes,101, 123);
 			
-			ctx.stroke();
-			// ctx.closePath();
-			ctx.fill();
 
+		// 		window.requestAnimationFrame(renderTime)
+		// }
 
-			// ctr.font="20px Segoe Print"
-			// ctr.fillText('n', baseX + vx - 10,baseY + vy + 4);
+		// renderCircle();
+		// renderTime();
 
-			
-
-			
-
-
-			//Center
-			ctx.beginPath();
-			ctx.arc(baseX,baseX,2,0, 360);
-			ctx.stroke();
-
-
-			 window.requestAnimationFrame(renderTime)
-		}
-
-		renderTime();
-
-		// setInterval(renderTime, 100);
+		// // setInterval(renderTime, 100);
 
 	</script>
 
