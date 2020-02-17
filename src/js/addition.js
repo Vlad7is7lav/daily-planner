@@ -193,4 +193,42 @@ renderTime();
 // setInterval(renderTime, 100);
 
 
+//OPENWEATHER API
+
+const API_KEY = "08376460c140cfb4ce2efbb062ba72c3";
+// const city = 'Yaroslavl';
+
+
+function getWeather() {
+	
+	let xhr = new XMLHttpRequest();
+	let d = document.querySelector('.weatherAPI_grad');
+	let city = document.getElementById('city_name');
+	city.value = 'Moscow';
+	let url = `http://api.openweathermap.org/data/2.5/weather?q=${city.value}&appid=${API_KEY}&units=metric`;
+
+
+	xhr.open('GET', url, true );
+
+	
+
+	xhr.onload = function() {
+		if(xhr.status != 200) {
+			console.log(`${xhr.status} : ${xhr.statusText}`);
+		} else {
+			let data = JSON.parse(xhr.responseText);
+			d.innerText = data.main.temp;
+			console.log(data, city.value);
+
+		}
+	}
+
+	xhr.send(null);
+
+	
+}
+
+getWeather();
+
+
 export { makeMonth, createElement, EventEmitter };
