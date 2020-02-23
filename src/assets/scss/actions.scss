@@ -2,6 +2,7 @@
 	position: relative;
 	width: 270px;
 	margin-bottom: 12px;
+	text-align: center;
 }
 
 .infodDesk_weatherName, .infoDesk_clockName {
@@ -11,20 +12,46 @@
 
 .infoDesk_weatherAPI, .infoDesk_clockSVG {
 	height: 220px;
-	// background-color: #5e8289;
 }
-
-
 
 #canvas {
 	margin-top: -10px;
+	margin-left: -50%;
 	z-index: 4;
 	position: absolute;
 } 
 
 #circle {
 	margin-top: -10px;
+	margin-left: -50%;
 	z-index: 1;
 	position: absolute;
+}
+
+.weatherAPI_search {
+	position: relative;
+	top: 20px;
+}
+
+.weatherAPI_grad {
+	font-size: 70px;
+	color: $cellDaysBackground;
+	text-shadow: 2px 2px 3px rgba($cellDateBackground_r, $cellDateBackground_g, $cellDateBackground_b, 0.6);
+	padding-top: 46px;
+}
+
+.fa-search {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	cursor: pointer;
+	color: $cellDaysBackground;
+}
+
+#city_name {
+	background-color: rgba($cellDateBackground_r, $cellDateBackground_g, $cellDateBackground_b, 0.2);
+	border-color: lighten($cellDaysBackground, 30%);
+	color: darken(rgba($cellDateBackground_r, $cellDateBackground_g, $cellDateBackground_b, 0.85), 20%);
+	font-weight: bold;
 }
 

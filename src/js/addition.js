@@ -44,9 +44,14 @@ function createElement(elem, options, text) {
 			element[prop] = options[prop];
 		}
 
+		if(elem == 'input') {
+			element.setAttribute("required",true);
+		}
+
 		if (text) {
 			if(elem == 'input') {
 				element.value = text;
+				
 			} else {
 				element.textContent = text
 			}
@@ -62,19 +67,16 @@ class EventEmitter {
 	constructor() {
 		this.events = {}
 	}
-
 	on(type, callback) {
 		this.events[type] = this.events[type] || [];
 		this.events[type].push(callback);
 	}
-
 	emit(type, ...args) {
 		if (this.events[type]) {
 			this.events[type].forEach(callback => callback(args[0], args[1]));
 		}
 	}
 }
-
 
 let canvas = document.getElementById('canvas');
 let circle = document.getElementById('circle');
@@ -128,7 +130,7 @@ function renderTime() {
 	let now = new Date();
 	let year = now.getFullYear();
 	let day = now.getDate();
-	let hours = now.getHours();
+	let hours = now.getHours() % 12; //translate to 12
 	let hoursFull = now.getHours();
 	let minutes = now.getMinutes();
 	let seconds = now.getSeconds();
@@ -136,7 +138,7 @@ function renderTime() {
 	let newSeconds = (seconds + (milliseconds/1000)).toFixed(1);
 	let rad = (degToRad((newSeconds*0.6/0.1) - 90)).toFixed(6);
 	let radMinutes = (degToRad((minutes*6) - 90));
-	let radHours = (degToRad((hours*6) + 90));
+	let radHours = (degToRad((hours*30) + minutes*0.5 - 90));
 
 	// getting coordinates
 	let vx = r1*Math.cos(rad);
@@ -192,43 +194,112 @@ renderTime();
 
 // setInterval(renderTime, 100);
 
-
-//OPENWEATHER API
-
-const API_KEY = "08376460c140cfb4ce2efbb062ba72c3";
-// const city = 'Yaroslavl';
-
-
-function getWeather() {
+function completed(self, from) {
+	console.log(self);
 	
-	let xhr = new XMLHttpRequest();
-	let d = document.querySelector('.weatherAPI_grad');
-	let city = document.getElementById('city_name');
-	city.value = 'Moscow';
-	let url = `http://api.openweathermap.org/data/2.5/weather?q=${city.value}&appid=${API_KEY}&units=metric`;
-
-
-	xhr.open('GET', url, true );
-
+	if (from) self.checked = false;
+	let items = document.querySelectorAll('section.active .tabs_content_list_item');
+	if (items.length == 0) return;
+	let active = document.getElementById('active');
 	
+	if (active.checked == true) active.checked = false;
+	if (self.checked == true) {
 
-	xhr.onload = function() {
-		if(xhr.status != 200) {
-			console.log(`${xhr.status} : ${xhr.statusText}`);
-		} else {
-			let data = JSON.parse(xhr.responseText);
-			d.innerText = data.main.temp;
-			console.log(data, city.value);
-
+		for(let item of items) {
+			var label = item.querySelector('label');
+			if (label.style.textDecoration != 'line-through') {
+				// item.style.display = 'none';
+				console.log(item);	
+				item.classList.add('none');
+			} else {
+				item.style.display = '';
+				// item.classList.remove('none');
+			}
+		}
+	} else {
+		for(let item of items) {
+			// item.style.display = '';
+			item.classList.remove('none');
 		}
 	}
 
-	xhr.send(null);
-
-	
 }
 
-getWeather();
+function showActive(self, from) {
+	console.log(self);
+
+	if (from) self.checked = false;
+	
+
+	let items = document.querySelectorAll('section.active .tabs_content_list_item');
+	if (items.length == 0) return;
+	
+	let completed = document.getElementById('completed');
+
+	if (completed.checked == true) completed.checked = false;
+	if (self.checked == true) {
+		
+		for(let item of items) {
+			var label = item.querySelector('label');
+			if (label.style.textDecoration == 'line-through') {
+				// item.style.display = 'none';
+				item.classList.add('none');
+			} else {
+				item.style.display = '';
+			}
+		}
+	} else {
+		for(let item of items) {
+			// item.style.display = '';
+			item.classList.remove('none');
+		}
+	}
+}
+
+//---------------
+//OPENWEATHER API
+
+(function () {
+	const API_KEY = "08376460c140cfb4ce2efbb062ba72c3";
+
+	let grad = document.querySelector('.weatherAPI_grad');
+	let city = document.getElementById('city_name');
+	const search_icon = document.getElementById('search-icon');
+
+	city.addEventListener('focusout', (event) => {
+		getWeather();
+	}) 
 
 
-export { makeMonth, createElement, EventEmitter };
+	function getWeather() {
+
+		let xhr = new XMLHttpRequest();
+		let url = `http://api.openweathermap.org/data/2.5/weather?q=${city.value}&appid=${API_KEY}&units=metric`;
+		
+		xhr.open('GET', url, true );
+
+		xhr.onload = function() {
+			if(xhr.status != 200) {
+				console.log(`${xhr.status} : ${xhr.statusText}`);
+				grad.innerHTML = `Connection failed. </br> Try Later.`;
+				grad.style.fontSize = '24px';
+				grad.style.color = 'red';
+			} else {
+				let data = JSON.parse(xhr.responseText);
+				grad.style.fontSize = '70px';
+				grad.style.color = '#5f8087';
+				grad.innerText = `${data.main.temp}°C`;
+				console.log(data, city.value);
+			}
+		}
+		xhr.send(null);
+	}
+
+	getWeather()
+
+})();
+
+
+
+
+export { makeMonth, createElement, EventEmitter, completed,  showActive};

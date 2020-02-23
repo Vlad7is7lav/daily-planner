@@ -1,4 +1,4 @@
-import { makeMonth, createElement, EventEmitter } from './addition.js';
+import { makeMonth, createElement, EventEmitter, completed, showActive } from './addition.js';
 
 class View extends EventEmitter {
 	constructor() {
@@ -36,6 +36,12 @@ class View extends EventEmitter {
 
 	addEventListeners() {
 		const tabs = document.querySelector('.tabs');
+		let buttonComplete = document.getElementById("completed");
+		let buttonActive = document.getElementById("active");
+		buttonActive.addEventListener('change', () => showActive(buttonActive));
+		buttonComplete.addEventListener('change', () => completed(buttonComplete));
+		
+
 		tabs.addEventListener('click', this.changeTab.bind(this)); // watch when click active on 'tab' for choice
 		this.varsObject.calendarDate_year.addEventListener('click', this.openSelectYear.bind(this)); // watch when click active on 'year' for choice
 		this.varsObject.calendarDate_month.addEventListener('click', this.openSelectMonth.bind(this)); // watch when click active on 'month' for choice
@@ -183,10 +189,10 @@ class View extends EventEmitter {
 				
 		let tabsArray = Array.prototype.slice.call(tab);
 
-		const inputUnacted = document.getElementById('unacted');
+		const inputactive = document.getElementById('active');
 		const inputCompleted = document.getElementById('completed');
 		completed(inputCompleted, false);
-		unacted(inputUnacted, true);
+		showActive(inputactive, true);
 
 		if (data) {
 			console.log('createtab');
@@ -274,7 +280,6 @@ class View extends EventEmitter {
 
 	// Creating ToDo Elements
 	createItem(task) { // createItem(data) если есть data = tasks from DB or state
-		//всё указанное ниже + label.innerText = task
 		let className;
 		const currentULSection = document.querySelector('section.active > .tabs_content_list');
 
@@ -296,10 +301,6 @@ class View extends EventEmitter {
 		}
 
 		currentULSection.querySelectorAll('input').length;
-		// let elemLI = createElement("li", {'className' : 'tabs_content_list_item'});
-		// let elemLILabel = createElement("label", {'className' : 'label_Hide'}, item);
-
-		// let elemLIinput = createElement('input', {type : 'text', 'className' : 'textfield'}, item);
 		let elemLI = createElement("li", {'className' : className['li']});
 		let elemLILabel = createElement("label", {'className' : className['label']}, task.item);
 		let elemLIinput = createElement('input', {type : 'text', 'className' : className['input']}, task.item);
@@ -323,7 +324,7 @@ class View extends EventEmitter {
 		const input = item.querySelector('input');
 		const label = item.querySelector('label');
 
-		item.addEventListener('click', this.editItem.bind(this, input, label)); 			// if click -> edit task
+		item.addEventListener('click', this.editItem.bind(this, input, label)); // if click -> edit task
 		i.addEventListener('click', this.hdeleteItem.bind(this)); 				// if click -> add new 'li' (check if old 'li' empty)
 		input.addEventListener('keydown', this.hAddItem.bind(this)); 			// if input in focus and push 'enter' -> add new 'li' (check if old 'li' empty)
 		input.addEventListener('focusout', this.catch_focusOut.bind(this));
@@ -411,7 +412,10 @@ class View extends EventEmitter {
 		while (target.tagName != 'LI') {
 			target = target.parentNode;
 		}
-		target.remove();
+
+		target.classList.add('none');
+		setTimeout(() => {target.remove()}, 1000)
+		// target.remove();
 	}
 
 	updateItem(e) {

@@ -8,7 +8,7 @@
 	
 		<link href="1.css" rel="stylesheet">
 	
-		<link href="assets/css/app.ddd6ebae74a8b71fef91.css" rel="stylesheet">
+		<link href="assets/css/app.f671c7b3dd4463858f25.css" rel="stylesheet">
 	
 
 	<link href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" rel="stylesheet">
@@ -17,12 +17,23 @@
 	<div class="theMainBox">
 		<section class="infoDesk">
 			<div class="infoDesk_weather">
-				<div class="infodDesk_weatherName textHead"> Weather API</div>
-				<div class="infoDesk_weatherAPI"> Weather will be here</div>
+				<div class="infodDesk_weatherName textHead"> Weather Today</div>
+				<div class="infoDesk_weatherAPI"> 
+					<div class="weatherAPI_search">
+						<input type="text" name="city_name" id="city_name" value="Phuket">
+						<i class="fa fa-search" id="search-icon" aria-hidden="true"></i>
+					</div>
+					
+					<div class="weatherAPI_grad"></div>
+				</div>
 			</div>
 			<div class="infoDesk_clock">
-				<div class="infoDesk_clockName textHead"> Clock Canvas</div>
-				<div class="infoDesk_clockSVG"></div>
+				<div class="infoDesk_clockName textHead"> Clock </div>
+				<div class="infoDesk_clockSVG">
+					
+					<canvas id="canvas" width="200" height="200"></canvas>
+					<canvas id="circle" width="200" height="200"></canvas>
+				</div>
 			</div>
 		</section>
 
@@ -34,26 +45,18 @@
 				</div>
 				<div class="tabs_content">
 					<!-- Tasks list -->
-				</div>
-				<!-- <div>
-					<div><input type="radio" name="radioItems" id="radio-1"></div>	
-					<label>Завершить все</label>	
-				</div> -->				
+				</div>				
 			</div>
 			<div class="events_filters">
 				<div class="no-filter addItem"><i class="far fa-plus-square"></i></div>
-				<!-- <div class="filter filter_allTasks">
-					<input type="checkbox" onclick="allTask()" id="all" value="all">
-					<label for="all">All</label>
-				</div> -->
 
 				<div class="filter filter_completed">
-					<input type="checkbox" onchange="completed(this)" id="completed" value="completed">
+					<input type="checkbox" id="completed" value="completed">
 					<label class="completed" for="completed">Completed</label>
 				</div>
 				<div class="filter filter_act">
-					<input type="checkbox" onchange="unacted(this)" id="unacted" value="unacted">
-					<label for="unacted">Unacted</label>
+					<input type="checkbox" id="active" value="active">
+					<label for="active">active</label>
 				</div>
 				<button id="push">Push</button>
 			</div>
@@ -99,8 +102,7 @@
 							<th>Sat</th>
 						</tr>
 					</thead>
-					<tbody id="days">
-						
+					<tbody id="days">			
 					</tbody>
 				</table>
 			</div>
@@ -111,132 +113,14 @@
 
 	
 	
-	<script src="assets/js/vendors.ddd6ebae74a8b71fef91.js"></script>
+	<script src="assets/js/vendors.f671c7b3dd4463858f25.js"></script>
 	
-	<script src="assets/js/app.ddd6ebae74a8b71fef91.js"></script>
+	<script src="assets/js/app.f671c7b3dd4463858f25.js"></script>
 	
 	
 	<script type="text/javascript">
-		function completed(self, from) {
-			if (from) self.checked = false;
-			let items = document.querySelectorAll('section.active .tabs_content_list_item');
-			if (items.length == 0) return;
-			let unacted = document.getElementById('unacted');
-			
-			if (unacted.checked == true) unacted.checked = false;
-			if (self.checked == true) {
+		
 
-				for(let item of items) {
-					var label = item.querySelector('label');
-					if (label.style.textDecoration != 'line-through') {
-						item.style.display = 'none';
-					} else {
-						item.style.display = '';
-					}
-				}
-			} else {
-				for(let item of items) {
-					item.style.display = '';
-				}
-			}
-		}
-
-		function unacted(self, from) {
-
-			if (from) self.checked = false;
-			
-
-			let items = document.querySelectorAll('section.active .tabs_content_list_item');
-			if (items.length == 0) return;
-			
-			let completed = document.getElementById('completed');
-
-			if (completed.checked == true) completed.checked = false;
-			if (self.checked == true) {
-				
-				for(let item of items) {
-					var label = item.querySelector('label');
-					if (label.style.textDecoration == 'line-through') {
-						item.style.display = 'none';
-					} else {
-						item.style.display = '';
-					}
-				}
-			} else {
-				for(let item of items) {
-					item.style.display = '';
-				}
-			}
-		}
-
-		// window.addEventListener("DOMContentLoaded", ready);
-
-		// function ready() {
-		// 	// window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-		// 	// if (!window.indexedDB) {
-		// 	// 	window.alert('Ваш браузер не поддерживает indexedDB. Обновите браузер или используйте другой.');
-		// 	// }
-		// 	// var db = null;
-
-		// 	// const BDname = "testDB1";
-
-		// 	// const request = indexedDB.open(BDname, 1);
-
-		// 	// request.onerror = (event) => {
-		// 	// 	window.alert('Что-то пошло не так. Не могу создать базу данных!')
-		// 	// };
-
-		// 	// request.onsuccess = (event) => {
-		// 	// 	db = event.target.result;
-
-		// 	// 	db.onversionchange = () => {
-		// 	// 		db.close;
-		// 	// 		alert("База данных устарела, пожалуста, перезагрузите страницу.");
-		// 	// 	}
-		// 	// };
-
-		// 	// request.onerror = (event) => {
-		// 	// 	//выводим ошибку
-		// 	// 	window.alert('Database error' + event.target.errorCode);
-		// 	// }
-
-		// 	// request.onupgradeneeded = (event) => {
-		// 	// 	db = event.target.result;
-
-		// 	// 	if (!db.objectStoreNames.contains('daily1')) { // if there's no "books" store
-		// 	// 	    db.createObjectStore('daily1', {keyPath: "id"}); // create it
-		// 	// 	}
-
-				
-
-
-		// 	// 	// // Создаем хранилище объектов для этой базы данных
-		// 	// 	// var objectStore = db.createObjectStore(BDname, { keyPath: "myKey" });
-		// 	// }
-
-		// 	// request.onblocked = function() {
-		// 	//   // есть другое соединение к той же базе
-		// 	//   // и оно не было закрыто после срабатывания на нём db.onversionchange
-		// 	// };
-
-		// 	// let btn = document.getElementById('push');
-		// 	// btn.addEventListener("click", addNote);
-
-		// 	// function addNote() {
-		// 	// 	console.log(db, IDBDatabase)
-		// 	// 	const tx = db.transaction("daily1", "readwrite");
-		// 	// 	const store = tx.objectStore('daily1');
-
-		// 	// 	var req = store.add({
-		// 	// 	"id": "12.01.2020",
-		// 	// 	"task": "Разобраться с БД"
-		// 	// });
-		// 	// }
-
-			
-
-
-		// }
 	</script>
 
 </body>

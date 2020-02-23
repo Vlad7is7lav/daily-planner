@@ -15,9 +15,13 @@
 	<div class="theMainBox">
 		<section class="infoDesk">
 			<div class="infoDesk_weather">
-				<div class="infodDesk_weatherName textHead"> Weather API</div>
+				<div class="infodDesk_weatherName textHead"> Weather Today</div>
 				<div class="infoDesk_weatherAPI"> 
-					<input type="text" name="city_name" id="city_name">
+					<div class="weatherAPI_search">
+						<input type="text" name="city_name" id="city_name" value="Phuket">
+						<i class="fa fa-search" id="search-icon" aria-hidden="true"></i>
+					</div>
+					
 					<div class="weatherAPI_grad"></div>
 				</div>
 			</div>
@@ -45,12 +49,12 @@
 				<div class="no-filter addItem"><i class="far fa-plus-square"></i></div>
 
 				<div class="filter filter_completed">
-					<input type="checkbox" onchange="completed(this)" id="completed" value="completed">
+					<input type="checkbox" id="completed" value="completed">
 					<label class="completed" for="completed">Completed</label>
 				</div>
 				<div class="filter filter_act">
-					<input type="checkbox" onchange="unacted(this)" id="unacted" value="unacted">
-					<label for="unacted">Unacted</label>
+					<input type="checkbox" id="active" value="active">
+					<label for="active">active</label>
 				</div>
 				<button id="push">Push</button>
 			</div>
@@ -96,8 +100,7 @@
 							<th>Sat</th>
 						</tr>
 					</thead>
-					<tbody id="days">
-						
+					<tbody id="days">			
 					</tbody>
 				</table>
 			</div>
@@ -112,57 +115,7 @@
 	<% } %>
 	
 	<script type="text/javascript">
-		function completed(self, from) {
-			if (from) self.checked = false;
-			let items = document.querySelectorAll('section.active .tabs_content_list_item');
-			if (items.length == 0) return;
-			let unacted = document.getElementById('unacted');
-			
-			if (unacted.checked == true) unacted.checked = false;
-			if (self.checked == true) {
-
-				for(let item of items) {
-					var label = item.querySelector('label');
-					if (label.style.textDecoration != 'line-through') {
-						item.style.display = 'none';
-					} else {
-						item.style.display = '';
-					}
-				}
-			} else {
-				for(let item of items) {
-					item.style.display = '';
-				}
-			}
-		}
-
-		function unacted(self, from) {
-
-			if (from) self.checked = false;
-			
-
-			let items = document.querySelectorAll('section.active .tabs_content_list_item');
-			if (items.length == 0) return;
-			
-			let completed = document.getElementById('completed');
-
-			if (completed.checked == true) completed.checked = false;
-			if (self.checked == true) {
-				
-				for(let item of items) {
-					var label = item.querySelector('label');
-					if (label.style.textDecoration == 'line-through') {
-						item.style.display = 'none';
-					} else {
-						item.style.display = '';
-					}
-				}
-			} else {
-				for(let item of items) {
-					item.style.display = '';
-				}
-			}
-		}
+		
 
 	</script>
 
