@@ -10,14 +10,12 @@ class Controller {
 		this.view.on('updateItem', this.updateItem.bind(this));
 		this.view.on('deleteItem', this.deleteItem.bind(this));
 		this.view.on('updateCompState', this.updateCompState.bind(this));
-		this.view.on('openBD', this.openBD.bind(this));
 		this.view.on('getDates', this.getDates.bind(this));
 		this.view.on('checkData', this.checkDataM.bind(this));
 	}
 
 	openBD() {
 		const db = this.model.openDBNow();
-		console.log(1);
 
 	}
 

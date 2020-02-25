@@ -46,6 +46,8 @@ function createElement(elem, options, text) {
 
 		if(elem == 'input') {
 			element.setAttribute("required",true);
+			element.setAttribute("maxlength",40);
+
 		}
 
 		if (text) {
@@ -213,7 +215,7 @@ function completed(self, from) {
 				item.classList.add('none');
 			} else {
 				item.style.display = '';
-				// item.classList.remove('none');
+				item.classList.remove('none');
 			}
 		}
 	} else {
@@ -246,6 +248,7 @@ function showActive(self, from) {
 				item.classList.add('none');
 			} else {
 				item.style.display = '';
+				item.classList.remove('none');
 			}
 		}
 	} else {

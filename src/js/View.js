@@ -29,9 +29,11 @@ class View extends EventEmitter {
 
 		window.onload = () => {
 			let currentDate = new Date();
+				
 			this.changeDate(currentDate.getFullYear(), currentDate.getMonth());
-			this.emit('openBD');
+
 		}
+
 	}
 
 	addEventListeners() {
@@ -176,7 +178,6 @@ class View extends EventEmitter {
 		if (day.length < 2) day = '0' + day;
 		const id = `${day}.${month}.${year}`;
 		this.emit('checkData', id, event);
-		console.log(id, day, 'daytask');
 	}
 
 	
@@ -191,11 +192,10 @@ class View extends EventEmitter {
 
 		const inputactive = document.getElementById('active');
 		const inputCompleted = document.getElementById('completed');
-		completed(inputCompleted, false);
+		completed(inputCompleted, true);
 		showActive(inputactive, true);
 
 		if (data) {
-			console.log('createtab');
 			this.id = data.id;
 		} else {
 			let year = document.querySelector(".calendarDate_year").textContent;
@@ -209,9 +209,6 @@ class View extends EventEmitter {
 
 			this.id = `${day}.${month}.${year}`;
 		}
-
-	  // this.id = data.id || `${day}.${month}.${year}`;
-	  console.log(this.id, 'crtab');
 
 	  // Check if this day already open in tabs
 		for (let i = 0; i < tabsArray.length; i++) {
@@ -310,7 +307,6 @@ class View extends EventEmitter {
 		
 		elemLI.appendChild(elemLILabel);
 		elemLI.appendChild(elemLIinput);
-		console.log(elemLIinput);
 		currentULSection.appendChild(elemLI);
 		
 		const inputs = currentULSection.querySelectorAll('input'); // Find all input in section
@@ -360,7 +356,6 @@ class View extends EventEmitter {
 		const tasks = [];
 		const labelsCollection = [...document.querySelectorAll('section.active > .tabs_content_list input')];
 		let indexItem = labelsCollection.indexOf(e.target);
-		console.log(indexItem);	
 		const element = labelsCollection[indexItem].value;	
 		this.emit('addToDo', {'id': id, 'index': indexItem, 'item': element, 'completed': false}, e);
 		this.isTask(labelsCollection);
@@ -434,9 +429,7 @@ class View extends EventEmitter {
 		let nDay = this.id.slice(0, 2);
 		if(this.id.slice(0, 2) < 10) {nDay = this.id.slice(1, 2)};
 
-		console.log(nDay, 'nday');
 		if (labelsCollection.length <= 1 & !del) {
-			console.log(labelsCollection.length);
 			for (let x of tdCollection) {
 				if (x.innerText === nDay) {
 					x.classList.add('circleOn');
@@ -445,7 +438,6 @@ class View extends EventEmitter {
 		} else if (labelsCollection.length <= 1 & del) {
 			for (let x of tdCollection) {
 				if (x.innerText === nDay) {
-					console.log(labelsCollection.length, 'cOn');
 					x.classList.remove('circleOn');
 				}
 			}
@@ -477,7 +469,7 @@ class View extends EventEmitter {
 
 		else if (e.ctrlKey & e.keyCode == 13) {	
 			// проверка флага на edit а не на добавление
-			if (!e.target.value) return console.log('Введите задачу');
+			if (!e.target.value) return;	
 
 			if (this.editFlag === true) {
 				this.hupdateItem(e);
@@ -500,7 +492,6 @@ class View extends EventEmitter {
 
 			if (e.target.classList == "far fa-plus-square") {
 				let inputs = document.querySelectorAll('section.active > .tabs_content_list input');
-				console.log(inputs);
 
 				for (let element of inputs) {
 					if(!this.itemIsEmpty(element)) {						
@@ -524,7 +515,7 @@ class View extends EventEmitter {
 
 		else if (e.keyCode == 13) {
 			event.preventDefault();
-			if (!e.target.value) return console.log('Введите задачу');
+			if (!e.target.value) return;
 			// !!! описать анимацию появления сообщения "Введите задачу"
 
 			const inputs = document.querySelectorAll('section.active > .tabs_content_list input');

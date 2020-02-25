@@ -8,12 +8,13 @@
 	
 		<link href="1.css" rel="stylesheet">
 	
-		<link href="assets/css/app.f671c7b3dd4463858f25.css" rel="stylesheet">
+		<link href="assets/css/app.f4ebc0eaf29d2458432a.css" rel="stylesheet">
 	
 
 	<link href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" rel="stylesheet">
 </head>
 <body style="background: url(assets/img/MultLightGreen.jpg) center center fixed no-repeat">
+
 	<div class="theMainBox">
 		<section class="infoDesk">
 			<div class="infoDesk_weather">
@@ -29,8 +30,7 @@
 			</div>
 			<div class="infoDesk_clock">
 				<div class="infoDesk_clockName textHead"> Clock </div>
-				<div class="infoDesk_clockSVG">
-					
+				<div class="infoDesk_clockSVG">		
 					<canvas id="canvas" width="200" height="200"></canvas>
 					<canvas id="circle" width="200" height="200"></canvas>
 				</div>
@@ -56,10 +56,15 @@
 				</div>
 				<div class="filter filter_act">
 					<input type="checkbox" id="active" value="active">
-					<label for="active">active</label>
+					<label for="active">Active</label>
 				</div>
-				<button id="push">Push</button>
 			</div>
+
+			<b style="font-size: 18px; color: #516d73"> * - USE "CTRL+CLICK" TO STRIKE OUT THE WORD </b> </br>
+			<b style="font-size: 18px; color: #516d73"> * - USE "ESC" TO LEAVE WITHOUT CHANGING </b> </br>
+			<b style="font-size: 18px; color: #516d73"> * - USE "ENTER" TO ADD AND CREATE NEW ITEM </b> </br>
+			<b style="font-size: 18px; color: #516d73"> * - USE "CTRL+ENTER" TO ADD ITEM </b>
+
 		</section>
 
 		<section class="calendar">
@@ -113,13 +118,19 @@
 
 	
 	
-	<script src="assets/js/vendors.f671c7b3dd4463858f25.js"></script>
+	<script src="assets/js/vendors.f4ebc0eaf29d2458432a.js"></script>
 	
-	<script src="assets/js/app.f671c7b3dd4463858f25.js"></script>
+	<script src="assets/js/app.f4ebc0eaf29d2458432a.js"></script>
 	
 	
 	<script type="text/javascript">
-		
+		document.addEventListener("DOMContentLoaded", ()=> {
+			const theMainBox = document.querySelector(".theMainBox");
+			setTimeout(() => {
+				theMainBox.style.opacity = '1'
+				// theMainBox.style.visibility  = 'visible'
+			}, 600);
+		});
 
 	</script>
 
