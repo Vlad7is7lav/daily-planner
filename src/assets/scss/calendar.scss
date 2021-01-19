@@ -144,6 +144,44 @@ td {
 	background-color: orange;
 }
 
+.selectList {
+	width: 100%;
+	font-family: $theListFont;
+	color: $cellDateTextColor;
+}
+
+.selectList .fas {
+	position: absolute;
+	right: 5%;
+	top: 27%;
+	cursor: pointer;
+}
+
+.lists {
+	visibility: hidden;
+	opacity: 0;	
+	transition: all .3s ease-in;
+}
+
+.show {
+	visibility: visible;
+	opacity: 1;
+}
+
+
+.list {
+	position: relative;
+	width: 40%;
+	padding: 5px;
+	margin: 5px 10px 10px 12px;
+	border-radius: 5px;
+	background-color: $headTextColor;
+
+	span {
+		cursor: pointer;
+	}
+}
+
 
 
 

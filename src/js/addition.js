@@ -17,13 +17,11 @@ function makeMonth(year, month) {
 		}
 
 		for(let n = 1; n <= endDayNumber; n++) {		
-
 				if (dayWeek > 7 ) {
 					text = text + "</tr><tr>";
 					dayWeek = 1;
 				}
-
-				text = text + "<td>" + n + "</td>";
+				text = text + `<td data-cell=${n > 9 ? '' : 0}${n}> ${n} </td>`;
 				dayWeek++;
 		}
 
@@ -31,9 +29,8 @@ function makeMonth(year, month) {
 			text = text + "<td></td>";
 			dayWeek++;
 		}
-
+		
 		text = text + "</tr>"
-
 		return text;
 }
 
@@ -44,7 +41,7 @@ function createElement(elem, options, text) {
 			element[prop] = options[prop];
 		}
 
-		if(elem == 'input') {
+		if(elem == 'input' & options['type'] == 'text') {
 			element.setAttribute("required",true);
 			element.setAttribute("maxlength",40);
 
@@ -112,7 +109,7 @@ function renderCircle() {
 	ctr.lineWidth = 2;
 	//start draw circles
 	ctr.beginPath();
-	ctr.setLineDash([9, 15]);
+	// ctr.setLineDash([17.27, 17.27]);
 	// draw "circle"
 	ctr.arc(baseX,baseY,r1,0, 360);
 	// go to the minutes "circle"
@@ -124,8 +121,13 @@ function renderCircle() {
 	ctr.stroke();
 
 	ctr.fillStyle = '#1d71c5';
-	ctr.font="21px Segoe Print"
-	ctr.fillText(time + '/' + day,90, 159);
+	ctr.font="21px Segoe Print";
+	// ctr.textAlign = 'center';
+	// ctr.fillText(time + '/' + day,132, 159);
+	
+	ctr.fillText(time,84, 159);
+	ctr.fillText('/',130, 159);
+	ctr.fillText(day,142, 159);
 }
 
 function renderTime() {
@@ -184,7 +186,7 @@ function renderTime() {
 	ctx.fillStyle = '#1d71c5'
 	ctx.font="21px Segoe Print"
 	if(minutes < 10) minutes = '0'+minutes;
-	if(hoursFull < 10) hoursFull = '0'+minutes;
+	if(hoursFull < 10) hoursFull = '0'+hoursFull;
 	ctx.fillText(hoursFull + ':' + minutes,101, 123);
 	
 
@@ -196,22 +198,19 @@ renderTime();
 
 // setInterval(renderTime, 100);
 
-function completed(self, from) {
-	console.log(self);
-	
-	if (from) self.checked = false;
+function completed(self, reset) {
+	if (reset) self.checked = false;
+
 	let items = document.querySelectorAll('section.active .tabs_content_list_item');
 	if (items.length == 0) return;
-	let active = document.getElementById('active');
-	
-	if (active.checked == true) active.checked = false;
-	if (self.checked == true) {
 
+	let active = document.getElementById('active');
+	active.checked == true ? active.checked = false : null;
+
+	if (self.checked == true) {
 		for(let item of items) {
-			var label = item.querySelector('label');
+			var label = item.querySelector('.label');
 			if (label.style.textDecoration != 'line-through') {
-				// item.style.display = 'none';
-				console.log(item);	
 				item.classList.add('none');
 			} else {
 				item.style.display = '';
@@ -220,19 +219,15 @@ function completed(self, from) {
 		}
 	} else {
 		for(let item of items) {
-			// item.style.display = '';
 			item.classList.remove('none');
 		}
 	}
 
 }
 
-function showActive(self, from) {
-	console.log(self);
-
-	if (from) self.checked = false;
+function showActive(self, reset) {
+	if (reset) self.checked = false;
 	
-
 	let items = document.querySelectorAll('section.active .tabs_content_list_item');
 	if (items.length == 0) return;
 	
@@ -242,9 +237,8 @@ function showActive(self, from) {
 	if (self.checked == true) {
 		
 		for(let item of items) {
-			var label = item.querySelector('label');
+			var label = item.querySelector('.label');
 			if (label.style.textDecoration == 'line-through') {
-				// item.style.display = 'none';
 				item.classList.add('none');
 			} else {
 				item.style.display = '';
@@ -253,7 +247,6 @@ function showActive(self, from) {
 		}
 	} else {
 		for(let item of items) {
-			// item.style.display = '';
 			item.classList.remove('none');
 		}
 	}
@@ -283,7 +276,6 @@ function showActive(self, from) {
 
 		xhr.onload = function() {
 			if(xhr.status != 200) {
-				console.log(`${xhr.status} : ${xhr.statusText}`);
 				grad.innerHTML = `Connection failed. </br> Try Later.`;
 				grad.style.fontSize = '24px';
 				grad.style.color = 'red';
@@ -292,7 +284,6 @@ function showActive(self, from) {
 				grad.style.fontSize = '70px';
 				grad.style.color = '#5f8087';
 				grad.innerText = `${data.main.temp}°C`;
-				console.log(data, city.value);
 			}
 		}
 		xhr.send(null);

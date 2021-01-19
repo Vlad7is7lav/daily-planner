@@ -22,6 +22,11 @@
 
 }
 
+.events_block label:not(.marker) {
+	color: #e7e7e7;
+	min-width: 280px;
+}
+
 .events_block_list {
 	padding-top: 14px;
 	margin-left: 20px;
@@ -31,17 +36,18 @@ li {
 	opacity: 1;
 	position: relative;
 	height: 34px;
-	list-style-type: square;	
+	list-style-type: none;	
 	transition: all 0.5s ease;	
 }
 
-li label {
+li .label {
 	position: absolute;
 	cursor: pointer;
 	width: 100%;
 	overflow: hidden;
-	// white-space: nowrap;
+	//white-space: nowrap;
 }
+
 li div .fa-plus-circle {
 	position: absolute;
 	left: -56px;
@@ -51,11 +57,14 @@ li div .fa-plus-circle {
 	color: $cellDaysBackground;
 }
 
+
+
 .tabs > .tab {
+	position: relative;
 	font-size: 16px;
 	display: inline-block;
-	padding: 10px 14px;
-	text-align: center;
+	padding: 10px 30px 10px 8px;
+	text-align: left;
 	background-color: $cellDaysBackground;
 	// border: 0px solid #ddd;
 	border-width: 1px;
@@ -79,13 +88,18 @@ li div .fa-plus-circle {
 	font-size: 16px;
 }
 
-.tab_content input {
+.tab_content input[type=text] {
+	position: relative;
 	width: 100%;
 	box-sizing: border-box;
 	background-color: rgba(220, 250, 239, 0.5);
 }
 
-
+.list_delete {
+	position: absolute;
+	right: 10px;
+	top: 11px;
+}
 
 input[type=text], select {
 	width: 100%;
@@ -96,6 +110,56 @@ input[type=text], select {
 	box-sizing: border-box;
 	transition: all 0.5s ease;
 }
+
+li label > .marker {
+	position: absolute;
+	cursor: pointer;
+}
+
+.checkbox {
+	display: none;
+}
+
+.itemCheck {
+	position: absolute;
+	cursor: pointer;
+	left: -30px;
+	top: 50%;
+	margin-top: -10px;
+	width: 20px;
+	height: 20px;
+	border: 2px solid #5f8087;
+	border-radius: 4px;
+	top: 13px;
+}
+	
+
+.itemCheck::after {
+	position: absolute;
+	content: "";
+	visibility: hidden;
+	opacity: 0;
+	width: 23px;
+	height: 10px;
+	border-bottom: 2px solid #5f8087;
+	border-left: 2px solid #5f8087;
+    top: -2px;
+    transition: all 0.5s ease;
+}
+
+
+.checkbox:checked + .itemCheck::after {
+	visibility: visible;
+	opacity: 1;
+	transform: rotate(-50deg);
+	-ms-transform: rotate(-50deg);
+	-webkit-transform: rotate(-50deg); 
+    -o-transform: rotate(-50deg); 
+    transform: rotate(-50deg);
+}
+
+
+
 
 section.events input[type=text], select {
 	width: 50%;
@@ -134,10 +198,7 @@ section.events input[type=text]:focus {
 	visibility: hidden;
 }
 
-.events_block label {
-	color: #e7e7e7;
-	min-width: 280px;
-}
+
 
 .item_delete {
 	position: absolute;

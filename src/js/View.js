@@ -14,8 +14,16 @@ class View extends EventEmitter {
 		this.id = '';
 		this.eventListeners = null;
 		this.editFlag = false;
-
+		this.currentElem = null;
 		this.initilise();
+		this.tempData;
+		this.currentName;
+		this.popupModal = {
+			overlay:  document.querySelector('.overlay'),
+			goButton: document.getElementById('go'),
+			popupInput: document.getElementById('popupInput')
+		}
+
 	}
 
 	initilise() {
@@ -23,104 +31,134 @@ class View extends EventEmitter {
 		this.addEventListeners();
 	}
 
+	
+
 	onload() {
 		this.varsObject.calendarDate_year = document.querySelector(".calendarDate_year");
 		this.varsObject.calendarDate_month = document.querySelector(".calendarDate_month");
 
 		window.onload = () => {
-			let currentDate = new Date();
-				
+			let currentDate = new Date();	
 			this.changeDate(currentDate.getFullYear(), currentDate.getMonth());
-
 		}
-
 	}
 
 	addEventListeners() {
+		document.addEventListener('click', this.closeSelected.bind(this));
+
 		const tabs = document.querySelector('.tabs');
+		tabs.addEventListener('click', this.changeTab.bind(this)); // listen when click active on 'tab' for choice
+		
 		let buttonComplete = document.getElementById("completed");
 		let buttonActive = document.getElementById("active");
-		buttonActive.addEventListener('change', () => showActive(buttonActive));
-		buttonComplete.addEventListener('change', () => completed(buttonComplete));
+		buttonActive.addEventListener('change', () => showActive(buttonActive)); 	// button to select active tasks
+		buttonComplete.addEventListener('change', () => completed(buttonComplete));	// button to select complete tasks
 		
-
-		tabs.addEventListener('click', this.changeTab.bind(this)); // watch when click active on 'tab' for choice
 		this.varsObject.calendarDate_year.addEventListener('click', this.openSelectYear.bind(this)); // watch when click active on 'year' for choice
 		this.varsObject.calendarDate_month.addEventListener('click', this.openSelectMonth.bind(this)); // watch when click active on 'month' for choice
 
-		let currentElem = null;
-		// let calendarBlock = document.querySelector(".calendarBlock");
 		const table = document.querySelector("table");
-		const tdCells = document.getElementsByTagName('td');
-
-		document.addEventListener('click', this.closeSelected.bind(this));
-
-		table.addEventListener('mouseover', (event) => {
-			if (currentElem) return 
-
-			const target = event.target.closest('td');
-
-			if (!target) return;
-
-			currentElem = target;
-
-			if(target.textContent == '') return;
-
-			this.showPlus(event);
-		})
-
-		table.addEventListener('mouseout', (event) => {
-			if(!currentElem) return;
-			let relatedTarget = event.relatedTarget;
-
-			if(event.target.tagName == 'TD' && event.target.textContent == '') return;
-
-			while (relatedTarget) {
-				if (relatedTarget == currentElem) return;
-
-				relatedTarget = relatedTarget.parentNode;
-			}
-			this.hidePlus(event);
-			currentElem = null;				
-		});
+		
+		table.addEventListener('mouseover', this.tableMouseOver.bind(this));
+		table.addEventListener('mouseout', this.tableMouseOut.bind(this));
 	}
 
-	showPlus({ target }) {
+	tableMouseOver(event) {
+		if (this.currentElem) return 
+		const target = event.target.closest('td');
+
+		if (!target) return;
+		this.currentElem = target;
+
+		if(target.textContent == '') return;
+		this.showPlus(event);
+	}
+
+	tableMouseOut(event) {
+		if(!this.currentElem) return;
+		let relatedTarget = event.relatedTarget;
+
+		if(event.target.tagName == 'TD' && event.target.textContent == '') return;
+
+		while (relatedTarget) {
+			if (relatedTarget == this.currentElem) return;
+			relatedTarget = relatedTarget.parentNode;
+		}
+		this.hidePlus(event);
+		this.currentElem = null;
+	}
+
+	showPlus(event) {
 		let elem = document.createElement("I");
 		elem.className = "fas fa-plus-circle showPlus";
-		target.appendChild(elem);
-		elem.onclick = (event) => {this.hCreateTab(event)} //watching when user click 'plus' on the top-right corner of the date-cell
+		event.target.appendChild(elem);
+		let listener = elem.addEventListener('click', this.addNameForTab.bind(this, event));
+		elem.removeEventListener('click', listener);
+	}
+
+	addNameForTab(t) {
+		let day = t.target.innerText;
+		if (day < 10) {day = '0' + day};
+		if(this.id.length > 7) {this.id = this.id.slice(3)}
+		this.id = `${day}.${this.id}`;
+		// const fullDate = `${day}.${this.id}`;
+		this.emit('getNeededData', this.id);
+	}
+
+	getArray(data) {
+		this.tempData = data;
+		if (data.length < 3) {
+			let {overlay, goButton, popupInput} = this.popupModal;
+				overlay.classList.add('showModal');
+				goButton.onclick = () => {
+					if (this.checkName(popupInput.value, data)) {
+						overlay.classList.remove('showModal');
+						this.hCreateTab(this.id, popupInput.value);
+						this.currentName = popupInput.value;
+						setTimeout(() => {popupInput.value = ""; popupInput.placeholder = 'Enter the list name'}, 1000)
+					} else {
+						popupInput.placeholder = `${popupInput.value} is already use`
+						popupInput.value = '';
+						return
+					}
+				}
+		} else {
+			return console.log('Max tasks for day is 3')
+		}
+	}
+
+	checkName(listName, data) {
+		if (!listName) return false;
+		let x = data.every((x) => {return x.name != listName});
+		console.log(x, 'listName');
+		return x;
 	}
 
 	hidePlus(e) {
 		if (e.target.tagName == "I") {
-
 			e.target.remove();
 			return;
 		};
+		if (e.target.firstElementChild == null) return;
 		if(e.target.firstElementChild.tagName == "I") {
-			
 			e.target.firstElementChild.remove();
 		}
 		return;
 	}
 
 	openSelectYear(event) {
-		// event.preventDefault();
 		this.selectYear.classList.toggle('beVisible');
 		this.selectMonth.classList.remove('beVisible');
 		this.flag = 1;
 	}
 
 	openSelectMonth(event) {
-		// event.preventDefault();
 		this.selectMonth.classList.toggle('beVisible');
 		this.selectYear.classList.remove('beVisible');
 		this.flag = 1;	
 	}
 
 	closeSelected(event) {
-		// event.preventDefault();
 		let target = event.target;
 		let year = this.varsObject.calendarDate_year;
 		let month = this.varsObject.calendarDate_month;
@@ -154,78 +192,105 @@ class View extends EventEmitter {
 
 	changeDate(year, month) {
 		let daysBlock = document.getElementById("days");
-		const text = makeMonth(year, month); 						// external funciton makeMonth() from file 'addition.js'
+		const text = makeMonth(year, month);						// external funciton makeMonth() from file 'addition.js'
+		daysBlock.innerHTML = text;
 		this.varsObject.calendarDate_month.setAttribute("data-month", month);
 		this.varsObject.calendarDate_month.innerText = this.months[month];
 		this.varsObject.calendarDate_year.innerText = year;
-		daysBlock.innerHTML = text;
+		
 		let tdCollection = [...document.querySelectorAll('tbody td')];
+		month < 10 ? month = '0' + (month + 1) : month + 1;
 
 		for(let x of tdCollection) {
-			if (x.innerText != '') {
-				x.addEventListener('click', this.checkDayTask.bind(this));
+			// if (x.innerText != '') {
+			if (x.getAttribute('data-cell')) {
+				x.addEventListener('click', this.checkDayTask.bind(this, year, month));
 			}
 		}
-
+		
 		this.emit('getDates', month, year);
+		this.id = `${month}.${year}`;
 	}
 
-	checkDayTask(event) {
-		const year = this.varsObject.calendarDate_year.innerText;
-		let month = 1 + +(this.varsObject.calendarDate_month.getAttribute("data-month"));
-		if (month < 10) month = '0' + month;
-		let day = event.target.innerText;
-		if (day.length < 2) day = '0' + day;
-		const id = `${day}.${month}.${year}`;
-		this.emit('checkData', id, event);
+	checkDayTask(event, year, month) {
+		if (event.target.tagName === 'I') return;
+		console.log(event.target, 'target');
+		// const year = this.varsObject.calendarDate_year.innerText;
+		// let month = 1 + +(this.varsObject.calendarDate_month.getAttribute("data-month"));
+		// if (month < 10) month = '0' + month;
+		// let day = event.target.innerText;
+		let day = event.target.getAttribute('data-cell');
+		// if (day.length < 2) day = '0' + day;
+		this.id = `${day}.${month}.${year}`;
+		this.emit('checkDataToOpen', this.id, event);
 	}
 
-	
+	hSelectList(event, data) {
+		console.log(data);
+		const selectList = document.querySelector('.selectList');
+		selectList.innerText = '';
+		let lists = createElement("div", {className: `lists`});
+		
+		// let  i = 0;
 
-	hCreateTab(event, data) {
-		event.stopPropagation();
+		data.forEach((elem, i) => {
+			let list = createElement("div", {className: `list list_${i}`});
+			let span = createElement("span", {}, elem['name']);
+			let deleteList = createElement("i", {className: `fas fa-times`});
+			list.appendChild(span);
+			list.appendChild(deleteList);
+			lists.appendChild(list);
+			
+			deleteList.addEventListener('click', this.deleteList.bind(this, elem))
+			list.addEventListener('click', this.showList.bind(this, elem))
+			// i++;
+		})
+		selectList.appendChild(lists);
+		setTimeout(() => {lists.classList.add('show')}, 0);
+	}
 
+	showList(data, event) {
+		if(event.target.tagName === 'I') return
+		this.emit("checkDataM", data['item'], data['name']);
+	}
+
+	deleteList(data, event) {
+		this.emit("deleteList", {'id': data['item'], 'name': data['name']}, event);
+	}
+
+	hCreateTab(id, listName, data) {
 		const sections = document.querySelectorAll('.tabs_content > section');
-		const tab = document.querySelectorAll('.tabs > .tab');
-				
+		const tab = document.querySelectorAll('.tabs > .tab');		
 		let tabsArray = Array.prototype.slice.call(tab);
-
-		const inputactive = document.getElementById('active');
+		const inputActive = document.getElementById('active');
 		const inputCompleted = document.getElementById('completed');
 		completed(inputCompleted, true);
-		showActive(inputactive, true);
+		showActive(inputActive, true);
+		// if (data) {
+		// 	this.id = data.item;
+		// } 
 
-		if (data) {
-			this.id = data.id;
-		} else {
-			let year = document.querySelector(".calendarDate_year").textContent;
-			let month = +(document.querySelector(".calendarDate_month").getAttribute("data-month")) + 1;
-			let day = event.target.parentElement.textContent;
-
-			// Add '0' before number of month or day
-			if (day < 10) {day = '0' + day};
-			if (month < 10) {month = '0' + month};
-	  		//
-
-			this.id = `${day}.${month}.${year}`;
-		}
-
-	  // Check if this day already open in tabs
-		for (let i = 0; i < tabsArray.length; i++) {
-			if (tabsArray[i].textContent == this.id) {
-				tabsArray[i].classList.add("active");
-				this.changeTab(null, tabsArray[i]);
-				return
+		//   Check if this day already open in tabs
+		if(tabsArray.length > 0) {
+			let tmp = 0;
+			for (let i = 0; i < tabsArray.length; i++) {
+				if (tmp == 0  && tabsArray[i].firstChild.textContent == this.id && tabsArray[i].firstElementChild.textContent == listName) {
+					tabsArray[i].classList.add("active");
+					tmp = 1;
+					this.changeTab(null, i);
+				} else {
+					tabsArray[i].classList.remove("active");
+				}
 			}
-			tabsArray[i].classList.remove("active");
+			if (tmp === 1) return
 		}
 
 		if (sections != null) {
-			Array.prototype.slice.call(sections).forEach( function(element, index) {
+			Array.prototype.slice.call(sections).forEach( function(element) {
 				element.classList.remove("active");
 			});
 		};
-		
+
 		if (this.tabs == 3) {
 			document.querySelectorAll('.tab')[this.tabs-1].remove(); // delete last 'tab' element
 			document.querySelector('.tabs_content').lastElementChild.remove(); // delete content block 
@@ -234,36 +299,45 @@ class View extends EventEmitter {
 
 		let tabs = document.querySelector(".tabs");
 
-	//Creating tab with date for tasks
-		if (tab != null) {
-			tabsArray.forEach( function(element, index) {
-				element.classList.remove("active");
-			})
-		};
+	  //Creating tab with date for tasks
+		// if (tab != null) {
+		// 	tabsArray.forEach( function(element) {
+		// 		element.classList.remove("active");
+		// 	})
+		// };
+
 		let elemTab = createElement("div", {className: `tab active`}, this.id);
+		let elemName = createElement("div", {className: `tabName`}, listName);
+		let elemCloseList = createElement("div", {className: `list_delete`});
+		elemCloseList.innerHTML = "<i class=\"fas fa-times\"></i>";
+		elemCloseList.addEventListener('click', this.closeList.bind(this));
+		elemTab.append(elemName);
+		elemTab.append(elemCloseList);
+		// elemCloseList.innerHTML = "<i class=\"fas fa-times\"></i>";
 		tabs.insertBefore(elemTab, tabs.firstElementChild);
+		// elemCloseList.addEventListener('click', this.closeList.bind(this));
 
 		this.tabs++;
 
-	//Call f createSection for creating List(Section)
+	  //Call f createSection for creating List(Section)
 		this.createSection();
-	//Call f createItem for creating task item
 
+	  //Call f createItem for creating task item
 		if (data) {
-			for(let task of data.tasks) {
+			for(let task of data['tasks']) {
 				this.createItem(task);
 			}
 		} else {
 			this.createItem();	
-		}
-		
+		}	
 	}
+		
 
 	//Creating section for tasks
 	createSection() {
+		const tabs_content = document.querySelector(".tabs_content");
 		let elemSection = createElement("section", {className : 'tab_content active'});
 		let elemUL = createElement("ul", {className : 'tabs_content_list'});
-		const tabs_content = document.querySelector(".tabs_content");
 		elemSection.appendChild(elemUL);
 		tabs_content.insertBefore(elemSection, tabs_content.firstElementChild);
 
@@ -272,7 +346,7 @@ class View extends EventEmitter {
 			const addButton = document.querySelector(".no-filter.addItem");
 			addButton.addEventListener('click', this.hAddItem.bind(this));
 			this.eventListeners = 'ACTIVATED'
-		}		
+		}
 	}
 
 	// Creating ToDo Elements
@@ -280,50 +354,72 @@ class View extends EventEmitter {
 		let className;
 		const currentULSection = document.querySelector('section.active > .tabs_content_list');
 
-		if(currentULSection.querySelectorAll('input').length > 18) return alert('Free version allows you create only 18 tasks');
+		// переделать проверку количества строк в отдельную функцию
+		if(currentULSection.querySelectorAll('input[type=text]').length > 18) return alert('Free version allows you create only 18 tasks');
 		if (task != undefined) {
 			className = {
 				'li': 'tabs_content_list_item',
-				'label': '',
+				'label': 'label',
 				'input': 'textfield input_hide'
 			}
 		}
 		else {
 			className = {
 			'li': 'tabs_content_list_item',
-			'label': 'label_Hide',
+			'label': 'label label_Hide',
 			'input': 'textfield'
 			}
 			task = {item: ''};
 		}
 
-		currentULSection.querySelectorAll('input').length;
+		// currentULSection.querySelectorAll('input').length;
+		let randomID = this.getRandomID(5000);
 		let elemLI = createElement("li", {'className' : className['li']});
-		let elemLILabel = createElement("label", {'className' : className['label']}, task.item);
+
+		let markerBlock = createElement("label", {'className': 'marker'});
+		let elemCheckBox = createElement("input", {'id' : randomID, 'type': 'checkbox', 'className': 'checkbox', 'name' : 'check', 'checked': task.completed});
+		let markerDIV = createElement("div", {'className' : 'itemCheck'});
+
+		let elemLILabel = createElement("label", {'className' : className['label'] || 'label'}, task.item);
 		let elemLIinput = createElement('input', {type : 'text', 'className' : className['input']}, task.item);
+
 		elemLI.innerHTML = "<div class=\"item_delete\"><i class=\"fas fa-times\"></i></div></li>";
 
-		if (task.completed == true) elemLILabel.style.textDecoration = 'line-through';
-		
+		if (task.completed == true) {
+			elemLILabel.style.textDecoration = 'line-through';
+			elemLILabel.setAttribute('data-complete', 'true');
+		};
+
+		markerBlock.appendChild(elemCheckBox);
+		markerBlock.appendChild(markerDIV);
+		elemLI.appendChild(markerBlock);
 		elemLI.appendChild(elemLILabel);
 		elemLI.appendChild(elemLIinput);
+
 		currentULSection.appendChild(elemLI);
 		
-		const inputs = currentULSection.querySelectorAll('input'); // Find all input in section
+		const inputs = currentULSection.querySelectorAll('input[type=text]'); // Find all input in section
 		inputs[inputs.length-1].focus(); 						// Add the last input focus()
 
-		return this.todoEventListeners(elemLI);
+		// return this.todoEventListeners(elemLI);
+		this.todoEventListeners(elemLI);
+	}
+
+	getRandomID(b) {
+		return Math.floor(Math.random()*Math.floor(b));
 	}
 
 	todoEventListeners(item) {
 		const i = item.querySelector('div > i.fas');
-		const input = item.querySelector('input');
-		const label = item.querySelector('label');
+		const input = item.querySelector('input[type=text]');
+		const label = item.querySelector('label.label');
+		const checkbox = item.querySelector('input[type=checkbox]');
 
 		item.addEventListener('click', this.editItem.bind(this, input, label)); // if click -> edit task
 		i.addEventListener('click', this.hdeleteItem.bind(this)); 				// if click -> add new 'li' (check if old 'li' empty)
 		input.addEventListener('keydown', this.hAddItem.bind(this)); 			// if input in focus and push 'enter' -> add new 'li' (check if old 'li' empty)
 		input.addEventListener('focusout', this.catch_focusOut.bind(this));
+		checkbox.addEventListener('click', this.crossItem.bind(this));
 
 		return item;
 	}
@@ -332,32 +428,32 @@ class View extends EventEmitter {
 		const id = this.id;
 		const labelsCollection = [...document.querySelectorAll('section.active .item_delete i')];
 		let indexItem = labelsCollection.indexOf(e.target); // get index of removing element
-		this.emit('deleteItem', {'id': id, 'index': indexItem}, e);
+		this.emit('deleteItem', {'id': id, 'name': this.currentName,'index': indexItem}, e);
 		this.isTask(labelsCollection, true);
 	}
 
 	hupdateItem(e) {
 		const id = this.id;
-		const inputCollection = [...document.querySelectorAll('section.active input')];
+		const inputCollection = [...document.querySelectorAll('section.active input[type=text]')];
 		let indexItem = inputCollection.indexOf(e.target);
-		this.emit('updateItem', {'id': id, 'index': indexItem, 'task': e.target.value}, e);
+		this.emit('updateItem', {'id': id, 'name': this.currentName, 'index': indexItem, 'task': e.target.value}, e);
 	}
 
 	hupdateCompState(e, complete) {
 		const id = this.id;
-		const labelsCollection = [...document.querySelectorAll('section.active label')];
-		let indexItem = labelsCollection.indexOf(e.target);
-		this.emit('updateCompState', {'id': id, 'index': indexItem, 'complete': complete}, e);
+		const labelsCollection = [...document.querySelectorAll('section.active label.label')];
+		let indexItem = labelsCollection.indexOf(e);
+		this.emit('updateCompState', {'id': this.id, 'name': this.currentName, 'index': indexItem, 'complete': complete}, e);
 	}
 
 	hAddToDo(e) {
 		// event.preventDefault() //stop sending data
 		const id = this.id;
 		const tasks = [];
-		const labelsCollection = [...document.querySelectorAll('section.active > .tabs_content_list input')];
+		const labelsCollection = [...document.querySelectorAll('section.active > .tabs_content_list input[type=text]')];
 		let indexItem = labelsCollection.indexOf(e.target);
 		const element = labelsCollection[indexItem].value;	
-		this.emit('addToDo', {'id': id, 'index': indexItem, 'item': element, 'completed': false}, e);
+		this.emit('addToDo', {'id': id, 'index': indexItem, 'name': this.currentName, 'item': element, 'completed': false}, e);
 		this.isTask(labelsCollection);
 
 	}
@@ -373,11 +469,11 @@ class View extends EventEmitter {
 			input.value = input.value.trim()  // Clear empty space before and after
 			let value = input.value;
 			let label = input.previousElementSibling;
-
 			let prevLabelText = label.innerText;
 			const itemAmount = e.target.closest('ul').querySelectorAll('input').length;
 			input.classList.add('input_hide');
 			label.innerText = value;
+
 			label.classList.remove('label_Hide');
 
 			if (this.editFlag === true && e.target.value != prevLabelText) {
@@ -395,6 +491,28 @@ class View extends EventEmitter {
 			this.hAddToDo(e);
 		}
 	}
+
+	closeList(event) {
+		const target = event.target;
+		const tab = target.closest('.tab');
+		const tabsCollection = [...document.querySelectorAll('.tab')];
+		const sectionContents = [...document.querySelectorAll('.tab_content')];
+		const index = tabsCollection.indexOf(tab); // get index of removing element
+
+		if (tab.classList.contains('active') && tabsCollection.length > 1) {		
+			if(index === tabsCollection.length-1) {
+				tab.previousElementSibling.classList.add('active')
+				sectionContents[index-1].classList.add('active')
+			} else {
+				tab.nextElementSibling.classList.add('active')
+				sectionContents[index+1].classList.add('active')
+			} 
+		}
+		
+		tab.remove();
+		sectionContents[index].remove();
+		this.tabs--;
+	} 
 
 	addItem(event) {
 		event.target.classList.add('input_hide'); //перенес в addItem
@@ -423,25 +541,23 @@ class View extends EventEmitter {
 		label.classList.remove('label_Hide');
 	}
 
-	isTask(labelsCollection, del) {
+	isTask(labelsCollection, del, day) {
 		let tdCollection = [...document.querySelectorAll('tbody td')];
-		
 		let nDay = this.id.slice(0, 2);
-		if(this.id.slice(0, 2) < 10) {nDay = this.id.slice(1, 2)};
-
-		if (labelsCollection.length <= 1 & !del) {
+		if (labelsCollection.length >= 1 && !del) {
 			for (let x of tdCollection) {
-				if (x.innerText === nDay) {
+				if (x.dataset.cell === nDay) {
 					x.classList.add('circleOn');
 				}
 			}
-		} else if (labelsCollection.length <= 1 & del) {
+		} else if (labelsCollection.length <= 1) {
 			for (let x of tdCollection) {
-				if (x.innerText === nDay) {
+				if (x.dataset.cell === nDay) {
 					x.classList.remove('circleOn');
 				}
 			}
 		}
+		return
 	}
 
 	hAddItem(event) {
@@ -450,49 +566,40 @@ class View extends EventEmitter {
 		let input = e.target;
 		let value = input.value;
 		let label = input.previousElementSibling;
+		
 
 		if (e.keyCode == 27) {
-			event.preventDefault();
-			if (value == '') {
-				e.target.blur();
-				return;
-			}
 			input.value = label.innerText;
 			input.classList.add('input_hide');
 			label.classList.remove('label_Hide');
 			return;
 		}
-	
-		else if (e.keyCode != 13 & e.type != 'focusout' & e.target.tagName != 'I') {
-			return 
-		}
+
+		if (e.keyCode != 13 & e.type != 'focusout' & e.target.tagName != 'I') return
 
 		else if (e.ctrlKey & e.keyCode == 13) {	
-			// проверка флага на edit а не на добавление
+			// check value
 			if (!e.target.value) return;	
-
+			// check editflag
 			if (this.editFlag === true) {
 				this.hupdateItem(e);
 				return;
 			}
 
 			if (value != label.innerText) {	// check if text didn't change
-				let trimValue = event.target.value.trim();
-				event.target.value = event.target.value.trim();
-				label.innerText = trimValue;
+				value = value.trim();
+				label.innerText = value;
 				this.hAddToDo(e);
 			} else {
-				e.target.classList.add('input_hide');
-				e.target.previousElementSibling.classList.remove('label_Hide');
+				input.classList.add('input_hide');
+				input.previousElementSibling.classList.remove('label_Hide');
 			}			
 			return;
 		}
 
 		else if (e.type == 'click') {
-
 			if (e.target.classList == "far fa-plus-square") {
-				let inputs = document.querySelectorAll('section.active > .tabs_content_list input');
-
+				let inputs = document.querySelectorAll('section.active > .tabs_content_list input[type=text]');
 				for (let element of inputs) {
 					if(!this.itemIsEmpty(element)) {						
 						element.classList.remove('input_hide');
@@ -506,8 +613,8 @@ class View extends EventEmitter {
 			}
 
 			if (this.itemIsEmpty()) {
-				this.createItem();
-				this.itemOut(2);
+				// this.createItem();
+				// this.itemOut(1); Не понянтно зачем????
 				return;
 			}
 			return
@@ -516,9 +623,8 @@ class View extends EventEmitter {
 		else if (e.keyCode == 13) {
 			event.preventDefault();
 			if (!e.target.value) return;
-			// !!! описать анимацию появления сообщения "Введите задачу"
 
-			const inputs = document.querySelectorAll('section.active > .tabs_content_list input');
+			const inputs = document.querySelectorAll('section.active > .tabs_content_list input[type=text]');
 
 			// Clear empty space before and after
 			let trimValue = event.target.value.trim();
@@ -532,9 +638,10 @@ class View extends EventEmitter {
 					return;
 				}
 			}
-			
+			this.itemOut(1);
 			this.createItem();
-			this.itemOut(2, event);
+			// this.itemOut(2);
+			// this.itemOut(2, event);
 			flag = 1;
 			return;
 		} 		
@@ -542,7 +649,7 @@ class View extends EventEmitter {
 
 	// Funciton itemOut(k). When we leave input or move to another input. Parameter k - indicates which input (last or before last) we need.
 	itemOut(k, event) {
-		const inputs = document.querySelectorAll('section.active > .tabs_content_list input');
+		const inputs = document.querySelectorAll('section.active > .tabs_content_list input[type=text]');
 		const lastLI = inputs[inputs.length-k].previousElementSibling;
 		const lastInputs = inputs[inputs.length-k]
 		lastInputs.classList.add('input_hide');
@@ -550,59 +657,71 @@ class View extends EventEmitter {
 		lastLI.innerText = inputs[inputs.length-k].value;
 		lastInputs.blur();
 		const lastPlus = lastLI.previousElementSibling;
-
-		if (k === 2) {
-			let lastPlus = lastLI.previousElementSibling;
-		}
+		// if (k === 2) {
+		// 	let lastPlus = lastLI.previousElementSibling;
+		// }
 	}
 
-	editItem(input_, label_, event) {
-		if (event.target.tagName === 'I') return
-		else if (event.ctrlKey & event.type == 'click') {
-			
-			if (label_.style.textDecoration == 'line-through') {
+	crossItem(event) {
+		const label_ = event.target.closest('li').querySelector('label.label');
+		if (label_.style.textDecoration == 'line-through') {
 				label_.style.textDecoration = 'none';
 				label_.setAttribute('data-complete', 'false');	
 			} else {
 				label_.style.textDecoration = 'line-through';
 				label_.setAttribute('data-complete', 'true');
 			}
-			// const e = event.target.nextElementSibling;
-			let complete = label_.getAttribute('data-complete');
-			this.hupdateCompState(event, complete);
-			return;
-		
-		} else {
+		let complete = label_.getAttribute('data-complete');
+		this.hupdateCompState(label_, complete);
+		return;
+	}
+
+	editItem(input_, label_, event) {
+		if (event.target.className == 'label')  {	
 			this.editFlag = true;
 			input_.value = label_.innerText;
 			input_.classList.remove('input_hide');
 			label_.classList.add('label_Hide');
-			input_.focus();
-		}
+			input_.focus()
+		}		
+			return
 	}
 
 	itemIsEmpty(elem) {
-		let field = elem.value;
-		if (field.trim() == '') return false
+		let value = elem.value;
+		if (value.trim() == '') return false
 		elem.blur();
 		return true;
 	}
 
 	// function for change active tab on click
 	changeTab(event, cTab) {
-
-		// check if click on active tab
-		if (event != null) {
-			if(event.target.classList == 'tab active') return;
-		}
-		
-
-		let k = 0;
-		let target = cTab || event.target;
-		if (cTab) target.classList.remove("active");
-		
+		let target;
 		const tab = document.querySelectorAll('.tabs > .tab');
 		const content = document.querySelectorAll('.tabs_content > .tab_content');
+		
+
+		// check if click on active tab
+		if (event == null) {
+			Array.prototype.slice.call(content).forEach( function(element, index) {
+				element.classList.remove("active");
+			})
+			content[cTab].classList.add('active');
+			return;
+		}
+		
+		if (event.target.classList == 'tab active' || event.target.parentNode.classList == 'tab active') return;
+
+		if (event.target.parentNode.classList.contains('tab')) {
+			console.log(event.target.parentNode)
+			target = event.target.parentNode;
+		} else {
+			target = cTab || event.target;
+			console.log(target)
+		}
+
+		let k = 0;
+		if (cTab) target.classList.remove("active");
 
 		if(target.className == 'tab') {
 		  // Remove class active from tab
@@ -611,7 +730,11 @@ class View extends EventEmitter {
 			})
 		  // Add class '.active'  for tab 
 			target.classList.add('active');
-			this.id = target.innerText;
+			this.currentName = target.querySelector('.tabName').innerText;
+
+		  // Change date
+			let regex = new RegExp("^[0-9]{2}\.[0-9]{2}\.[1-2][0-9]{3}");
+			this.id = regex.exec(target.innerText)[0];
 
 		  // Remove class active from content
 			Array.prototype.slice.call(content).forEach( function(element, index) {
@@ -619,7 +742,6 @@ class View extends EventEmitter {
 			})
 
 		  // Searching the number of the active tab to choose the right content and add class '.active' 
-
 			for (let i = 0; i < tab.length; i++) {
 				if (target == tab[i]) {
 					content[i].classList.add('active');

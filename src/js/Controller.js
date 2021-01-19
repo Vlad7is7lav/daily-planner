@@ -11,23 +11,46 @@ class Controller {
 		this.view.on('deleteItem', this.deleteItem.bind(this));
 		this.view.on('updateCompState', this.updateCompState.bind(this));
 		this.view.on('getDates', this.getDates.bind(this));
-		this.view.on('checkData', this.checkDataM.bind(this));
+		this.view.on('checkDataM', this.checkDataM.bind(this));
+		this.view.on('getNeededData', this.getNeededData.bind(this));
+		this.view.on('checkDataToOpen', this.checkDataToOpen.bind(this));
+		this.view.on('deleteList', this.deleteList.bind(this));
 	}
 
 	openBD() {
 		const db = this.model.openDBNow();
-
 	}
 
-	checkDataM(id, event) {
-		let data = this.model.getTaskList(id);
-		if(data) this.view.hCreateTab(event, data);
+	checkDataToOpen(id, event) {
+		const data = this.model.getTaskList(id);
+		console.log(data, 'checkDataToOpen');
+		if (data) this.view.hSelectList(event, data)
+	}
+
+
+
+	checkDataM(id, name, event) {
+		console.log(id, name, 'checkDataM1');
+		const newData = this.model.getTaskList(id, name, 1);
+
+		if(newData) this.view.hCreateTab(event, name, newData);
+
+		// if (data && data.length < 2) this.view.hCreateTab(event, data[0]) // вызываем функцию
+			// которая показывает список листов во view. И уже по щелчку во View достаем 
+			//соответствующие данные, по имени списка.
+		// if(data) this.view.hCreateTab(event, data);
+	}
+
+	getNeededData(id) {
+		const data = this.model.getTaskList(id);
+		console.log(data, 'checkNeededs');
+		this.view.getArray(data);
 	}
 
 	addTodo(taskList, event) {
-
 		const section = this.model.addTaskList({ // after execution we get tasklist
 			id: taskList.id,
+			name: taskList.name,
 			tasks: [{ 					// <- внутри tasks должен быть массив объектов с task и completed равным true или false)
 					'item': taskList.item,
 					'completed': taskList.completed
@@ -38,10 +61,11 @@ class Controller {
 	}
 
 	updateItem(item, e) {
-		if (this.model.getTaskList(item.id)) {
-
+		if (this.model.getTaskList(item.id, item.name)) {
+			
 			const updatedItem = this.model.updateItem({ // after execution we get tasklist
 				id: item.id,
+				name: item.name,
 				index: item.index, // <- внутри tasks должен быть массив объектов с task и completed равным true или false)
 				task: item['task']
 				// completed: item.completed
@@ -52,10 +76,11 @@ class Controller {
 	}
 
 	updateCompState(item, e) {
-		if (this.model.getTaskList(item.id)) {
+		if (this.model.getTaskList(item.id, item.name)) {
 
 			const updatedItem = this.model.updateComp({ // after execution we get tasklist
 				id: item.id,
+				name: item.name,
 				index: item.index, // <- внутри tasks должен быть массив объектов с task и completed равным true или false)
 				completed: item.complete
 			});			
@@ -65,20 +90,49 @@ class Controller {
 	}
 
 	deleteItem(item, e) {
-		if (this.model.getTaskList(item.id)) {
+		if (this.model.getTaskList(item.id, item.name)) {
 			const removeItem = this.model.deleteItem({
 				id: item.id,
+				name: item.name,
 				index: item.index
 			})
 		}
 
 		this.view.deleteItem(e);
 	}
+	
+	deleteList(item, e) {
+		if (this.model.getTaskList(item.id, item.name)) {
+			const removeItem = this.model.deleteList({
+				id: item.id,
+				name: item.name,
+			})
+		}
+		
+		
+		const x = this.model.getTaskList(item.id);
+		console.log(this.model.getTaskList(item.id), 'nday')
+		if (x.length === 0) {
+			let nDay = item.id.slice(0, 2);
+			if(nDay < 10) {nDay = item.id.slice(1, 2)};
+			console.log(nDay)
+			let tdCollection = [...document.querySelectorAll('tbody td')];
+			for (let x of tdCollection) {
+				if (x.innerText === nDay) {
+					x.classList.remove('circleOn');
+				}
+			}
+			return;
+		}
+		
+	}
+
+	
 
 	getDates(month, year) {
 
-		month = 1 + (+month);		
-		if (month < 10) month = `0${month}`;
+		// month = 1 + (+month);		
+		// if (month < 10) month = `0${month}`;
 		let ym = `${month}.${year}`;
 		
 		let newData = this.model.datesFromState();

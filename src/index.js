@@ -15,32 +15,46 @@ import Controller from './js/Controller.js';
 
 const data = [
 				{
-					id: "08.12.2019", 
+					id: "08.08.2020", 
+					name: "Fruit",
 					tasks: [
-								{item: "1", completed: false},
-								{item: "2", completed: false},
-								{item: "3", completed: true},
-								{item: "4", completed: true}
+							{item: "1", completed: false},
+							{item: "2", completed: false},
+							{item: "3", completed: true},
+							{item: "4", completed: true}
+						]
+				},
+
+				{
+					id: "08.08.2020", 
+					name: "Travel",
+					tasks: [
+							{item: "1", completed: true},
+							{item: "2", completed: true},
+							{item: "3", completed: true},
+							{item: "4", completed: true}
+						]
+				},
+
+			 	{
+					id: "12.08.2020", 
+					name: "Fruit3",
+					tasks: [
+								{item: "5", completed: true},
+								{item: "6", completed: false},
+								{item: "7", completed: false},
+								{item: "8", completed: false}
 							]	
 			 	},
 
 			 	{
-					id: "01.02.2020", 
+					id: "15.08.2020", 
+					name: "Fruit",
 					tasks: [
-								{item: "1", completed: true},
-								{item: "2", completed: false},
-								{item: "3", completed: false},
-								{item: "4", completed: false}
-							]	
-			 	},
-
-			 	{
-					id: "06.02.2020", 
-					tasks: [
-								{item: "1", completed: false},
-								{item: "2", completed: false},
-								{item: "3", completed: true},
-								{item: "4", completed: false}
+								{item: "9", completed: false},
+								{item: "10", completed: false},
+								{item: "11", completed: true},
+								{item: "12", completed: false}
 							]	
 			 	}
 			 ]

@@ -4,40 +4,68 @@ class Model {
 		this.db = null;
 	}
 
-	getTaskList(id) {		
+	getTaskList(id, name, n) {	
+		if (n === 0 && !name) return this.state.find(item => item.id == id);
+		if (n === 0 && name) {
+			let findList = this.state.find(item => item.name == name);
+			console.log(findList, 'findlist')
+			return findList;
+		}
+
 		this.state.forEach( function(element, index) {
-			console.log(element, id, element.id == id.toString())
+			// console.log(element, id, element.id == id.toString())
+		});
+		let filterArray = [];
+
+		if (n === 1) {
+			let newData;
+			this.state.forEach((item) => {
+				if (item.id == id && item.name == name) {
+					newData = {item : item.id, name: item.name, tasks: item.tasks};
+				}
+			});
+			console.log(newData, 'fil tasks');
+			return newData;
+		}
+		
+		this.state.forEach((item) => {
+			if (item.id == id) {
+				filterArray.push({item : item.id, name: item.name});
+			}
 		});
 
-		return this.state.find(item => item.id == id)
+		console.log(filterArray, 'fil');
+
+		return filterArray;
 	}
 
 
 
-	addTaskList(taskList, index) {
-		let isObj = this.getTaskList(taskList.id);
+	addTaskList(taskList, index) { 						// необходимо увязать с gettasklist
+		let isObj = this.getTaskList(taskList.id, taskList.name, 0);
 		if (isObj === undefined) {
 			this.state.push(taskList);
-			return taskList;
+			// return taskList;
 		} else {
 			isObj.tasks.push(taskList.tasks[0]);
 		}
 
-		console.log(this.state, 'add');
+		console.log(this.state, 'add123123');
 		return taskList
 	}
 
 	updateItem(item) {
-		let isObj = this.getTaskList(item.id);
+		// console.log(item, 'update item');
+		let isObj = this.getTaskList(item.id, item.name, 0);
+		console.log(isObj, 'isObj upd');
 		isObj.tasks[item.index]['item'] = item.task;
-		console.log(isObj.tasks[item.index]['item']);
-		console.log(this.state,'upd');
 
 		return this.state
 	}
 
 	updateComp(item) {
-		let isObj = this.getTaskList(item.id);
+		console.log(item, 'update Compstate');
+		let isObj = this.getTaskList(item.id, item.name, 0);
 		let isObjComplete = isObj.tasks[item.index];
 		isObjComplete['completed'] = item.completed;
 		console.log(isObjComplete);
@@ -46,9 +74,15 @@ class Model {
 	}
 
 	deleteItem(item) {
-		let isObj = this.getTaskList(item.id);
+		let isObj = this.getTaskList(item.id, item.name, 0);
 		isObj.tasks.splice(item.index, 1);
 		console.log(this.state, 'rem');
+		return this.state;
+	}
+
+	deleteList(item) {
+		const index = this.state.findIndex((element) => element.id === item.id && element.name == item.name);
+		this.state.splice(index, 1);
 		return this.state;
 	}
 
