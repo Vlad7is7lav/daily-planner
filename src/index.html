@@ -10,7 +10,8 @@
 	<% } %>
 
 	<link href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" rel="stylesheet">
-	
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 	<noscript>
 		<style> .body_hide{opacity: 1 !important;} </style>
 	</noscript>
@@ -28,11 +29,59 @@
 
 </head>
 <body class="body_hide" style="background: url(assets/img/MultLightGreen.jpg) center center fixed no-repeat">
+	<div class="header">
+		<div class="logo"> Dayly calendar</div>
+		<div class="login">
+			<i class="fas fa-sign-in-alt" style="margin-right: 5px;"></i></i> Войти
+		</div>
+
+		<div class="logreg">
+			<div class="closeForm"> <i class="far fa-times-circle"></i> </div>
+			<div class="wrapper">
+				<div class="logreg-wrapper wrapper-sign_in">
+					<div class="back"> <i class="fas fa-arrow-circle-right"></i> </div>
+					<h5>SIGN IN using your email and password</h5>
+					<form method="post" class="form-sign-in" id="form-sign-in">
+						<label for="email-in">EMail</label>
+						<div><input type="email" name="email" id="email-in" placeholder="" required/></div>
+						<label for="password-in">Password</label>
+						<div><input type="password" name="password" id="password-in" placeholder="" required/></div>
+						<input type="submit" value="Sign in">
+					</form>
+					
+				</div>
+				<div class="logreg-wrapper">
+					<div class="hello">
+						<h4>Hello guys!</h4> 
+						<h4>Welcome to my dayly calendar!</h4>
+						<h4>Login or Sign up, please!</h4>
+					</div>
+					<div class="button1"> SIGN IN </div>
+					<div class="button2"> SIGN UP</div>
+				</div>
+				
+				<div class="logreg-wrapper wrapper-sign_up">
+					<div class="back"> <i class="fas fa-arrow-circle-left"></i> </div>
+					<h5>SIGN UP using your email and password</h5>
+					<form method="post" class="form-sign-up" id="form-sign-up">
+						<label for="email-up">EMail</label>
+						<div><input type="email" name="email" id="email-up" placeholder="" required value="uthiq@mail.ru"/></div>
+						<label for="pass-up">Password</label>
+						<div><input type="password" name="password" id="password-up" placeholder="" required/></div>
+						<input type="submit" value="SIGN UP">
+					</form>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+
 	<div class="overlay">
 		<div class="popup">
 			<h4>Введите имя списка задач</h4>
 			<input type="text" placeholder="Enter the list name" maxlength="12" id="popupInput">
 			<div class="button" id=go>GO</div>
+			<div class="button" id=cancel>CANCEL</div>
 		</div>
 	</div>
 	<div class="theMainBox">
@@ -138,8 +187,9 @@
 				</div>
 			</div>
 		</section>
-
 	</div>
+
+	
 
 	
 

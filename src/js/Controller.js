@@ -5,6 +5,7 @@ class Controller {
 	constructor(model, view) {
 		this.model = model;
 		this.view = view;
+		this.data = [];
 
 		this.view.on('addToDo', this.addTodo.bind(this));
 		this.view.on('updateItem', this.updateItem.bind(this));
@@ -15,6 +16,8 @@ class Controller {
 		this.view.on('getNeededData', this.getNeededData.bind(this));
 		this.view.on('checkDataToOpen', this.checkDataToOpen.bind(this));
 		this.view.on('deleteList', this.deleteList.bind(this));
+		this.view.on('loginUser', this.loginUser.bind(this));
+		this.view.on('registerUser', this.registerUser.bind(this));
 	}
 
 	openBD() {
@@ -26,8 +29,6 @@ class Controller {
 		console.log(data, 'checkDataToOpen');
 		if (data) this.view.hSelectList(event, data)
 	}
-
-
 
 	checkDataM(id, name, event) {
 		console.log(id, name, 'checkDataM1');
@@ -44,7 +45,7 @@ class Controller {
 	getNeededData(id) {
 		const data = this.model.getTaskList(id);
 		console.log(data, 'checkNeededs');
-		this.view.getArray(data);
+		this.view.getArray(data, id);
 	}
 
 	addTodo(taskList, event) {
@@ -130,21 +131,39 @@ class Controller {
 	
 
 	getDates(month, year) {
-
-		// month = 1 + (+month);		
-		// if (month < 10) month = `0${month}`;
 		let ym = `${month}.${year}`;
-		
 		let newData = this.model.datesFromState();
+		console.log(newData)
 		let tdCollection = [...document.querySelectorAll('tbody td')];
 		tdCollection.forEach(item => {
-			let itemText = item.textContent.toString();
-			if (item.textContent.length == 1) itemText = `0${item.textContent}`;
-			if(newData.indexOf(`${itemText}.${ym}`) >= 0) {
+			let itemDay = item.getAttribute('data-cell');
+			if(newData.indexOf(`${itemDay}.${ym}`) >= 0) {
 				item.classList.add('circleOn');
 				item.setAttribute('data-task', 'true');
 			}
 		})
+	}
+
+	registerUser(email, password) {
+		console.log('registerUser');
+		let data = {'email': email, 'password': password};
+		let response = this.model.registerUser(data);
+
+		if(!response) return console.log('Sorry, try else one')
+
+		this.view.showRegisterMessage();
+
+	}
+
+	loginUser(email, password) {
+		console.log('loginUser');
+		let data = {'email': email, 'password': password};
+		let response = this.model.loginUser(data);
+
+		if(!response) return console.log('Sorry, login is false');
+		this.data = 
+
+		this.view.changeDate()
 	}
 }
 

@@ -1,3 +1,5 @@
+import axios from "axios";
+
 class Model {
 	constructor(state = []) {
 		this.state = state;
@@ -91,6 +93,39 @@ class Model {
 		return dates;
 	}
 
+	async loginUser(data) {
+		const request = await axios.post('/user/login', data)
+		.then((response) => {return response.data})
+
+		if(!request.auth) return false
+
+		return {auth, user, todos} = request;
+
+		// return {
+		// 	auth: request.auth,
+		// 	user: request.user,
+		// 	todos: request.todos
+		// }
+	}
+
+	async registerUser(data) {
+		const request = await axios.get('/user/register')
+		.then((response) => response.data)
+
+		if(request.success === false) return console.log('Email address already registered');
+
+		return response.data
+	}
+
+	//check token
+	userAuth(inner) {
+		const request = axios.get('/user/auth')
+		.then(response => response.data)
+		if (!request.auth) return console.log('Please, login first');
+
+		inner(request.userData);
+
+	}
 }
 
 export default Model;

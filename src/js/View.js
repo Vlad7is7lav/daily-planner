@@ -21,6 +21,7 @@ class View extends EventEmitter {
 		this.popupModal = {
 			overlay:  document.querySelector('.overlay'),
 			goButton: document.getElementById('go'),
+			cancelButton: document.getElementById('cancel'),
 			popupInput: document.getElementById('popupInput')
 		}
 
@@ -46,6 +47,18 @@ class View extends EventEmitter {
 	addEventListeners() {
 		document.addEventListener('click', this.closeSelected.bind(this));
 
+		const openLoginForm = document.querySelector('.login');
+		openLoginForm.addEventListener('click', this.openLoginForm.bind(this));
+
+		const closeLoginForm = document.querySelector('.closeForm');
+		closeLoginForm.addEventListener('click', this.closeLoginForm.bind(this));
+
+		const formSignIn = document.getElementById('form-sign-in');
+		formSignIn.addEventListener('submit', this.login.bind(this));
+
+		const formSignUp = document.getElementById('form-sign-up');
+		formSignUp.addEventListener('submit', this.registerUser.bind(this));
+
 		const tabs = document.querySelector('.tabs');
 		tabs.addEventListener('click', this.changeTab.bind(this)); // listen when click active on 'tab' for choice
 		
@@ -61,6 +74,59 @@ class View extends EventEmitter {
 		
 		table.addEventListener('mouseover', this.tableMouseOver.bind(this));
 		table.addEventListener('mouseout', this.tableMouseOut.bind(this));
+	}
+
+	openLoginForm() {
+		const loginForm = document.querySelector('.logreg');
+		const buttonSignInForm = document.querySelector('.button1');
+		const buttonSignUpForm = document.querySelector('.button2');
+		const backToMain = document.querySelectorAll('.back');
+		const wrapper = document.querySelector('.wrapper');
+		buttonSignInForm.addEventListener('click', this.openSignInForm.bind(this, wrapper));
+		buttonSignUpForm.addEventListener('click', this.openSignUpForm.bind(this, wrapper))
+		Array.prototype.slice.call(backToMain).forEach((elem) => {
+			elem.addEventListener('click', this.backToMain.bind(this, wrapper))
+		})
+		if(loginForm.classList.contains('showLoginForm')) return this.closeLoginForm()
+		loginForm.classList.add('showLoginForm')
+	}
+
+	closeLoginForm() {
+		const loginForm = document.querySelector('.logreg')
+		loginForm.classList.remove('showLoginForm')
+	}
+
+	openSignInForm(wrapper) {
+		wrapper.style.marginLeft = "0px";
+	}
+
+	openSignUpForm(wrapper) {
+		wrapper.style.marginLeft = "-1000px"
+	}
+
+	backToMain(wrapper) {
+		wrapper.style.marginLeft = "-500px"
+	}
+
+	registerUser(event) {
+		event.preventDefault();
+		const email = document.querySelector('#email-up');
+		const password = document.querySelector('#password-up');
+		if(!email.value || !password.value) return alert('Заполните все поля')
+
+		this.emit('registerUser', email.value, password.value);
+	}
+
+	showRegisterMessage() {
+		console.log('Congratulation! Just one step else -> Login')
+	}
+
+	login(event) {
+		event.preventDefault();
+		const email = document.querySelector('#email-in');
+		const password = document.querySelector('#pasword-in');
+		if(!email.value || !password.value) return alert('Заполните все поля')
+		this.emit('loginUser', email, password);
 	}
 
 	tableMouseOver(event) {
@@ -98,21 +164,24 @@ class View extends EventEmitter {
 
 	addNameForTab(t) {
 		let day = t.target.innerText;
+		let fullDate = this.id;
 		if (day < 10) {day = '0' + day};
-		if(this.id.length > 7) {this.id = this.id.slice(3)}
-		this.id = `${day}.${this.id}`;
-		// const fullDate = `${day}.${this.id}`;
-		this.emit('getNeededData', this.id);
+		if(this.id.length > 7) {fullDate = this.id.slice(3)};
+		// this.id = `${day}.${this.id}`;
+		fullDate = `${day}.${fullDate}`;
+		this.emit('getNeededData', fullDate);
 	}
 
-	getArray(data) {
+	getArray(data, fullDate) {
+		console.log(fullDate)
 		this.tempData = data;
 		if (data.length < 3) {
-			let {overlay, goButton, popupInput} = this.popupModal;
+			let {overlay, goButton, cancelButton, popupInput} = this.popupModal;
 				overlay.classList.add('showModal');
 				goButton.onclick = () => {
 					if (this.checkName(popupInput.value, data)) {
 						overlay.classList.remove('showModal');
+						this.id = fullDate;
 						this.hCreateTab(this.id, popupInput.value);
 						this.currentName = popupInput.value;
 						setTimeout(() => {popupInput.value = ""; popupInput.placeholder = 'Enter the list name'}, 1000)
@@ -121,6 +190,9 @@ class View extends EventEmitter {
 						popupInput.value = '';
 						return
 					}
+				}
+				cancelButton.onclick = () => {
+					overlay.classList.remove('showModal');
 				}
 		} else {
 			return console.log('Max tasks for day is 3')
@@ -199,10 +271,8 @@ class View extends EventEmitter {
 		this.varsObject.calendarDate_year.innerText = year;
 		
 		let tdCollection = [...document.querySelectorAll('tbody td')];
-		month < 10 ? month = '0' + (month + 1) : month + 1;
-
+		month < 10 ? month = '0' + (+month + 1) : month = +month + 1;
 		for(let x of tdCollection) {
-			// if (x.innerText != '') {
 			if (x.getAttribute('data-cell')) {
 				x.addEventListener('click', this.checkDayTask.bind(this, year, month));
 			}
@@ -210,40 +280,43 @@ class View extends EventEmitter {
 		
 		this.emit('getDates', month, year);
 		this.id = `${month}.${year}`;
+		let selectList = document.querySelector('.lists');
+		while (selectList.firstChild) {
+			selectList.removeChild(selectList.firstChild);
+		}
 	}
 
-	checkDayTask(event, year, month) {
-		if (event.target.tagName === 'I') return;
+	checkDayTask(year, month, event) {
 		console.log(event.target, 'target');
-		// const year = this.varsObject.calendarDate_year.innerText;
-		// let month = 1 + +(this.varsObject.calendarDate_month.getAttribute("data-month"));
-		// if (month < 10) month = '0' + month;
-		// let day = event.target.innerText;
+		if (event.target.tagName === 'I') return;
 		let day = event.target.getAttribute('data-cell');
-		// if (day.length < 2) day = '0' + day;
+		console.log( this.id)
 		this.id = `${day}.${month}.${year}`;
 		this.emit('checkDataToOpen', this.id, event);
 	}
 
 	hSelectList(event, data) {
-		console.log(data);
+		let dateYear = document.querySelector('.calendarDate_year').innerText;
+		let dateMonth = 1+ +document.querySelector('.calendarDate_month').getAttribute('data-month');
+		let dateDay = event.target.getAttribute('data-cell')
+		dateMonth < 10 ? dateMonth = '0' + dateMonth : dateMonth;
+		const fullDate = `${dateDay}.${dateMonth}.${dateYear}`;
+
 		const selectList = document.querySelector('.selectList');
 		selectList.innerText = '';
 		let lists = createElement("div", {className: `lists`});
-		
-		// let  i = 0;
 
 		data.forEach((elem, i) => {
 			let list = createElement("div", {className: `list list_${i}`});
 			let span = createElement("span", {}, elem['name']);
 			let deleteList = createElement("i", {className: `fas fa-times`});
+			list.setAttribute('fullDate',fullDate)
 			list.appendChild(span);
 			list.appendChild(deleteList);
 			lists.appendChild(list);
 			
-			deleteList.addEventListener('click', this.deleteList.bind(this, elem))
+			deleteList.addEventListener('click', this.deleteList.bind(this, elem, fullDate))
 			list.addEventListener('click', this.showList.bind(this, elem))
-			// i++;
 		})
 		selectList.appendChild(lists);
 		setTimeout(() => {lists.classList.add('show')}, 0);
@@ -254,8 +327,17 @@ class View extends EventEmitter {
 		this.emit("checkDataM", data['item'], data['name']);
 	}
 
-	deleteList(data, event) {
+	deleteList(data, fullDate, event) {
 		this.emit("deleteList", {'id': data['item'], 'name': data['name']}, event);
+		let tab = document.querySelectorAll('.tab');
+		let tabArray = Array.prototype.slice.call(tab);
+		tabArray.forEach((elem, i) => {
+			if(elem.firstChild.textContent == fullDate && elem.firstElementChild.innerText == data['name']) {
+				this.closeList(null, elem.lastElementChild);
+				return
+			}
+		})
+		event.target.closest('.list').remove();
 	}
 
 	hCreateTab(id, listName, data) {
@@ -266,9 +348,6 @@ class View extends EventEmitter {
 		const inputCompleted = document.getElementById('completed');
 		completed(inputCompleted, true);
 		showActive(inputActive, true);
-		// if (data) {
-		// 	this.id = data.item;
-		// } 
 
 		//   Check if this day already open in tabs
 		if(tabsArray.length > 0) {
@@ -300,11 +379,6 @@ class View extends EventEmitter {
 		let tabs = document.querySelector(".tabs");
 
 	  //Creating tab with date for tasks
-		// if (tab != null) {
-		// 	tabsArray.forEach( function(element) {
-		// 		element.classList.remove("active");
-		// 	})
-		// };
 
 		let elemTab = createElement("div", {className: `tab active`}, this.id);
 		let elemName = createElement("div", {className: `tabName`}, listName);
@@ -353,7 +427,6 @@ class View extends EventEmitter {
 	createItem(task) { // createItem(data) если есть data = tasks from DB or state
 		let className;
 		const currentULSection = document.querySelector('section.active > .tabs_content_list');
-
 		// переделать проверку количества строк в отдельную функцию
 		if(currentULSection.querySelectorAll('input[type=text]').length > 18) return alert('Free version allows you create only 18 tasks');
 		if (task != undefined) {
@@ -492,8 +565,12 @@ class View extends EventEmitter {
 		}
 	}
 
-	closeList(event) {
-		const target = event.target;
+	closeList(event, s) {
+		console.log(s);
+		if(s != undefined) {
+			target = s.closest('.tab')
+		} else {var target = event.target}
+		// const target = event.target;
 		const tab = target.closest('.tab');
 		const tabsCollection = [...document.querySelectorAll('.tab')];
 		const sectionContents = [...document.querySelectorAll('.tab_content')];
@@ -600,6 +677,7 @@ class View extends EventEmitter {
 		else if (e.type == 'click') {
 			if (e.target.classList == "far fa-plus-square") {
 				let inputs = document.querySelectorAll('section.active > .tabs_content_list input[type=text]');
+				if(inputs === null) return;
 				for (let element of inputs) {
 					if(!this.itemIsEmpty(element)) {						
 						element.classList.remove('input_hide');
@@ -608,6 +686,7 @@ class View extends EventEmitter {
 						return;
 					}
 				}
+				if(!document.querySelector('section.active')) return
 				this.createItem();
 				return;
 			}
@@ -657,9 +736,6 @@ class View extends EventEmitter {
 		lastLI.innerText = inputs[inputs.length-k].value;
 		lastInputs.blur();
 		const lastPlus = lastLI.previousElementSibling;
-		// if (k === 2) {
-		// 	let lastPlus = lastLI.previousElementSibling;
-		// }
 	}
 
 	crossItem(event) {

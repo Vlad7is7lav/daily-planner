@@ -4,6 +4,7 @@ import './js/View.js';
 import './js/Controller.js';
 import './assets/css/style.css';
 import './assets/scss/main.scss';
+import './assets/scss/login.scss';
 // import './assets/scss/actions.scss';
 // import './assets/scss/list.scss';
 // import './assets/scss/calendar.scss';
@@ -15,7 +16,7 @@ import Controller from './js/Controller.js';
 
 const data = [
 				{
-					id: "08.08.2020", 
+					id: "01.02.2021", 
 					name: "Fruit",
 					tasks: [
 							{item: "1", completed: false},
@@ -26,7 +27,7 @@ const data = [
 				},
 
 				{
-					id: "08.08.2020", 
+					id: "28.02.2021", 
 					name: "Travel",
 					tasks: [
 							{item: "1", completed: true},
@@ -37,7 +38,7 @@ const data = [
 				},
 
 			 	{
-					id: "12.08.2020", 
+					id: "12.02.2021", 
 					name: "Fruit3",
 					tasks: [
 								{item: "5", completed: true},
@@ -48,7 +49,7 @@ const data = [
 			 	},
 
 			 	{
-					id: "15.08.2020", 
+					id: "12.02.2021", 
 					name: "Fruit",
 					tasks: [
 								{item: "9", completed: false},
