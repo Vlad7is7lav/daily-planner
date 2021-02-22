@@ -7,27 +7,23 @@ class Controller {
 		this.view = view;
 		this.data = [];
 
-		this.view.on('addToDo', this.addTodo.bind(this));
+		this.view.on('addToDo', this.addToDo.bind(this));
 		this.view.on('updateItem', this.updateItem.bind(this));
 		this.view.on('deleteItem', this.deleteItem.bind(this));
 		this.view.on('updateCompState', this.updateCompState.bind(this));
-		this.view.on('getDates', this.getDates.bind(this));
+		// this.view.on('getDates', this.getDates.bind(this));
+		this.view.on('getAllData', this.getAllData.bind(this));
 		this.view.on('checkDataM', this.checkDataM.bind(this));
 		this.view.on('getNeededData', this.getNeededData.bind(this));
 		this.view.on('checkDataToOpen', this.checkDataToOpen.bind(this));
 		this.view.on('deleteList', this.deleteList.bind(this));
 		this.view.on('loginUser', this.loginUser.bind(this));
+		this.view.on('logoutUser', this.logoutUser.bind(this));
 		this.view.on('registerUser', this.registerUser.bind(this));
 	}
-
+	
 	openBD() {
 		const db = this.model.openDBNow();
-	}
-
-	checkDataToOpen(id, event) {
-		const data = this.model.getTaskList(id);
-		console.log(data, 'checkDataToOpen');
-		if (data) this.view.hSelectList(event, data)
 	}
 
 	checkDataM(id, name, event) {
@@ -35,11 +31,6 @@ class Controller {
 		const newData = this.model.getTaskList(id, name, 1);
 
 		if(newData) this.view.hCreateTab(event, name, newData);
-
-		// if (data && data.length < 2) this.view.hCreateTab(event, data[0]) // вызываем функцию
-			// которая показывает список листов во view. И уже по щелчку во View достаем 
-			//соответствующие данные, по имени списка.
-		// if(data) this.view.hCreateTab(event, data);
 	}
 
 	getNeededData(id) {
@@ -48,12 +39,12 @@ class Controller {
 		this.view.getArray(data, id);
 	}
 
-	addTodo(taskList, event) {
+	addToDo(taskList, event) {
 		const section = this.model.addTaskList({ // after execution we get tasklist
-			id: taskList.id,
+			date: taskList.date,
 			name: taskList.name,
 			tasks: [{ 					// <- внутри tasks должен быть массив объектов с task и completed равным true или false)
-					'item': taskList.item,
+					'task': taskList.task,
 					'completed': taskList.completed
 					}]
 		}, taskList.index);
@@ -128,42 +119,68 @@ class Controller {
 		
 	}
 
-	
+	// getDates(month, year) {
+	// 	let ym = `${month}.${year}`;
+	// 	let newData = this.model.datesFromState();
+	// 	let tdCollection = [...document.querySelectorAll('tbody td')];
+	// 	tdCollection.forEach(item => {
+	// 		let itemDay = item.getAttribute('data-cell');
+	// 		if(newData.indexOf(`${itemDay}.${ym}`) >= 0) {
+	// 			item.classList.add('circleOn');
+	// 			item.setAttribute('data-task', 'true');
+	// 		}
+	// 	})
+	// }
 
-	getDates(month, year) {
-		let ym = `${month}.${year}`;
-		let newData = this.model.datesFromState();
-		console.log(newData)
+	checkDataToOpen(date, event) {
+		const list_of_dates = this.data.filter(item => item.date == date);
+		if (list_of_dates) this.view.hSelectList(event, list_of_dates);
+		return null
+	}
+
+	async getAllData(month, year) {
+		let ym = `${month}-${year}`;
+		this.data = await this.model.getAllData();
+		let dates = Array.from(this.data, ({date}) => date);
 		let tdCollection = [...document.querySelectorAll('tbody td')];
 		tdCollection.forEach(item => {
+			console.log(ym);
 			let itemDay = item.getAttribute('data-cell');
-			if(newData.indexOf(`${itemDay}.${ym}`) >= 0) {
+			if(dates.indexOf(`${itemDay}-${ym}`) >= 0) {
 				item.classList.add('circleOn');
 				item.setAttribute('data-task', 'true');
 			}
 		})
+		console.log(dates)
 	}
 
-	registerUser(email, password) {
+	async registerUser(email, password) {
 		console.log('registerUser');
 		let data = {'email': email, 'password': password};
-		let response = this.model.registerUser(data);
+		let response = await this.model.registerUser(data);
+		console.log(response)
+		if(response.message == 'duplicate') return this.view.showRegisterMessage(1);
 
-		if(!response) return console.log('Sorry, try else one')
-
-		this.view.showRegisterMessage();
+		this.view.showRegisterMessage(0);
 
 	}
 
-	loginUser(email, password) {
-		console.log('loginUser');
+	async loginUser(email, password) {
+		
 		let data = {'email': email, 'password': password};
-		let response = this.model.loginUser(data);
+		let response = await this.model.loginUser(data);
 
-		if(!response) return console.log('Sorry, login is false');
-		this.data = 
+		if(response.auth == false) return this.view.showLoginMessage(1);
+		this.view.showLoginMessage(0);
+		// this.view.changeDate()
+		return 
+	}
 
-		this.view.changeDate()
+	async logoutUser(login, logout) {
+		let response = await this.model.logoutUser();
+		//clearData
+
+		this.view.showLoginMessage(2, login, logout);
 	}
 }
 

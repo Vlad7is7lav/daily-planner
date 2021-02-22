@@ -1,25 +1,31 @@
 const express = require('express');
 const router = express.Router();
 
+
 //Model 
 const { User } = require('../model/user')
 
 //Middleware
 const {auth} = require('../middleware/auth');
-const { response } = require('express');
 
 ////
-router.post('/register', function(req, res){  
+router.post('/register', function(req, res, next){  
     const user = new User(req.body);
     user.save((err,doc)=> {
-        if(err) return res.json({success: err});
-        res.status(200).json({success: true, user: doc});
+        if(err) {
+            next(err)
+        } else {
+            res.status(200).json({success: true, user: doc});
+        }
+        // if(err) return res.json({success: err});
+        
     })
 })
 
 router.post('/login', function(req, res){
-    User.findOne({'email': req.body.email}, (req, user)=>{
-        if(err) throw err
+    User.findOne({'email': req.body.email}, (err, user)=>{
+        
+        if(err) return res.json({'err': err});
         if(!user) res.json({
                 auth: false,
                 message: 'User not found',
@@ -37,16 +43,14 @@ router.post('/login', function(req, res){
                 if(err) return res.status(400).send(err);
                 res.cookie('auth', user.token).json({
                     auth: true,
+                    message: 'ok',
                     userData: {
                             id: user._id,
                             email: user.email,
-                            name: user.name
+                            name: user.name,
                         }
+                    
                 })
-
-                req.session.var = '1';
-                res.redirect('/user/main');
-
             })
         })
     })
@@ -66,7 +70,7 @@ router.get('/auth', auth, function(req,res) {
 router.get('/logout', auth,  function(req,res) {
     req.user.deleteToken(req.token, (err, user)=>{
         if(err) return res.status(400).send(err);
-        res.status(200).send('Bye').json({
+        res.status(200).json({
             auth: false,
             logout: true
         })

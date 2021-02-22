@@ -11,7 +11,7 @@ class View extends EventEmitter {
 		this.months = ['January', 'Febriary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 		this.tabs = 0;
 		this.varsObject = {}; //look in onload() function
-		this.id = '';
+		this.date = '';
 		this.eventListeners = null;
 		this.editFlag = false;
 		this.currentElem = null;
@@ -54,7 +54,7 @@ class View extends EventEmitter {
 		closeLoginForm.addEventListener('click', this.closeLoginForm.bind(this));
 
 		const formSignIn = document.getElementById('form-sign-in');
-		formSignIn.addEventListener('submit', this.login.bind(this));
+		formSignIn.addEventListener('submit', this.loginUser.bind(this));
 
 		const formSignUp = document.getElementById('form-sign-up');
 		formSignUp.addEventListener('submit', this.registerUser.bind(this));
@@ -117,16 +117,97 @@ class View extends EventEmitter {
 		this.emit('registerUser', email.value, password.value);
 	}
 
-	showRegisterMessage() {
-		console.log('Congratulation! Just one step else -> Login')
+	showRegisterMessage(data) {
+		switch (data) {
+			case 1:
+				let wrapper_up = document.querySelector('.wrapper-sign_up');
+				let elem = document.createElement('div');
+				elem.classList.add('registerFalse');
+				elem.innerHTML = 'Sorry, this login email already exists';
+				wrapper_up.append(elem);
+				console.log(wrapper_up.firstElementChild);
+				setTimeout(()=> {
+					wrapper_up.lastElementChild.remove();
+				}, 1500)
+
+				break;
+			case 0: 
+				let wrapper_up_2 = document.querySelector('.wrapper-sign_up');
+				let elem_2 = document.createElement('div');
+				elem_2.classList.add('registerTrue');
+				elem_2.innerHTML = 'Congratulation! </br> Use your login and pass to sign in!';
+				wrapper_up_2.append(elem_2);
+				const wrapper = document.querySelector('.wrapper');
+				setTimeout(()=>{
+					wrapper_up_2.lastElementChild.remove();
+					this.openSignInForm(wrapper)
+				}, 1500)
+				break;
+		
+			default:
+				break;
+		}
 	}
 
-	login(event) {
+	showLoginMessage(data, login, logout) {
+		switch (data) {
+			case 1:
+				let wrapper_in = document.querySelector('.wrapper-sign_in');
+				let elem = document.createElement('div');
+				elem.classList.add('loginFalse');
+				elem.innerHTML = 'You have entered an invalid email or password';
+				wrapper_in.append(elem);
+				console.log(wrapper_in.firstElementChild);
+				setTimeout(()=> {
+					// wrapper_in.lastElementChild.remove();
+				}, 2000)
+				break;
+			case 0: 
+				let wrapper_in_2 = document.querySelector('.wrapper-sign_in');
+				let elem_2 = document.createElement('div');
+				elem_2.classList.add('loginTrue');
+				elem_2.innerHTML = 'You are logged in.';
+				wrapper_in_2.append(elem_2);
+				const wrapper = document.querySelector('.wrapper');
+				let currentDate = new Date();
+				setTimeout(()=>{
+					wrapper_in_2.lastElementChild.remove();
+					this.closeLoginForm();
+					this.openExitForm();
+					this.changeDate(currentDate.getFullYear(), currentDate.getMonth());
+				}, 1000)
+				break;
+			case 2: 
+				logout.replaceWith(login);
+				break;
+		
+			default:
+				break;
+		}
+	}
+
+	openExitForm() {
+		const login = document.querySelector('.login');
+		let logout = document.createElement('div');
+		logout.classList.add('login');
+		logout.innerHTML = '<i class="fas fa-sign-out-alt" style="margin-right: 5px;"></i> Выход';
+		logout.addEventListener('click', this.logoutUser.bind(this, login, logout));
+		login.replaceWith(logout);
+	}
+
+	loginUser(event) {
 		event.preventDefault();
 		const email = document.querySelector('#email-in');
-		const password = document.querySelector('#pasword-in');
-		if(!email.value || !password.value) return alert('Заполните все поля')
-		this.emit('loginUser', email, password);
+		const password = document.querySelector('#password-in');
+		console.log(email.value)
+		if(!email.value || !password.value) return alert('Заполните все поля');
+		this.emit('loginUser', email.value, password.value);
+	}
+
+	logoutUser(login, logout) {
+		event.preventDefault();
+		this.emit('logoutUser', login, logout);
+		//clear data
 	}
 
 	tableMouseOver(event) {
@@ -164,9 +245,9 @@ class View extends EventEmitter {
 
 	addNameForTab(t) {
 		let day = t.target.innerText;
-		let fullDate = this.id;
+		let fullDate = this.date;
 		if (day < 10) {day = '0' + day};
-		if(this.id.length > 7) {fullDate = this.id.slice(3)};
+		if(this.date.length > 7) {fullDate = this.date.slice(3)};
 		// this.id = `${day}.${this.id}`;
 		fullDate = `${day}.${fullDate}`;
 		this.emit('getNeededData', fullDate);
@@ -181,8 +262,8 @@ class View extends EventEmitter {
 				goButton.onclick = () => {
 					if (this.checkName(popupInput.value, data)) {
 						overlay.classList.remove('showModal');
-						this.id = fullDate;
-						this.hCreateTab(this.id, popupInput.value);
+						this.date = fullDate;
+						this.hCreateTab(this.date, popupInput.value);
 						this.currentName = popupInput.value;
 						setTimeout(() => {popupInput.value = ""; popupInput.placeholder = 'Enter the list name'}, 1000)
 					} else {
@@ -278,8 +359,8 @@ class View extends EventEmitter {
 			}
 		}
 		
-		this.emit('getDates', month, year);
-		this.id = `${month}.${year}`;
+		this.emit('getAllData', month, year);
+		this.date = `${month}.${year}`;
 		let selectList = document.querySelector('.lists');
 		while (selectList.firstChild) {
 			selectList.removeChild(selectList.firstChild);
@@ -290,9 +371,9 @@ class View extends EventEmitter {
 		console.log(event.target, 'target');
 		if (event.target.tagName === 'I') return;
 		let day = event.target.getAttribute('data-cell');
-		console.log( this.id)
-		this.id = `${day}.${month}.${year}`;
-		this.emit('checkDataToOpen', this.id, event);
+		console.log( this.date)
+		this.date = `${day}-${month}-${year}`;
+		this.emit('checkDataToOpen', this.date, event);
 	}
 
 	hSelectList(event, data) {
@@ -308,7 +389,7 @@ class View extends EventEmitter {
 
 		data.forEach((elem, i) => {
 			let list = createElement("div", {className: `list list_${i}`});
-			let span = createElement("span", {}, elem['name']);
+			let span = createElement("span", {}, elem['listName']);
 			let deleteList = createElement("i", {className: `fas fa-times`});
 			list.setAttribute('fullDate',fullDate)
 			list.appendChild(span);
@@ -322,9 +403,10 @@ class View extends EventEmitter {
 		setTimeout(() => {lists.classList.add('show')}, 0);
 	}
 
-	showList(data, event) {
+	showList(elem, event) {
 		if(event.target.tagName === 'I') return
-		this.emit("checkDataM", data['item'], data['name']);
+		// this.emit("checkDataM", data['item'], data['name']);
+		this.hCreateTab(event, elem.listName, elem);
 	}
 
 	deleteList(data, fullDate, event) {
@@ -353,7 +435,7 @@ class View extends EventEmitter {
 		if(tabsArray.length > 0) {
 			let tmp = 0;
 			for (let i = 0; i < tabsArray.length; i++) {
-				if (tmp == 0  && tabsArray[i].firstChild.textContent == this.id && tabsArray[i].firstElementChild.textContent == listName) {
+				if (tmp == 0  && tabsArray[i].firstChild.textContent == this.date && tabsArray[i].firstElementChild.textContent == listName) {
 					tabsArray[i].classList.add("active");
 					tmp = 1;
 					this.changeTab(null, i);
@@ -380,7 +462,7 @@ class View extends EventEmitter {
 
 	  //Creating tab with date for tasks
 
-		let elemTab = createElement("div", {className: `tab active`}, this.id);
+		let elemTab = createElement("div", {className: `tab active`}, this.date);
 		let elemName = createElement("div", {className: `tabName`}, listName);
 		let elemCloseList = createElement("div", {className: `list_delete`});
 		elemCloseList.innerHTML = "<i class=\"fas fa-times\"></i>";
@@ -398,7 +480,8 @@ class View extends EventEmitter {
 
 	  //Call f createItem for creating task item
 		if (data) {
-			for(let task of data['tasks']) {
+			console.log(data)
+			for(let task of data.todos) {
 				this.createItem(task);
 			}
 		} else {
@@ -445,6 +528,8 @@ class View extends EventEmitter {
 			task = {item: ''};
 		}
 
+		console.log(task)
+
 		// currentULSection.querySelectorAll('input').length;
 		let randomID = this.getRandomID(5000);
 		let elemLI = createElement("li", {'className' : className['li']});
@@ -457,8 +542,8 @@ class View extends EventEmitter {
 		let elemLIinput = createElement('input', {type : 'text', 'className' : className['input']}, task.item);
 
 		elemLI.innerHTML = "<div class=\"item_delete\"><i class=\"fas fa-times\"></i></div></li>";
-
-		if (task.completed == true) {
+		console.log(task.complete)
+		if (task.complete == true) {
 			elemLILabel.style.textDecoration = 'line-through';
 			elemLILabel.setAttribute('data-complete', 'true');
 		};
@@ -498,7 +583,7 @@ class View extends EventEmitter {
 	}
 
 	hdeleteItem(e) {
-		const id = this.id;
+		const id = this.date;
 		const labelsCollection = [...document.querySelectorAll('section.active .item_delete i')];
 		let indexItem = labelsCollection.indexOf(e.target); // get index of removing element
 		this.emit('deleteItem', {'id': id, 'name': this.currentName,'index': indexItem}, e);
@@ -506,29 +591,28 @@ class View extends EventEmitter {
 	}
 
 	hupdateItem(e) {
-		const id = this.id;
+		const id = this.date;
 		const inputCollection = [...document.querySelectorAll('section.active input[type=text]')];
 		let indexItem = inputCollection.indexOf(e.target);
 		this.emit('updateItem', {'id': id, 'name': this.currentName, 'index': indexItem, 'task': e.target.value}, e);
 	}
 
 	hupdateCompState(e, complete) {
-		const id = this.id;
+		const id = this.date;
 		const labelsCollection = [...document.querySelectorAll('section.active label.label')];
 		let indexItem = labelsCollection.indexOf(e);
-		this.emit('updateCompState', {'id': this.id, 'name': this.currentName, 'index': indexItem, 'complete': complete}, e);
+		this.emit('updateCompState', {'id': this.date, 'name': this.currentName, 'index': indexItem, 'complete': complete}, e);
 	}
 
 	hAddToDo(e) {
-		// event.preventDefault() //stop sending data
-		const id = this.id;
+		e.preventDefault();
+		const date = this.date;
 		const tasks = [];
 		const labelsCollection = [...document.querySelectorAll('section.active > .tabs_content_list input[type=text]')];
 		let indexItem = labelsCollection.indexOf(e.target);
-		const element = labelsCollection[indexItem].value;	
-		this.emit('addToDo', {'id': id, 'index': indexItem, 'name': this.currentName, 'item': element, 'completed': false}, e);
+		const task = labelsCollection[indexItem].value;	
+		this.emit('addToDo', {'date': date, 'index': indexItem, 'name': this.currentName, 'task': task, 'completed': false}, e);
 		this.isTask(labelsCollection);
-
 	}
 
 	catch_focusOut(e) {
@@ -620,7 +704,7 @@ class View extends EventEmitter {
 
 	isTask(labelsCollection, del, day) {
 		let tdCollection = [...document.querySelectorAll('tbody td')];
-		let nDay = this.id.slice(0, 2);
+		let nDay = this.date.slice(0, 2);
 		if (labelsCollection.length >= 1 && !del) {
 			for (let x of tdCollection) {
 				if (x.dataset.cell === nDay) {
@@ -664,8 +748,8 @@ class View extends EventEmitter {
 			}
 
 			if (value != label.innerText) {	// check if text didn't change
-				value = value.trim();
-				label.innerText = value;
+				// value = value.trim();
+				label.innerText = value.trim();
 				this.hAddToDo(e);
 			} else {
 				input.classList.add('input_hide');
@@ -810,7 +894,7 @@ class View extends EventEmitter {
 
 		  // Change date
 			let regex = new RegExp("^[0-9]{2}\.[0-9]{2}\.[1-2][0-9]{3}");
-			this.id = regex.exec(target.innerText)[0];
+			this.date = regex.exec(target.innerText)[0];
 
 		  // Remove class active from content
 			Array.prototype.slice.call(content).forEach( function(element, index) {

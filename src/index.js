@@ -60,6 +60,7 @@ const data = [
 			 	}
 			 ]
 
+let DATA = []; 			 
 const model = new Model(data);
 const view = new View();
 const controller = new Controller(model, view) 

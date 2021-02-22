@@ -72,7 +72,7 @@ form input {
     outline: none;
 }
 
-form input[type="button"] {
+form input[type="submit"] {
     box-sizing: border-box;
     margin-top: 30px;
     width: 40%;
@@ -81,11 +81,12 @@ form input[type="button"] {
     color: rgb(106, 134, 141);
 }
 
-form input[type="button"]:hover {
+form input[type="submit"]:hover {
     border: outset 2px solid rgb(130, 155, 161);
 }
 
 .back {
+    position: relative;
     margin: 20px 0;
     font-size: 35px;
     width: 100%;
@@ -116,68 +117,24 @@ form input[type="button"]:hover {
     transition: ease-in .2s all;
     -moz-user-select: none;
     -webkit-user-select: none;
-    // backface-visibility: hidden;
-    animation-fill-mode: forwards;
     line-height: 2.2rem;
-   
-    
 }
-
-// .logreg-wrapper:hover .button1 {
-//     color: white;
-//     left: -30%
-// } 
-
-// .logreg-wrapper:hover .button2 {
-//     color: white;
-//     left: 130%
-// } 
 
 .loginForm {
     position: absolute;
-    // top: -1500px;
     transform: translateY(-1500px);
     transition: ease-in .64s all;
     opacity: 0;
     width: 400px;
     height: 400px;
     background-color: rgba($cellDaysBackground, 1);
-    
 }
+
 .logreg:hover .loginForm{
     bottom: 0px;
     transform: translateY(0px);
     opacity: 1;
-    animation-name: around;
-    animation-timing-function: linear;
-    // animation-iteration-count: infinite;
-    animation-duration: 1.5s;
 }
-
-@keyframes around {
-    from {
-        height: 400px;
-    }
-
-    to {
-        height: 400px;
-        bottom: 0px;
-    }
-    20% {
-        height: 400px;
-    }
-
-    40% {
-        height: 240px
-    }
-    60% {
-        height: 480px
-    }
-    80% {
-        height: 260px
-    }
-}
-
 
 .go-left {
     transform: translateX(-100px);
@@ -187,5 +144,21 @@ form input[type="button"]:hover {
     transform: translateX(-100px);
 }
 
+.registerFalse, .loginFalse {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    font-size: 16px;
+    color: darkorchid;
+}
+
+.registerTrue, .loginTrue {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    font-size: 16px;
+    color: rgb(1, 102, 77);
+    line-height: 1;
+}
 
 

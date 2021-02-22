@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const listScheme = mongoose.Schema({
     date: {
-        type: Date || String,
+        type: String,
         required: true,
         trim: true
     },
@@ -15,16 +15,16 @@ const listScheme = mongoose.Schema({
     },
 
     todos: {
-        type: Array[String],
+        type: Array,
         required: true,
         minLength: 1
-    },
-
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
     }
+
+    // userId: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'User',
+    //     required: true
+    // }
 })
 
 const List = mongoose.model('List', listScheme);
