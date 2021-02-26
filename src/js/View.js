@@ -205,7 +205,7 @@ class View extends EventEmitter {
 	}
 
 	logoutUser(login, logout) {
-		event.preventDefault();
+		// event.preventDefault();
 		this.emit('logoutUser', login, logout);
 		//clear data
 	}
@@ -248,8 +248,7 @@ class View extends EventEmitter {
 		let fullDate = this.date;
 		if (day < 10) {day = '0' + day};
 		if(this.date.length > 7) {fullDate = this.date.slice(3)};
-		// this.id = `${day}.${this.id}`;
-		fullDate = `${day}.${fullDate}`;
+		fullDate = `${day}-${fullDate}`;
 		this.emit('getNeededData', fullDate);
 	}
 
@@ -360,7 +359,7 @@ class View extends EventEmitter {
 		}
 		
 		this.emit('getAllData', month, year);
-		this.date = `${month}.${year}`;
+		this.date = `${month}-${year}`;
 		let selectList = document.querySelector('.lists');
 		while (selectList.firstChild) {
 			selectList.removeChild(selectList.firstChild);
@@ -381,7 +380,7 @@ class View extends EventEmitter {
 		let dateMonth = 1+ +document.querySelector('.calendarDate_month').getAttribute('data-month');
 		let dateDay = event.target.getAttribute('data-cell')
 		dateMonth < 10 ? dateMonth = '0' + dateMonth : dateMonth;
-		const fullDate = `${dateDay}.${dateMonth}.${dateYear}`;
+		const fullDate = `${dateDay}-${dateMonth}-${dateYear}`;
 
 		const selectList = document.querySelector('.selectList');
 		selectList.innerText = '';
@@ -410,7 +409,8 @@ class View extends EventEmitter {
 	}
 
 	deleteList(data, fullDate, event) {
-		this.emit("deleteList", {'id': data['item'], 'name': data['name']}, event);
+		// this.emit("deleteList", {'_id': data['_id'], 'name': data['name']}, event);
+		this.emit("deleteList", {'_id': data['_id']}, event);
 		let tab = document.querySelectorAll('.tab');
 		let tabArray = Array.prototype.slice.call(tab);
 		tabArray.forEach((elem, i) => {
@@ -425,7 +425,7 @@ class View extends EventEmitter {
 	hCreateTab(id, listName, data) {
 		const sections = document.querySelectorAll('.tabs_content > section');
 		const tab = document.querySelectorAll('.tabs > .tab');		
-		let tabsArray = Array.prototype.slice.call(tab);
+		let tabsArray = Array.from(tab);
 		const inputActive = document.getElementById('active');
 		const inputCompleted = document.getElementById('completed');
 		completed(inputCompleted, true);
@@ -447,7 +447,7 @@ class View extends EventEmitter {
 		}
 
 		if (sections != null) {
-			Array.prototype.slice.call(sections).forEach( function(element) {
+			Array.from(sections).forEach( function(element) {
 				element.classList.remove("active");
 			});
 		};
@@ -479,12 +479,14 @@ class View extends EventEmitter {
 		this.createSection();
 
 	  //Call f createItem for creating task item
+	  	const activeTab = document.querySelector('div.tabs > div.active');
 		if (data) {
-			console.log(data)
+			activeTab.setAttribute('data-id', data._id)
 			for(let task of data.todos) {
 				this.createItem(task);
 			}
 		} else {
+			activeTab.setAttribute('data-id', "null")
 			this.createItem();	
 		}	
 	}
@@ -528,21 +530,18 @@ class View extends EventEmitter {
 			task = {item: ''};
 		}
 
-		console.log(task)
-
-		// currentULSection.querySelectorAll('input').length;
 		let randomID = this.getRandomID(5000);
 		let elemLI = createElement("li", {'className' : className['li']});
 
 		let markerBlock = createElement("label", {'className': 'marker'});
-		let elemCheckBox = createElement("input", {'id' : randomID, 'type': 'checkbox', 'className': 'checkbox', 'name' : 'check', 'checked': task.completed});
+		let elemCheckBox = createElement("input", {'id' : randomID, 'type': 'checkbox', 'className': 'checkbox', 'name' : 'check', 'checked': task.complete});
 		let markerDIV = createElement("div", {'className' : 'itemCheck'});
 
 		let elemLILabel = createElement("label", {'className' : className['label'] || 'label'}, task.item);
 		let elemLIinput = createElement('input', {type : 'text', 'className' : className['input']}, task.item);
 
 		elemLI.innerHTML = "<div class=\"item_delete\"><i class=\"fas fa-times\"></i></div></li>";
-		console.log(task.complete)
+
 		if (task.complete == true) {
 			elemLILabel.style.textDecoration = 'line-through';
 			elemLILabel.setAttribute('data-complete', 'true');
@@ -591,10 +590,14 @@ class View extends EventEmitter {
 	}
 
 	hupdateItem(e) {
-		const id = this.date;
+		e.preventDefault();
+		const task = e.target.value;
+		const date = this.date;
+		const tabID = document.querySelector('div.tabs > div.active').getAttribute('data-id');
 		const inputCollection = [...document.querySelectorAll('section.active input[type=text]')];
 		let indexItem = inputCollection.indexOf(e.target);
-		this.emit('updateItem', {'id': id, 'name': this.currentName, 'index': indexItem, 'task': e.target.value}, e);
+		console.log({'_id': tabID,'date': date, 'name': this.currentName, 'item': task, 'complete': false, 'index': indexItem})
+		this.emit('updateItem', {'_id': tabID, 'date': date, 'name': this.currentName, 'item': task, 'complete': false, 'index': indexItem}, e);
 	}
 
 	hupdateCompState(e, complete) {
@@ -607,16 +610,21 @@ class View extends EventEmitter {
 	hAddToDo(e) {
 		e.preventDefault();
 		const date = this.date;
-		const tasks = [];
-		const labelsCollection = [...document.querySelectorAll('section.active > .tabs_content_list input[type=text]')];
-		let indexItem = labelsCollection.indexOf(e.target);
-		const task = labelsCollection[indexItem].value;	
-		this.emit('addToDo', {'date': date, 'index': indexItem, 'name': this.currentName, 'task': task, 'completed': false}, e);
-		this.isTask(labelsCollection);
+		const tabID = document.querySelector('div.tabs > div.active').getAttribute('data-id');
+		// const tasks = [];
+		// const labelsCollection = [...document.querySelectorAll('section.active > .tabs_content_list input[type=text]')];
+		// let indexItem = labelsCollection.indexOf(e.target);
+		// const task = labelsCollection[indexItem].value;	
+		const task = e.target.value;
+		console.log({'_id': tabID,'date': date, 'name': this.currentName, 'item': task, 'complete': false})
+		this.emit('addToDo', {'_id': tabID, 'date': date, 'name': this.currentName, 'item': task, 'complete': false}, e);
+		this.isTask();
+		this.addItem(e);
 	}
 
 	catch_focusOut(e) {
 		if(e.type == 'focusout') { // && e.relatedTarget == null 
+			
 			if (e.target.value == '') {
 				e.target.parentNode.remove();
 				return;
@@ -644,17 +652,15 @@ class View extends EventEmitter {
 			if ((itemAmount <= 1) && e.target.value === '' || e.target.value === prevLabelText) return;
 				// this combination of comparisons allows stop function if first item is emptied or e.target.value === text in label 
 				// or if we use (e.ctrlKey & e.keyCode) because in this case e.target.value and prevLabelText are equal.
-			
+			console.log(e.target.value)
 			this.hAddToDo(e);
 		}
 	}
 
 	closeList(event, s) {
-		console.log(s);
 		if(s != undefined) {
 			target = s.closest('.tab')
 		} else {var target = event.target}
-		// const target = event.target;
 		const tab = target.closest('.tab');
 		const tabsCollection = [...document.querySelectorAll('.tab')];
 		const sectionContents = [...document.querySelectorAll('.tab_content')];
@@ -675,10 +681,16 @@ class View extends EventEmitter {
 		this.tabs--;
 	} 
 
-	addItem(event) {
+	addItem(event, id = null) {
 		event.target.classList.add('input_hide'); //перенес в addItem
-		event.target.previousElementSibling.classList.remove('label_Hide');
-		
+		event.target.previousElementSibling.classList.remove('label_Hide');	
+	}
+
+	setID(id) {
+		if(id != null)  {
+			const activeTab = document.querySelector('div.tabs > div.active');
+			activeTab.setAttribute('data-id', id)
+		}
 	}
 
 	deleteItem(event) {
@@ -703,15 +715,16 @@ class View extends EventEmitter {
 	}
 
 	isTask(labelsCollection, del, day) {
+		const labelsCollection1 = [...document.querySelectorAll('section.active > .tabs_content_list input[type=text]')];
 		let tdCollection = [...document.querySelectorAll('tbody td')];
 		let nDay = this.date.slice(0, 2);
-		if (labelsCollection.length >= 1 && !del) {
+		if (labelsCollection1.length >= 1 && !del) {
 			for (let x of tdCollection) {
 				if (x.dataset.cell === nDay) {
 					x.classList.add('circleOn');
 				}
 			}
-		} else if (labelsCollection.length <= 1) {
+		} else if (labelsCollection1.length <= 1) {
 			for (let x of tdCollection) {
 				if (x.dataset.cell === nDay) {
 					x.classList.remove('circleOn');
@@ -743,12 +756,12 @@ class View extends EventEmitter {
 			if (!e.target.value) return;	
 			// check editflag
 			if (this.editFlag === true) {
+				console.log('edti')
 				this.hupdateItem(e);
 				return;
 			}
 
 			if (value != label.innerText) {	// check if text didn't change
-				// value = value.trim();
 				label.innerText = value.trim();
 				this.hAddToDo(e);
 			} else {
@@ -784,14 +797,14 @@ class View extends EventEmitter {
 		}
 
 		else if (e.keyCode == 13) {
-			event.preventDefault();
+			e.preventDefault();
 			if (!e.target.value) return;
 
 			const inputs = document.querySelectorAll('section.active > .tabs_content_list input[type=text]');
 
 			// Clear empty space before and after
 			let trimValue = event.target.value.trim();
-			event.target.value = trimValue;
+			e.target.value = trimValue;
 			 
 			for (let element of inputs) {
 				if(!this.itemIsEmpty(element)) {						

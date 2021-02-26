@@ -35,7 +35,8 @@ router.route('/list')
 })
 
 .get((req, res, next) => {
-    List.findById({_id: req.body._id}, (err, doc)=>{
+    
+    List.findById({_id: req.query.id}, (err, doc)=>{
         if(err) {
             // next(err);
             return res.json({success: err})
@@ -49,12 +50,13 @@ router.route('/list')
 })
 
 .delete((req, res, next) => {
-    List.findByIdAndRemove({_id: req.body._id}, {new: true}, (err,doc) => {
+    List.findByIdAndRemove({_id: req.query.id}, {new: true}, (err,doc) => {
         if(err) {
             // next(err);
             return res.json({success: err})
         } else {
             res.json({
+                success: true,
                 message: "Deleted successfull"
             })
         }
@@ -77,7 +79,7 @@ router.route('/all_lists')
 })
 
 router.post('/list/add_task', function(req, res){
-    List.findByIdAndUpdate(req.body._id, {$push: {todos: req.body.task}}, (err, doc) => {
+    List.findByIdAndUpdate(req.body._id, {$push: {todos: req.body.todos}}, (err, doc) => {
         if(err) {
             // next(err);
             return res.json({success: err})
@@ -87,9 +89,10 @@ router.post('/list/add_task', function(req, res){
     })
 })
 
-router.patch('/list/update_task', function(req, res){
+router.patch('/list/update_item', function(req, res){
     const index = req.body.index;
-    List.findByIdAndUpdate(req.body._id, {$set: {[`todos.${index}`]: req.body.task}}, {new:true}, (err, doc) => {
+    console.log(index)
+    List.findByIdAndUpdate(req.body._id, {$set: {[`todos.${index}`]: req.body.todos}}, {new:true}, (err, doc) => {
         if(err) {
             // next(err);
             return res.json(err)

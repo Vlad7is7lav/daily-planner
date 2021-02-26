@@ -39,30 +39,43 @@ class Controller {
 		this.view.getArray(data, id);
 	}
 
-	addToDo(taskList, event) {
-		const section = this.model.addTaskList({ // after execution we get tasklist
-			date: taskList.date,
-			name: taskList.name,
-			tasks: [{ 					// <- внутри tasks должен быть массив объектов с task и completed равным true или false)
-					'task': taskList.task,
-					'completed': taskList.completed
-					}]
-		}, taskList.index);
+	async addToDo(taskList, event) {
+		let response;
+		if(taskList._id == "null") {
+			response = await this.model.addList({ // after execution we get tasklist
+				date: taskList.date,
+				listName: taskList.name,
+				todos: { 					// <- внутри tasks должен быть массив объектов с task и completed равным true или false)
+						'item': taskList.item,
+						'complete': taskList.complete
+						}
+			});
 
-		this.view.addItem(event);
+		} else {
+			response = await this.model.addTask({ // after execution we get tasklist
+				_id: taskList._id,
+				date: taskList.date,
+				listName: taskList.name,
+				todos: { 					// <- внутри tasks должен быть массив объектов с task и completed равным true или false)
+						'item': taskList.item,
+						'complete': taskList.complete
+						}
+			});
+		}
+	
+		this.view.setID(response._id);
 	}
 
-	updateItem(item, e) {
-		if (this.model.getTaskList(item.id, item.name)) {
-			
-			const updatedItem = this.model.updateItem({ // after execution we get tasklist
-				id: item.id,
-				name: item.name,
-				index: item.index, // <- внутри tasks должен быть массив объектов с task и completed равным true или false)
-				task: item['task']
-				// completed: item.completed
+	async updateItem(taskList, e) {
+	
+			const updatedItem = await this.model.updateItem({
+				_id: taskList._id,
+				todos: { 
+						'item': taskList.item,
+						'complete': taskList.complete
+						},
+				index: taskList.index
 			});			
-		}
 
 		this.view.updateItem(e);
 	}
@@ -93,29 +106,31 @@ class Controller {
 		this.view.deleteItem(e);
 	}
 	
-	deleteList(item, e) {
-		if (this.model.getTaskList(item.id, item.name)) {
-			const removeItem = this.model.deleteList({
-				id: item.id,
-				name: item.name,
-			})
+	async deleteList(list, e) {
+		let isList = await this.model.getList(list);
+		console.log(isList)
+		if (isList['success'] === true) {
+			const removeItem = await this.model.deleteList(list);
 		}
+
+		let pos = this.data.findIndex((val, index) => val._id === list['_id']);
+		if(~pos) this.data.splice(pos, 1);
+		console.log(this.data, pos)		
 		
-		
-		const x = this.model.getTaskList(item.id);
-		console.log(this.model.getTaskList(item.id), 'nday')
-		if (x.length === 0) {
-			let nDay = item.id.slice(0, 2);
-			if(nDay < 10) {nDay = item.id.slice(1, 2)};
-			console.log(nDay)
-			let tdCollection = [...document.querySelectorAll('tbody td')];
-			for (let x of tdCollection) {
-				if (x.innerText === nDay) {
-					x.classList.remove('circleOn');
-				}
-			}
-			return;
-		}
+		// const x = this.model.getTaskList(item.id);
+		// console.log(this.model.getTaskList(item.id), 'nday')
+		// if (x.length === 0) {
+		// 	let nDay = item.id.slice(0, 2);
+		// 	if(nDay < 10) {nDay = item.id.slice(1, 2)};
+		// 	console.log(nDay)
+		// 	let tdCollection = [...document.querySelectorAll('tbody td')];
+		// 	for (let x of tdCollection) {
+		// 		if (x.innerText === nDay) {
+		// 			x.classList.remove('circleOn');
+		// 		}
+		// 	}
+		// 	return;
+		// }
 		
 	}
 

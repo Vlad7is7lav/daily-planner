@@ -43,8 +43,14 @@ class Model {
 
 
 
-	addTaskList(taskList, index) { 						// необходимо увязать с gettasklist
-		let isObj = this.getTaskList(taskList.date, taskList.name, 0);
+	async addTaskList(taskList) { 						// необходимо увязать с gettasklist
+		if(taskList._id === null) {
+			var response = await this.addList(taskList);
+			return response;
+		}
+
+
+		// let isObj = this.getList(_id);
 		
 		if (isObj === undefined) {
 			this.state.push(taskList);
@@ -57,13 +63,13 @@ class Model {
 		return taskList
 	}
 
-	updateItem(item) {
-		let isObj = this.getTaskList(item.id, item.name, 0);
-		console.log(isObj, 'isObj upd');
-		isObj.tasks[item.index]['item'] = item.task;
+	// updateItem(item) {
+	// 	let isObj = this.getTaskList(item.id, item.name, 0);
+	// 	console.log(isObj, 'isObj upd');
+	// 	isObj.tasks[item.index]['item'] = item.task;
 		
-		return this.state
-	}
+	// 	return this.state
+	// }
 
 	updateComp(item) {
 		console.log(item, 'update Compstate');
@@ -82,20 +88,47 @@ class Model {
 		return this.state;
 	}
 
-	deleteList(item) {
-		const index = this.state.findIndex((element) => element.id === item.id && element.name == item.name);
-		this.state.splice(index, 1);
-		return this.state;
-	}
+	
 
 	datesFromState() {
 		let dates = Array.from(this.state, ({id}) => id);
 		return dates;
 	}
 
+	
+
 	async getAllData() {
 		const request = await axios.get('/lists/all_lists')
+		.then((respone) => respone.data);
+		return request
+	}
+
+	async getList(list) {
+		const request = await axios.get(`/lists/list?id=${list._id}`)
 		.then((respone) => respone.data)
+		return request
+	}
+
+	async addList(taskList) {
+		const request = await axios.post('/lists/list', taskList)
+		.then((respone) => respone.data);
+		return request
+	}
+
+	async deleteList(list) {
+		const request = await axios.delete(`/lists/list?id=${list._id}`);
+		return request
+	}
+
+	async addTask(taskList) {
+		const request = await axios.post('/lists//list/add_task', taskList)
+		.then((respone) => respone.data);
+		return request
+	}
+
+	async updateItem(taskList) {
+		const request = await axios.patch('/lists/list/update_item', taskList)
+		.then((respone) => respone.data);
 		return request
 	}
 
