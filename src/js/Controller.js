@@ -50,8 +50,13 @@ class Controller {
 						'complete': taskList.complete
 						}
 			});
-
+			this.data.push(response.data);
 		} else {
+			this.data.find((val) => val['_id'] == taskList._id).todos.push(
+				{'item': taskList.item,
+				'complete': taskList.complete
+			});
+			
 			response = await this.model.addTask({ // after execution we get tasklist
 				_id: taskList._id,
 				date: taskList.date,
@@ -61,26 +66,31 @@ class Controller {
 						'complete': taskList.complete
 						}
 			});
+			
 		}
+
+
+		// this.data.find((val)=> val['_id']);
+		// console.log(this.data)
 	
-		this.view.setID(response._id);
+		this.view.setID(response.data._id);
 	}
 
 	async updateItem(taskList, e) {
-	
-			const updatedItem = await this.model.updateItem({
-				_id: taskList._id,
-				todos: { 
-						'item': taskList.item,
-						'complete': taskList.complete
-						},
-				index: taskList.index
-			});			
-
+		const updatedItem = await this.model.updateItem({
+			_id: taskList._id,
+			todos: { 
+					'item': taskList.item,
+					'complete': taskList.complete
+					},
+			index: taskList.index
+		});		
+		if(e === undefined) return;
 		this.view.updateItem(e);
 	}
 
 	updateCompState(item, e) {
+
 		if (this.model.getTaskList(item.id, item.name)) {
 
 			const updatedItem = this.model.updateComp({ // after execution we get tasklist
@@ -90,48 +100,35 @@ class Controller {
 				completed: item.complete
 			});			
 		}
-
-		// this.view.updateCompState(e);
 	}
 
-	deleteItem(item, e) {
-		if (this.model.getTaskList(item.id, item.name)) {
-			const removeItem = this.model.deleteItem({
-				id: item.id,
-				name: item.name,
-				index: item.index
+	async deleteItem(taskList, e) {
+			const response = await this.model.deleteItem({
+				_id: taskList._id,
+				index: taskList.index
 			})
-		}
 
 		this.view.deleteItem(e);
+		console.log(response)
+		if (response.data.todos.length === 0) {
+			this.view.deleteList(taskList)
+		}
+		return
 	}
 	
 	async deleteList(list, e) {
 		let isList = await this.model.getList(list);
-		console.log(isList)
+		
 		if (isList['success'] === true) {
 			const removeItem = await this.model.deleteList(list);
 		}
-
-		let pos = this.data.findIndex((val, index) => val._id === list['_id']);
+		
+		let pos = this.data.findIndex((val) => val._id === list['_id']);
 		if(~pos) this.data.splice(pos, 1);
-		console.log(this.data, pos)		
-		
-		// const x = this.model.getTaskList(item.id);
-		// console.log(this.model.getTaskList(item.id), 'nday')
-		// if (x.length === 0) {
-		// 	let nDay = item.id.slice(0, 2);
-		// 	if(nDay < 10) {nDay = item.id.slice(1, 2)};
-		// 	console.log(nDay)
-		// 	let tdCollection = [...document.querySelectorAll('tbody td')];
-		// 	for (let x of tdCollection) {
-		// 		if (x.innerText === nDay) {
-		// 			x.classList.remove('circleOn');
-		// 		}
-		// 	}
-		// 	return;
-		// }
-		
+		console.log(isList.data)
+		console.log(this.data)		
+
+		this.view.removeCircle(isList.data.date);
 	}
 
 	// getDates(month, year) {
@@ -166,7 +163,7 @@ class Controller {
 				item.setAttribute('data-task', 'true');
 			}
 		})
-		console.log(dates)
+		console.log(this.data)
 	}
 
 	async registerUser(email, password) {

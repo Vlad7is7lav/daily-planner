@@ -38,6 +38,9 @@ function makeMonth(year, month) {
 function createElement(elem, options, text) {
 		let element = document.createElement(elem);
 		for (let prop in options) {
+			// if(prop === 'dataset') {
+			// 	element.dataset.options[prop]
+			// }
 			element[prop] = options[prop];
 		}
 

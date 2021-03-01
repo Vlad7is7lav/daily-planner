@@ -390,12 +390,13 @@ class View extends EventEmitter {
 			let list = createElement("div", {className: `list list_${i}`});
 			let span = createElement("span", {}, elem['listName']);
 			let deleteList = createElement("i", {className: `fas fa-times`});
-			list.setAttribute('fullDate',fullDate)
+			list.setAttribute('fullDate',fullDate);
+			list.setAttribute('data-id',elem['_id'])
 			list.appendChild(span);
 			list.appendChild(deleteList);
 			lists.appendChild(list);
 			
-			deleteList.addEventListener('click', this.deleteList.bind(this, elem, fullDate))
+			deleteList.addEventListener('click', this.deleteList.bind(this, elem))
 			list.addEventListener('click', this.showList.bind(this, elem))
 		})
 		selectList.appendChild(lists);
@@ -408,18 +409,37 @@ class View extends EventEmitter {
 		this.hCreateTab(event, elem.listName, elem);
 	}
 
-	deleteList(data, fullDate, event) {
-		// this.emit("deleteList", {'_id': data['_id'], 'name': data['name']}, event);
+	deleteList(data, event) {
 		this.emit("deleteList", {'_id': data['_id']}, event);
 		let tab = document.querySelectorAll('.tab');
 		let tabArray = Array.prototype.slice.call(tab);
 		tabArray.forEach((elem, i) => {
-			if(elem.firstChild.textContent == fullDate && elem.firstElementChild.innerText == data['name']) {
+			if(elem.getAttribute('data-id') === data['_id']) {
 				this.closeList(null, elem.lastElementChild);
 				return
 			}
 		})
+		if(!event) {
+			let list = document.querySelector(`div.list[data-id="${data['_id']}"]`);
+			console.log(list);
+			list.remove();
+			return
+		}
 		event.target.closest('.list').remove();
+	}
+
+	removeCircle(date) {
+		let nDay;
+		(date[0] == "0") ? nDay = date.slice(1, 2) : nDay = date.slice(0, 2);
+		console.log(nDay)
+		let tdCollection = [...document.querySelectorAll('tbody td')];
+			for (let x of tdCollection) {
+				if (x.innerText === nDay) {
+					x.classList.remove('circleOn');
+					console.log(x.innerText)
+				}
+			}
+			return;
 	}
 
 	hCreateTab(id, listName, data) {
@@ -582,10 +602,12 @@ class View extends EventEmitter {
 	}
 
 	hdeleteItem(e) {
-		const id = this.date;
+		e.preventDefault();
+		const tabID = document.querySelector('div.tabs > div.active').getAttribute('data-id');
 		const labelsCollection = [...document.querySelectorAll('section.active .item_delete i')];
 		let indexItem = labelsCollection.indexOf(e.target); // get index of removing element
-		this.emit('deleteItem', {'id': id, 'name': this.currentName,'index': indexItem}, e);
+		console.log({'_id': tabID, 'index': indexItem});
+		this.emit('deleteItem', {'_id': tabID, 'index': indexItem, 'date': this.date}, e);
 		this.isTask(labelsCollection, true);
 	}
 
@@ -600,21 +622,20 @@ class View extends EventEmitter {
 		this.emit('updateItem', {'_id': tabID, 'date': date, 'name': this.currentName, 'item': task, 'complete': false, 'index': indexItem}, e);
 	}
 
-	hupdateCompState(e, complete) {
-		const id = this.date;
+	hupdateCompState(label_, complete) {
+		const date = this.date;
+		const tabID = document.querySelector('div.tabs > div.active').getAttribute('data-id');
 		const labelsCollection = [...document.querySelectorAll('section.active label.label')];
-		let indexItem = labelsCollection.indexOf(e);
-		this.emit('updateCompState', {'id': this.date, 'name': this.currentName, 'index': indexItem, 'complete': complete}, e);
+		let indexItem = labelsCollection.indexOf(label_);
+		console.log({'_id': tabID,'date': date, 'name': this.currentName, 'item': label_.innerText, 'complete': complete, 'index': indexItem})
+		this.emit('updateItem', {'_id': tabID, 'date': date, 'name': this.currentName, 'item': label_.innerText, 'complete': complete, 'index': indexItem});
+		// this.emit('updateCompState', {'id': this.date, 'name': this.currentName, 'index': indexItem, 'complete': complete}, e);
 	}
 
 	hAddToDo(e) {
 		e.preventDefault();
 		const date = this.date;
 		const tabID = document.querySelector('div.tabs > div.active').getAttribute('data-id');
-		// const tasks = [];
-		// const labelsCollection = [...document.querySelectorAll('section.active > .tabs_content_list input[type=text]')];
-		// let indexItem = labelsCollection.indexOf(e.target);
-		// const task = labelsCollection[indexItem].value;	
 		const task = e.target.value;
 		console.log({'_id': tabID,'date': date, 'name': this.currentName, 'item': task, 'complete': false})
 		this.emit('addToDo', {'_id': tabID, 'date': date, 'name': this.currentName, 'item': task, 'complete': false}, e);
@@ -659,9 +680,11 @@ class View extends EventEmitter {
 
 	closeList(event, s) {
 		if(s != undefined) {
+			console.log(s.closest('.tab'));
 			target = s.closest('.tab')
 		} else {var target = event.target}
 		const tab = target.closest('.tab');
+		console.log(tab);
 		const tabsCollection = [...document.querySelectorAll('.tab')];
 		const sectionContents = [...document.querySelectorAll('.tab_content')];
 		const index = tabsCollection.indexOf(tab); // get index of removing element
@@ -675,6 +698,8 @@ class View extends EventEmitter {
 				sectionContents[index+1].classList.add('active')
 			} 
 		}
+
+		console.log(tab)
 		
 		tab.remove();
 		sectionContents[index].remove();
@@ -687,10 +712,8 @@ class View extends EventEmitter {
 	}
 
 	setID(id) {
-		if(id != null)  {
 			const activeTab = document.querySelector('div.tabs > div.active');
 			activeTab.setAttribute('data-id', id)
-		}
 	}
 
 	deleteItem(event) {
@@ -832,7 +855,7 @@ class View extends EventEmitter {
 		lastLI.classList.remove('label_Hide');
 		lastLI.innerText = inputs[inputs.length-k].value;
 		lastInputs.blur();
-		const lastPlus = lastLI.previousElementSibling;
+		// const lastPlus = lastLI.previousElementSibling;
 	}
 
 	crossItem(event) {

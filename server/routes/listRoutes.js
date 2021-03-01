@@ -15,7 +15,7 @@ router.route('/list')
         if(err) {
             return res.json({success: err})
         } else {
-            res.status(200).json({success: true, _id: doc._id})
+            res.status(200).json({success: true, data: doc})
         }
     })
 })
@@ -43,7 +43,7 @@ router.route('/list')
         } else {
             res.json({
                 success: true,
-                data: doc.todos[0]
+                data: doc
             })
         }
     })
@@ -84,7 +84,7 @@ router.post('/list/add_task', function(req, res){
             // next(err);
             return res.json({success: err})
         } else {
-            res.status(200).json({success: true})
+            res.status(200).json({success: true, data: doc})
         }
     })
 })
@@ -102,19 +102,30 @@ router.patch('/list/update_item', function(req, res){
     })
 })
 
-router.delete('/list/del_task',(req, res, next) => {
-    const index = 2
+router.patch('/list/del_task',(req, res, next) => {
+    const index = req.body.index;
     List.findByIdAndUpdate({_id: req.body._id}, [{$set: {
         todos: {
             $concatArrays: [
-                {$slice: ["$todos",2]},
+                {$slice: ["$todos",index]},
                 {$slice: ["$todos", {$add: index+1}, {$size: "$todos"} ]}
             ]
         }
-    }}] , {new:true}, (err,doc) => {
+    }}], {new:true}, (err,doc) => {
         if(err) {
             next(err)
         } else {
+            // let doc1 = doc;
+            // if(doc.todos.length === 0) {
+            //     List.findByIdAndRemove({_id: req.body.id}, {new: true}, (err,doc) => {
+            //         res.json({
+            //             success: true,
+            //             message: "List deleted successfull",
+            //             data: doc1
+            //         })
+            //     })
+            //     return
+            // }
             res.json({
                 success: true,
                 data: doc

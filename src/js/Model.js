@@ -81,12 +81,12 @@ class Model {
 		return this.state
 	}
 
-	deleteItem(item) {
-		let isObj = this.getTaskList(item.id, item.name, 0);
-		isObj.tasks.splice(item.index, 1);
-		console.log(this.state, 'rem');
-		return this.state;
-	}
+	// deleteItem(item) {
+	// 	let isObj = this.getTaskList(item.id, item.name, 0);
+	// 	isObj.tasks.splice(item.index, 1);
+	// 	console.log(this.state, 'rem');
+	// 	return this.state;
+	// }
 
 	
 
@@ -130,6 +130,17 @@ class Model {
 		const request = await axios.patch('/lists/list/update_item', taskList)
 		.then((respone) => respone.data);
 		return request
+	}
+
+	async deleteItem(item) {
+		const request = await axios.patch('/lists/list/del_task', item)
+		.then((respone) => respone.data);
+		return request
+
+		// let isObj = this.getTaskList(item.id, item.name, 0);
+		// isObj.tasks.splice(item.index, 1);
+		// console.log(this.state, 'rem');
+		// return this.state;
 	}
 
 	async registerUser(data) {
