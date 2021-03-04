@@ -51,12 +51,13 @@ class Controller {
 						}
 			});
 			this.data.push(response.data);
+			this.view.setID(response.data._id);
 		} else {
 			this.data.find((val) => val['_id'] == taskList._id).todos.push(
 				{'item': taskList.item,
 				'complete': taskList.complete
 			});
-			
+
 			response = await this.model.addTask({ // after execution we get tasklist
 				_id: taskList._id,
 				date: taskList.date,
@@ -66,14 +67,7 @@ class Controller {
 						'complete': taskList.complete
 						}
 			});
-			
 		}
-
-
-		// this.data.find((val)=> val['_id']);
-		// console.log(this.data)
-	
-		this.view.setID(response.data._id);
 	}
 
 	async updateItem(taskList, e) {
@@ -85,8 +79,19 @@ class Controller {
 					},
 			index: taskList.index
 		});		
+
+		this.data.find((val) => val['_id'] == taskList._id)
+		  .todos[taskList.index] = { 
+			'item': taskList.item,
+			'complete': taskList.complete
+			};
+		
+		console.log(this.data, 'cross')
+
 		if(e === undefined) return;
 		this.view.updateItem(e);
+	
+		return this.data
 	}
 
 	updateCompState(item, e) {
@@ -113,6 +118,9 @@ class Controller {
 		if (response.data.todos.length === 0) {
 			this.view.deleteList(taskList)
 		}
+
+		this.data.find((val)=>val['_id'] == taskList._id).todos.splice(taskList.index, 1);
+		console.log(this.data)
 		return
 	}
 	

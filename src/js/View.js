@@ -547,8 +547,10 @@ class View extends EventEmitter {
 			'label': 'label label_Hide',
 			'input': 'textfield'
 			}
-			task = {item: ''};
+			task = {item: '', complete: false};
 		}
+
+		console.log(task.complete)
 
 		let randomID = this.getRandomID(5000);
 		let elemLI = createElement("li", {'className' : className['li']});
@@ -558,13 +560,14 @@ class View extends EventEmitter {
 		let markerDIV = createElement("div", {'className' : 'itemCheck'});
 
 		let elemLILabel = createElement("label", {'className' : className['label'] || 'label'}, task.item);
-		let elemLIinput = createElement('input', {type : 'text', 'className' : className['input']}, task.item);
+		let elemLIinput = createElement("input", {type : 'text', 'className' : className['input']}, task.item);
 
 		elemLI.innerHTML = "<div class=\"item_delete\"><i class=\"fas fa-times\"></i></div></li>";
+		console.log(task.complete);
 
-		if (task.complete == true) {
+		if (task.complete === true) {
 			elemLILabel.style.textDecoration = 'line-through';
-			elemLILabel.setAttribute('data-complete', 'true');
+			elemLILabel.setAttribute('data-complete', true);
 		};
 
 		markerBlock.appendChild(elemCheckBox);
@@ -637,7 +640,7 @@ class View extends EventEmitter {
 		const date = this.date;
 		const tabID = document.querySelector('div.tabs > div.active').getAttribute('data-id');
 		const task = e.target.value;
-		console.log({'_id': tabID,'date': date, 'name': this.currentName, 'item': task, 'complete': false})
+		console.log({'_id': tabID,'date': date, 'name': this.currentName, 'item': task, complete: 'false'})
 		this.emit('addToDo', {'_id': tabID, 'date': date, 'name': this.currentName, 'item': task, 'complete': false}, e);
 		this.isTask();
 		this.addItem(e);
@@ -664,6 +667,7 @@ class View extends EventEmitter {
 
 			if (this.editFlag === true && e.target.value != prevLabelText) {
 				this.editFlag = false;
+				console.log('catch', e)
 				this.hupdateItem(e);
 				return;
 			}
@@ -698,9 +702,6 @@ class View extends EventEmitter {
 				sectionContents[index+1].classList.add('active')
 			} 
 		}
-
-		console.log(tab)
-		
 		tab.remove();
 		sectionContents[index].remove();
 		this.tabs--;
@@ -779,7 +780,7 @@ class View extends EventEmitter {
 			if (!e.target.value) return;	
 			// check editflag
 			if (this.editFlag === true) {
-				console.log('edti')
+				console.log('edti', e)
 				this.hupdateItem(e);
 				return;
 			}
@@ -860,14 +861,18 @@ class View extends EventEmitter {
 
 	crossItem(event) {
 		const label_ = event.target.closest('li').querySelector('label.label');
+		let complete;
 		if (label_.style.textDecoration == 'line-through') {
 				label_.style.textDecoration = 'none';
-				label_.setAttribute('data-complete', 'false');	
+				// label_.setAttribute('data-complete', 'false');	
+				label_.removeAttribute('data-complete');	
+				complete = false;
 			} else {
 				label_.style.textDecoration = 'line-through';
 				label_.setAttribute('data-complete', 'true');
+				complete = true
 			}
-		let complete = label_.getAttribute('data-complete');
+		// let complete = label_.getAttribute('data-complete');
 		this.hupdateCompState(label_, complete);
 		return;
 	}
