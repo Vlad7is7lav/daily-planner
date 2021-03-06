@@ -9,8 +9,8 @@ const {auth} = require('../middleware/auth');
 
 //// auth!!!
 router.route('/list')
-.post((req, res, next) => {
-    const list = new List(req.body);
+.post(auth, (req, res, next) => {
+    const list = new List({...req.body, ownID: req.user._id});
     list.save((err,doc) => {
         if(err) {
             return res.json({success: err})
@@ -20,7 +20,7 @@ router.route('/list')
     })
 })
 
-.patch((req, res, next) => { // доработать
+.patch(auth, (req, res, next) => { // доработать
     List.findByIdAndUpdate({_id: req.body._id}, req.body, {new: true}, (err, doc) => {
         if (err) {
             // next(err);
@@ -34,7 +34,7 @@ router.route('/list')
     })
 })
 
-.get((req, res, next) => {
+.get(auth, (req, res, next) => {
     
     List.findById({_id: req.query.id}, (err, doc)=>{
         if(err) {
@@ -49,7 +49,7 @@ router.route('/list')
     })
 })
 
-.delete((req, res, next) => {
+.delete(auth, (req, res, next) => {
     List.findByIdAndRemove({_id: req.query.id}, {new: true}, (err,doc) => {
         if(err) {
             // next(err);
@@ -64,21 +64,21 @@ router.route('/list')
 })
 
 router.route('/all_lists')
-.get((req, res)=>{
+.get(auth, (req, res)=>{
     // /all_stories?skip=1&limit=4&order=asc&owner=lfkoeoiwjff
 
     // let skip = req.query.skip ? parseInt(req.query.skip) : 0;
     // let limit = req.query.limit ? parseInt(req.query.limit) : 50;
     // let order = req.query.order ? req.query.order : 'asc';
-    // let byOwner=req.query.owner ? {ownerId: req.query.owner} : {};
+    // let byOwner=req.query.owner ? {ownerId: req.query.owner} : {}
 
-    List.find().exec((err, doc)=>{
+    List.find({ownID: req.user._id}).exec((err, doc)=>{
         if(err) return res.status(400).send(err);
         res.send(doc);
     })
 })
 
-router.post('/list/add_task', function(req, res){
+router.post('/list/add_task', auth, function(req, res){
     List.findByIdAndUpdate(req.body._id, {$push: {todos: req.body.todos}}, (err, doc) => {
         if(err) {
             // next(err);
@@ -89,9 +89,8 @@ router.post('/list/add_task', function(req, res){
     })
 })
 
-router.patch('/list/update_item', function(req, res){
+router.patch('/list/update_item', auth, function(req, res){
     const index = req.body.index;
-    console.log(index)
     List.findByIdAndUpdate(req.body._id, {$set: {[`todos.${index}`]: req.body.todos}}, {new:true}, (err, doc) => {
         if(err) {
             // next(err);
@@ -102,7 +101,7 @@ router.patch('/list/update_item', function(req, res){
     })
 })
 
-router.patch('/list/del_task',(req, res, next) => {
+router.patch('/list/del_task', auth, (req, res, next) => {
     const index = req.body.index;
     List.findByIdAndUpdate({_id: req.body._id}, [{$set: {
         todos: {

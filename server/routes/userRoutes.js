@@ -45,10 +45,10 @@ router.post('/login', function(req, res){
                     auth: true,
                     message: 'ok',
                     userData: {
-                            id: user._id,
-                            email: user.email,
-                            name: user.name,
-                        }
+                        id: user._id,
+                        email: user.email,
+                        name: user.name,
+                    }
                     
                 })
             })
@@ -57,23 +57,29 @@ router.post('/login', function(req, res){
 })
 
 router.get('/auth', auth, function(req,res) {
+    // if(err) return res.json({auth: false, message: "login please"});
     res.json({
         auth: true,
         userData: {
-            id: user._id,
-            email: user.email,
-            name: user.name
+            id: req.user._id,
+            email: req.user.email
+            // name: user.name
         }
     })
 })
 
 router.get('/logout', auth,  function(req,res) {
+    console.log(req.token);
     req.user.deleteToken(req.token, (err, user)=>{
         if(err) return res.status(400).send(err);
-        res.status(200).json({
+        res.status(200).cookie('auth', '').json({
             auth: false,
             logout: true
         })
+        // res.status(200).json({
+        //     auth: false,
+        //     logout: true
+        // })
     })
 })
 

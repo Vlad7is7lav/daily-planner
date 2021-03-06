@@ -20,10 +20,20 @@ class Controller {
 		this.view.on('loginUser', this.loginUser.bind(this));
 		this.view.on('logoutUser', this.logoutUser.bind(this));
 		this.view.on('registerUser', this.registerUser.bind(this));
+		this.view.on('auth', this.auth.bind(this));
 	}
 	
 	openBD() {
 		const db = this.model.openDBNow();
+	}
+
+	async auth() {
+		const response = await this.model.userAuth();
+		console.log(response);
+		if(response.auth) this.view.showLoginMessage(0);
+		let currentDate = new Date();	
+		this.view.changeDate(currentDate.getFullYear(), currentDate.getMonth());
+
 	}
 
 	checkDataM(id, name, event) {
@@ -198,8 +208,9 @@ class Controller {
 
 	async logoutUser(login, logout) {
 		let response = await this.model.logoutUser();
-		//clearData
-
+		//clearData;
+		this.data = [];
+		this.view.reRender();
 		this.view.showLoginMessage(2, login, logout);
 	}
 }

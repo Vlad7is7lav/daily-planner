@@ -19,9 +19,9 @@ app.use(coockieParser());
 app.use('/user', userRoute);
 app.use('/lists', listRoute);
 app.use((err, req, res, next) => {
+
     if(err.code === 11000) return res.json({reg: false, message: 'duplicate'})
-    // console.log(err)
-  
+
     res.status(500).json({error: err.stack})
   })
 

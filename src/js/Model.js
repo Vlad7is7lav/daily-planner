@@ -161,6 +161,7 @@ class Model {
 	async logoutUser() {
 		const request = await axios.get('/user/logout')
 		.then((respone) => respone.data)
+		console.log(request)
 		let {auth, logout} = request; 
 		return {auth, logout}
 	}
@@ -170,12 +171,14 @@ class Model {
 	
 
 	//check token
-	userAuth(inner) {
-		const request = axios.get('/user/auth')
-		.then(response => response.data)
-		if (!request.auth) return console.log('Please, login first', request.message);
-
-		inner(request.userData);
+	async userAuth(inner) {
+		const request = await axios.get('/user/auth')
+		.then(response => response.data);
+		console.log(request)
+		if (!request.auth) console.log('Please, login first', request.message);
+		return request
+		// inner(request.userData);
+		
 
 	}
 }

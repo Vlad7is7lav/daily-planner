@@ -39,25 +39,31 @@ class View extends EventEmitter {
 		this.varsObject.calendarDate_month = document.querySelector(".calendarDate_month");
 
 		window.onload = () => {
-			let currentDate = new Date();	
-			this.changeDate(currentDate.getFullYear(), currentDate.getMonth());
+			// let currentDate = new Date();	
+			// this.changeDate(currentDate.getFullYear(), currentDate.getMonth());
+			this.emit('auth');
+
 		}
 	}
 
 	addEventListeners() {
 		document.addEventListener('click', this.closeSelected.bind(this));
 
-		const openLoginForm = document.querySelector('.login');
-		openLoginForm.addEventListener('click', this.openLoginForm.bind(this));
+		
 
 		const closeLoginForm = document.querySelector('.closeForm');
 		closeLoginForm.addEventListener('click', this.closeLoginForm.bind(this));
 
 		const formSignIn = document.getElementById('form-sign-in');
-		formSignIn.addEventListener('submit', this.loginUser.bind(this));
+		// formSignIn.addEventListener('submit', this.loginUser.bind(this));
+		formSignIn.addEventListener('submit', (event) => this.loginUser(event, formSignIn.lastElementChild));
 
 		const formSignUp = document.getElementById('form-sign-up');
-		formSignUp.addEventListener('submit', this.registerUser.bind(this));
+		// formSignUp.addEventListener('submit', this.registerUser.bind(this));
+		formSignUp.addEventListener('submit', (event) => this.registerUser(event, formSignUp.lastElementChild));
+
+		const openLoginForm = document.querySelector('.login');
+		openLoginForm.addEventListener('click', this.openLoginForm.bind(this, formSignIn.lastElementChild, formSignUp.lastElementChild));
 
 		const tabs = document.querySelector('.tabs');
 		tabs.addEventListener('click', this.changeTab.bind(this)); // listen when click active on 'tab' for choice
@@ -76,7 +82,9 @@ class View extends EventEmitter {
 		table.addEventListener('mouseout', this.tableMouseOut.bind(this));
 	}
 
-	openLoginForm() {
+	openLoginForm(buttonSighIn, buttonSignUp) {
+		buttonSighIn.disabled = false;
+		buttonSignUp.disabled = false;
 		const loginForm = document.querySelector('.logreg');
 		const buttonSignInForm = document.querySelector('.button1');
 		const buttonSignUpForm = document.querySelector('.button2');
@@ -108,12 +116,13 @@ class View extends EventEmitter {
 		wrapper.style.marginLeft = "-500px"
 	}
 
-	registerUser(event) {
+	registerUser(event, formSignUp) {
 		event.preventDefault();
 		const email = document.querySelector('#email-up');
 		const password = document.querySelector('#password-up');
-		if(!email.value || !password.value) return alert('Заполните все поля')
-
+		if(!email.value || !password.value || (password.value.length < 8)) return alert('Заполните все поля');
+		formSignUp.disabled = true;
+		console.log(1)
 		this.emit('registerUser', email.value, password.value);
 	}
 
@@ -195,19 +204,28 @@ class View extends EventEmitter {
 		login.replaceWith(logout);
 	}
 
-	loginUser(event) {
-		event.preventDefault();
+	loginUser(e, formSignIn) {
+		e.preventDefault();
 		const email = document.querySelector('#email-in');
 		const password = document.querySelector('#password-in');
-		console.log(email.value)
-		if(!email.value || !password.value) return alert('Заполните все поля');
+		if(!email.value || !password.value || (password.value.length < 8)) return alert('Заполните все поля');
+		formSignIn.disabled = true;
 		this.emit('loginUser', email.value, password.value);
 	}
 
 	logoutUser(login, logout) {
-		// event.preventDefault();
 		this.emit('logoutUser', login, logout);
-		//clear data
+		//clear data;
+
+	}
+
+	reRender()  {
+		let currentDate = new Date();
+		this.changeDate(currentDate.getFullYear(), currentDate.getMonth());
+		let node = document.querySelector('.tabs');
+		node.innerHTML = '';					// remove tabs 
+		node.nextElementSibling.innerHTML = ''; // remove tabs content
+		
 	}
 
 	tableMouseOver(event) {

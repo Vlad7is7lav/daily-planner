@@ -18,13 +18,13 @@ const listScheme = mongoose.Schema({
         type: Array,
         required: true,
         minLength: 1
-    }
+    },
 
-    // userId: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'User',
-    //     required: true
-    // }
+    ownID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    }
 })
 
 const List = mongoose.model('List', listScheme);
