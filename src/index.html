@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+	<% for (var css in htmlWebpackPlugin.files.css) { %>
+		<link href="<%= htmlWebpackPlugin.files.css[css] %>" rel="stylesheet">
+	<% } %>
+
+	<link href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" rel="stylesheet">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+	<noscript>
+		<style> .body_hide{opacity: 1 !important;} </style>
+	</noscript>
+
+	<script type="text/javascript">
+		document.addEventListener("DOMContentLoaded", ()=> {
+			const theBody = document.body;
+			setTimeout(() => {
+				theBody.style.opacity = '1'
+				// theMainBox.style.visibility  = 'visible'
+			}, 200);
+		});
+
+	</script>
+
+</head>
+<body class="body_hide" style="background: url(assets/img/MultLightGreen.jpg) center center fixed no-repeat">
+	<div class="header">
+		<div class="logo"> Dayly calendar</div>
+		<div class="login">
+			<i class="fas fa-sign-in-alt" style="margin-right: 5px;"></i></i> Войти
+		</div>
+
+		<div class="logreg">
+			<div class="closeForm"> <i class="far fa-times-circle"></i> </div>
+			<div class="wrapper">
+				<div class="logreg-wrapper wrapper-sign_in">
+					<div class="back"> <i class="fas fa-arrow-circle-right"></i> </div>
+					<h5>SIGN IN using your email and password</h5>
+					<form method="post" class="form-sign-in" id="form-sign-in">
+						<label for="email-in">EMail</label>
+						<div><input type="email" name="email" id="email-in" placeholder="" required value="uthiq@mail.ru"/></div>
+						<label for="password-in">Password</label>
+						<div><input type="password" name="password" id="password-in" placeholder="" required/></div>
+						<input type="submit" value="Sign in">
+					</form>
+					
+				</div>
+				<div class="logreg-wrapper">
+					<div class="hello">
+						<h4>Hello guys!</h4> 
+						<h4>Welcome to my dayly calendar!</h4>
+						<h4>Login or Sign up, please!</h4>
+					</div>
+					<div class="button1"> SIGN IN </div>
+					<div class="button2"> SIGN UP</div>
+				</div>
+				
+				<div class="logreg-wrapper wrapper-sign_up">
+					<div class="back"> <i class="fas fa-arrow-circle-left"></i> </div>
+					<h5>SIGN UP using your email and password</h5>
+					<form method="post" class="form-sign-up" id="form-sign-up">
+						<label for="email-up">EMail</label>
+						<div><input type="email" name="email" id="email-up" placeholder="" value="uthiq@mail.ru" required /></div>
+						<label for="pass-up">Password</label>
+						<div><input type="password" name="password" id="password-up" placeholder="" required/></div>
+						<input type="submit" value="SIGN UP">
+					</form>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+
+	<div class="overlay">
+		<div class="popup">
+			<h4>Введите имя списка задач</h4>
+			<input type="text" placeholder="Enter the list name" maxlength="12" id="popupInput">
+			<div class="button" id=go>GO</div>
+			<div class="button" id=cancel>CANCEL</div>
+		</div>
+	</div>
+	<div class="theMainBox">
+		<section class="infoDesk">
+			<div class="infoDesk_weather">
+				<div class="infodDesk_weatherName textHead"> Weather Today</div>
+				<div class="infoDesk_weatherAPI"> 
+					<div class="weatherAPI_search">
+						<input type="text" name="city_name" id="city_name" value="Phuket">
+						<i class="fa fa-search" id="search-icon" aria-hidden="true"></i>
+					</div>
+					
+					<div class="weatherAPI_grad"></div>
+				</div>
+			</div>
+			<div class="infoDesk_clock">
+				<!-- <div class="infoDesk_clockName textHead"> Clock </div> -->
+				<div class="infoDesk_clockSVG">		
+					<canvas id="canvas" width="200" height="200"></canvas>
+					<canvas id="circle" width="200" height="200"></canvas>
+				</div>
+			</div>
+		</section>
+
+		<section class="events">
+			<div class="eventsName textHead">Events</div>
+			<div class="events_block">
+				<div class="tabs">	
+					<!-- Tabs line  -->			
+				</div>
+				<div class="tabs_content">
+					<!-- Tasks list -->
+				</div>				
+			</div>
+			<div class="events_filters">
+				<div class="no-filter addItem"><i class="far fa-plus-square"></i></div>
+
+				<div class="filter filter_completed">
+					<input type="checkbox" id="completed" value="completed">
+					<label class="completed" for="completed">Completed</label>
+				</div>
+				<div class="filter filter_act">
+					<input type="checkbox" id="active" value="active">
+					<label for="active">Active</label>
+				</div>
+			</div>
+
+			<b style="font-size: 18px; color: #516d73"> * - USE "ESC" TO LEAVE WITHOUT CHANGING </b> </br>
+			<b style="font-size: 18px; color: #516d73"> * - USE "ENTER" TO ADD AND CREATE NEW ITEM </b> </br>
+			<b style="font-size: 18px; color: #516d73"> * - USE "CTRL+ENTER" TO ADD ITEM </b>
+
+		</section>
+
+		<section class="calendar">
+			<div class="calendarDate textHead">
+				<div class="calendarDate_year">2019</div>
+				<div class="selectYear">
+					<div class="cells">2018</div>
+					<div class="cells">2019</div>
+					<div class="cells">2020</div>
+					<div class="cells">2021</div>
+					<div class="cells">2022</div>
+					<div class="cells">2023</div>
+				</div>	
+				<div class="calendarDate_month"></div>
+				<div class="selectMonth">
+					<div class="cellsM" data-month="0">Jan</div>
+					<div class="cellsM" data-month="1">Feb</div>
+					<div class="cellsM" data-month="2">Mar</div>
+					<div class="cellsM" data-month="3">Apr</div>
+					<div class="cellsM" data-month="4">May</div>
+					<div class="cellsM" data-month="5">June</div>
+					<div class="cellsM" data-month="6">July</div>
+					<div class="cellsM" data-month="7">Aug</div>
+					<div class="cellsM" data-month="8">Sep</div>
+					<div class="cellsM" data-month="9">Oct</div>
+					<div class="cellsM" data-month="10">Nov</div>
+					<div class="cellsM" data-month="11">Dec</div>
+				</div>					
+			</div>
+			<div class="calendarBlock">
+				<table>
+					<thead>
+						<tr>
+							<th>Sun</th>
+							<th>Mon</th>
+							<th>Tue</th>
+							<th>Wed</th>
+							<th>Thu</th>
+							<th>Fri</th>
+							<th>Sat</th>
+						</tr>
+					</thead>
+					<tbody id="days">			
+					</tbody>
+				</table>
+			</div>
+			<div class="selectList">
+				<div class="lists">
+					<div class="list list_1"><span>Фрукты</span><i class="fas fa-times"></i></div>		
+					<div class="list list_2"><span>Овощи</span><i class="fas fa-times"></i></div>		
+					<div class="list list_3"><span>Фильмы</span><i class="fas fa-times"></i></div>		
+				</div>
+			</div>
+		</section>
+	</div>
+
+	
+
+	
+
+	
+	<% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
+	<script src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
+	<% } %>
+	
+	
+
+</body>
+</html>

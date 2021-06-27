@@ -1,0 +1,263 @@
+@import "utils/libs";
+@import "utils/vars";
+@import "utils/mixins";
+@import "utils/fonts";
+
+body {
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	font-size: 20px;
+}
+
+.body_hide {
+	opacity: 0;
+	transition: opacity 1s ease;
+}
+
+.header {
+	position: relative;
+	top: 0;
+	bottom: 0;
+	width: 100%;
+	height: 55px;
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: flex-start;
+	justify-content: center;
+	background-color: rgba(#8EC0C1, 0.3);
+	box-shadow: 0px 4px 10px rgba(#8EC0C1, 1);
+	padding: 10px;
+	color: darken($headTextColor, 17);
+	font-family: 'Roboto', sans-serif;
+	line-height: 2rem;
+}
+
+.logo {
+	margin-right: 200px;
+	margin-left: -200px;
+	font-size: 24px;
+}
+
+.login, .logout {
+	position: relative;
+	line-height: 2.27rem;
+	font-size: 20px;
+	cursor: pointer;
+	width: 100px;
+	height: 30px;
+
+}
+
+.login::before {
+	box-sizing: inherit;
+    content: '';
+    position: absolute;
+    width: 0;
+	height: 0;
+	top: 1px;
+	left: 0;
+	border: 2px solid transparent;
+	border-radius: 0px;
+}
+
+.login:hover::before {
+	border-top-color: rgba(#8EC0C1, 1);
+	border-right-color: rgba(#8EC0C1, 1);
+	border-top-right-radius: 10px;
+	border-bottom-right-radius: 10px;
+	width: 110%;
+	height: 110%;
+	transition:  
+		width 0.25s ease-out,
+		height 0.25s ease-out 0.15s
+}
+
+.login::after {
+	box-sizing: inherit;
+    content: '';
+    position: absolute;
+    width: 0;
+	height: 0;
+	top: 1px;
+	right: -10px;
+	border: 2px solid transparent;
+}
+
+.login:hover::after {
+	border-bottom-color: rgba(#8EC0C1, 1);
+	border-bottom-right-radius: 10px;
+	width: 110%;
+	height: 110%;
+	transition: 
+	height 0.25s ease-out 0.15s,
+	width 0.25s ease-out 0.35s,
+	border-bottom-color 0.1s ease-out 0.35s
+}
+
+.overlay {
+	position: absolute;
+	overflow:hidden;
+	width: 10%;
+	height: 10vh;
+	top: 50%;
+	left: 50%;
+	background-color: rgba(0,0,0, .7);
+	z-index: 10;
+	visibility: hidden;
+	opacity: 0;
+	transition: all 0.5s ease-out;
+}
+
+.showModal {
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100vh;
+	visibility: visible;
+	opacity: 1
+}
+
+.popup {
+	position: fixed;
+	width: 400px;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	padding: 40px;
+	box-sizing: border-box;
+	background-color: rgba(darken($cellDaysBackground, 0.4), .5);
+	border-radius: 6px;
+	font-family: $theListFont;
+	text-align: center;
+}
+
+.popup h4 {
+	font-size: 1.3rem;
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+#go, 
+#cancel {
+	width: 130px;
+	height: 30px;
+	text-decoration: none;
+	padding-top: 6px;
+	color: #a675b3;
+	text-align: center;
+	line-height: 20px;
+	display: inline-block;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	margin-left: 10px;
+	font: normal 17px arial;
+	cursor: pointer;	
+  }
+  #cancel {
+	  margin-right: 10px;
+  }
+  
+  #go:not(.active), 
+  #cancel:not(.active) {
+	box-shadow: inset 0 1px 1px rgba(111, 55, 125, 0.8), inset 0 -1px 0px rgba(63, 59, 113, 0.2), 0 9px 16px 0 rgba(0, 0, 0, 0.3), 0 4px 3px 0 rgba(0, 0, 0, 0.3), 0 0 0 1px #150a1e;
+	background-image: linear-gradient(#3b2751, #271739);
+	text-shadow: 0 0 21px rgba(223, 206, 228, 0.5), 0 -1px 0 #311d47;
+  }
+  
+  #go:not(.active):hover,
+  #go:not(.active):focus,
+  #cancel:not(.active):hover,
+  #cancel:not(.active):focus {
+	transition: color 200ms linear, text-shadow 500ms linear;
+	color: #fff;
+	text-shadow: 0 0 21px rgba(223, 206, 228, 0.5), 0 0 10px rgba(223, 206, 228, 0.4), 0 0 2px #2a153c;
+  }
+  #go:not(:hover),
+  #cancel:not(:hover) {
+	  transition: 0.6s;
+  }
+
+.theMainBox {
+	position: relative;
+	width: 100%;
+	height: 100vh;
+	margin: 0 auto;
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: flex-start;
+	justify-content: center;
+	padding-top: 60px;
+}
+
+section {
+	position: relative;
+	margin: 20px 25px;
+}
+
+.infoDesk {
+	display: flex;
+	flex-direction: column;
+}
+
+.textHead {
+	position: relative;
+	font-family: $theMainfont, sans-serif;
+	font-size: 30px;
+	color: $headTextColor;
+	text-align: center;
+	height: 34px;
+}
+
+.textHead:before, .textHead:after {
+	position: absolute;
+	content: "";
+	display: block;
+	width: 100%;
+	height: 1px;
+	background-color: #6b8a90;
+}
+
+
+@import "actions";
+@import "list";
+@import "calendar";
+
+
+// html {
+// 	font-size: $mainFontSize;
+// 	height: 100%;
+
+// 	@media screen and (max-width: 1920px) {
+
+// 	}
+
+// 	@media screen and (max-width: 1280px) {
+
+// 	}
+
+// 	@media screen and (max-width: 978px) {
+
+// 	}
+// }
+
+// section, .section {
+
+// 	@media screen and (max-width: 1920px) {
+
+// 	}
+
+// 	@media screen and (max-width: 1280px) {
+
+// 	}
+
+// 	@media screen and (max-width: 978px) {
+
+// 	}
+// }
+
+

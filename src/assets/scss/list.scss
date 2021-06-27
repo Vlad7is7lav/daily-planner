@@ -1,0 +1,261 @@
+.events {
+	position: static;
+	font-family: $theListFont, sans-serif;
+	// margin-top: 90px;
+	align-self: flex-start;
+}
+
+.eventsName {
+	width: 500px;
+	margin-bottom: 24px;
+}
+
+.events_block {
+	position: relative;
+	min-height: 450px;
+	width: 502px;
+	color: $cellDateTextColor;
+	background-color: rgba(94, 130, 137, .45);
+	box-shadow: 7px 0px 7px -5px rgba(0,0,0,0.35);
+	-webkit-box-shadow: 7px 0px 7px -5px rgba(0,0,0,0.35);
+	border-radius: 4px;
+
+}
+
+.events_block label:not(.marker) {
+	color: #e7e7e7;
+	min-width: 280px;
+}
+
+.events_block_list {
+	padding-top: 14px;
+	margin-left: 20px;
+}
+
+li {
+	opacity: 1;
+	position: relative;
+	height: 34px;
+	list-style-type: none;	
+	transition: all 0.5s ease;	
+}
+
+li .label {
+	position: absolute;
+	cursor: pointer;
+	width: 100%;
+	overflow: hidden;
+	//white-space: nowrap;
+}
+
+li div .fa-plus-circle {
+	position: absolute;
+	left: -56px;
+	top: 1px;
+	font-size: 22px;
+	cursor: pointer;
+	color: $cellDaysBackground;
+}
+
+
+
+.tabs > .tab {
+	position: relative;
+	font-size: 16px;
+	display: inline-block;
+	padding: 10px 30px 10px 8px;
+	text-align: left;
+	background-color: $cellDaysBackground;
+	// border: 0px solid #ddd;
+	border-width: 1px;
+	cursor: pointer;
+}
+
+.tabs > .tab:first-of-type{
+	border-top-left-radius: 5px;
+}
+
+.tabs > .tab:last-of-type{
+	border-top-right-radius: 5px;
+}
+
+.tabs > .tab:nth-of-type(2) {
+	margin: 0 1px;
+}
+
+.tab_content {
+	display: none;
+	font-size: 16px;
+}
+
+.tab_content input[type=text] {
+	position: relative;
+	width: 100%;
+	box-sizing: border-box;
+	background-color: rgba(220, 250, 239, 0.5);
+}
+
+.list_delete {
+	position: absolute;
+	right: 10px;
+	top: 11px;
+}
+
+input[type=text], select {
+	width: 100%;
+  	padding: 2px 2px 2px 10px;
+  	margin-top: -3px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-sizing: border-box;
+	transition: all 0.5s ease;
+}
+
+li label > .marker {
+	position: absolute;
+	cursor: pointer;
+}
+
+.checkbox {
+	display: none;
+}
+
+.itemCheck {
+	position: absolute;
+	cursor: pointer;
+	left: -30px;
+	top: 50%;
+	margin-top: -10px;
+	width: 20px;
+	height: 20px;
+	border: 2px solid #5f8087;
+	border-radius: 4px;
+	top: 13px;
+}
+	
+
+.itemCheck::after {
+	position: absolute;
+	content: "";
+	visibility: hidden;
+	opacity: 0;
+	width: 23px;
+	height: 10px;
+	border-bottom: 2px solid #5f8087;
+	border-left: 2px solid #5f8087;
+    top: -2px;
+    transition: all 0.5s ease;
+}
+
+
+.checkbox:checked + .itemCheck::after {
+	visibility: visible;
+	opacity: 1;
+	transform: rotate(-50deg);
+	-ms-transform: rotate(-50deg);
+	-webkit-transform: rotate(-50deg); 
+    -o-transform: rotate(-50deg); 
+    transform: rotate(-50deg);
+}
+
+
+
+
+section.events input[type=text], select {
+	width: 50%;
+	opacity: 0;
+}
+
+section.events input[type=text]:required:invalid {
+	// border: 1px solid red;
+	border-radius: 4px;
+	background-color: #FFBCBC;
+}
+
+section.events input[type=text]:focus {
+	opacity: 1;
+	width: 100%;
+}
+
+.active {
+	display: block;
+}
+
+
+.tabs > .tab.active {
+	background-color: rgba(94, 130, 137, .0);
+}
+
+.label_Hide {
+	display: none;
+}
+
+.input_hide {
+	display: none;
+}
+
+.plus_hide {
+	visibility: hidden;
+}
+
+
+
+.item_delete {
+	position: absolute;
+    cursor: pointer;
+    color: #425a5f;
+    font-size: 18px;
+    top: -3px;
+    right: -17px;
+}
+
+.events_filters {
+	position: relative;
+	margin-top: 10px;
+	margin-bottom: 10px;
+    height: 50px;
+    width: 502px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    color: #e7e7e7;
+    background-color: rgba(94,130,137,.45);
+    -webkit-box-shadow: 7px 0px 7px -5px rgba(0,0,0,.35);
+    box-shadow: 7px 0px 7px -5px rgba(0,0,0,.35);
+    border-radius: 4px;
+
+    input {
+    	opacity: 0;
+		font-size: 20px;
+    }
+
+    input:checked + label {
+    	border: 2px solid #1bdbf8;
+	    background-color: #12bbd4;
+	    color: #fff;
+    }
+
+    label {
+    	line-height: 1;
+    	cursor: pointer;
+    	-webkit-tap-highlight-color: transparent;
+    	-webkit-touch-callout: none;
+	    -webkit-user-select: none;
+	    -moz-user-select: none;
+	    -ms-user-select: none;
+	    user-select: none;
+    }
+}
+
+.addItem {
+	cursor: pointer;
+    color: #425a5f;
+    font-size: 30px;
+}
+
+.none {
+	opacity: 0;
+	visibility: hidden;
+	// transform: translateY(-40px);
+	margin-top: -34px;
+}
