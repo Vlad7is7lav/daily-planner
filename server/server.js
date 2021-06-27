@@ -10,6 +10,8 @@ var fs = require('fs');
 const userRoute = require('./routes/userRoutes');
 const listRoute = require('./routes/listRoutes');
 
+const path = require('path');
+
 
 //MIDDLEWARE
 app.use(express.json());
@@ -24,20 +26,20 @@ app.use(express.static(path.resolve(__dirname, '..', 'dist')));
 
 
 if(process.env.NODE_ENV === 'production') {
-    const path = require('path');
+    
     app.get('/',  (req, res)=> {
         console.log('Works');
         res.sendFile(path.resolve(__dirname, '..', 'dist', 'index.html' ))
     })
 }
 
+console.log(path.resolve(__dirname, '..', 'dist', 'index.html' ))
 app.use((err, req, res, next) => {
 
     if(err.code === 11000) return res.json({reg: false, message: 'duplicate'})
     
     res.status(500).json({error: err.stack})
   })
-
   
 mongoose.connect(config.DATABASE, {
     useNewUrlParser: true,
