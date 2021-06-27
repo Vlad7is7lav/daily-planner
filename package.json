@@ -2,7 +2,7 @@
   "name": "todo--calendar",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "server/server.js",
   "directories": {
     "test": "test"
   },
@@ -12,7 +12,7 @@
     "server": "nodemon server/server.js",
     "dev": "concurrently \"npm run server\" \"npm run client\" ",
     "heroku-postbuild":"NPM_CONFIG_PRODUCTION=false npm install --prefix server && npm run mybuild",
-    "start": "node --prefix server server.js"
+    "start": "node server/server.js"
   },
   "proxy": "http://localhost:3003",
   "browserslist": [
