@@ -49,7 +49,7 @@ mongoose.connect(config.DATABASE, {
 mongoose.set('useCreateIndex', true);
 mongoose.set('useUnifiedTopology', true);
 
-const port = process.env.port || 3003;
+const port = process.env.PORT || 3003;
 
 app.listen(port, () => {
     console.log(`Server is started in port: ${port}`);
