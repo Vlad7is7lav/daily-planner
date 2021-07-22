@@ -86,8 +86,8 @@ router.route('/all_lists')
     })
 })
 
-router.post('/list/add_task', auth, function(req, res){
-    List.findByIdAndUpdate(req.body._id, {$push: {todos: req.body.todos}}, (err, doc) => {
+router.post('/list/add_task', auth, async function(req, res){
+    await List.findByIdAndUpdate(req.body._id, {$push: {todos: req.body.todos}}, (err, doc) => {
         if(err) {
             // next(err);
             return res.json({success: err})

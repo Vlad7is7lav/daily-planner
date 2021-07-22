@@ -51,8 +51,8 @@ class Controller {
 
 	async addToDo(taskList, event) {
 		let response;
-
-		if(taskList._id == "null") {
+		let isList = this.data.find((val) => val['_id'] == taskList._id && val['date'] == taskList.date);
+		if(taskList._id == "null" && isList == undefined) {
 			if (!this.isAuth) {
 				this.data.push({ // after execution we get tasklist
 					'_id': ++this.pseudoID,
