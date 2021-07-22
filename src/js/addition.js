@@ -273,7 +273,7 @@ function showActive(self, reset) {
 	function getWeather() {
 
 		let xhr = new XMLHttpRequest();
-		let url = `http://api.openweathermap.org/data/2.5/weather?q=${city.value}&appid=${API_KEY}&units=metric`;
+		let url = `https://api.openweathermap.org/data/2.5/weather?q=${city.value}&appid=${API_KEY}&units=metric`;
 		
 		xhr.open('GET', url, true );
 

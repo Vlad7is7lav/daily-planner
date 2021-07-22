@@ -9,19 +9,27 @@ const {auth} = require('../middleware/auth');
 
 //// auth!!!
 router.route('/list')
-.post(auth, (req, res, next) => {
-    const list = new List({...req.body, ownID: req.user._id});
-    list.save((err,doc) => {
-        if(err) {
-            return res.json({success: err})
-        } else {
-            res.status(200).json({success: true, data: doc})
-        }
-    })
+.post(auth, async (req, res, next) => {
+    try {
+        const list = new List({...req.body, ownID: req.user._id});
+        const sdoc = await list.save();
+        res.status(200).json({ success: true, data: sdoc });
+        console.log(s)
+    } catch {
+        return res.json({ success: err });
+    }
+
+    // list.save((err, doc) => {
+    //     if (err) {
+    //         return res.json({ success: err });
+    //     } else {
+    //         res.status(200).json({ success: true, data: doc });
+    //     }
+    // })
 })
 
-.patch(auth, (req, res, next) => { // доработать
-    List.findByIdAndUpdate({_id: req.body._id}, req.body, {new: true}, (err, doc) => {
+.patch(auth, async (req, res, next) => { // доработать
+    await List.findByIdAndUpdate({_id: req.body._id}, req.body, {new: true}, (err, doc) => {
         if (err) {
             // next(err);
             return res.json({success: err})
@@ -34,20 +42,18 @@ router.route('/list')
     })
 })
 
-.get(auth, (req, res, next) => {
-    
-    List.findById({_id: req.query.id}, (err, doc)=>{
-        if(err) {
-            // next(err);
-            return res.json({success: err})
-        } else {
+.get(auth, async (req, res, next) => {
+    try {
+        await List.findById({_id: req.query.id}, (err, doc)=>{
             res.json({
                 success: true,
                 data: doc,
                 auth: true
             })
-        }
-    })
+        })
+    } catch {
+        return res.json({success: err})
+    }    
 })
 
 .delete(auth, (req, res, next) => {
