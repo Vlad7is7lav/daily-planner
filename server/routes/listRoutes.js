@@ -44,7 +44,7 @@ router.route('/list')
                 }
             })
             delay = false;
-        }, 100)
+        }, 250)
     }
     
     
