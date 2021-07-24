@@ -50,56 +50,56 @@ class Controller {
 		this.view.getArray(data, id);
 	}
 
-	async addToDoHelp(taskList) {
-		if(taskList._id == "null") {
-			if (!this.isAuth) {
-				this.data.push({ // after execution we get tasklist
-					'_id': ++this.pseudoID,
-					date: taskList.date,
-					listName: taskList.name,
-					todos: [{ 					// <- внутри tasks должен быть массив объектов с task и completed равным true или false)
-							'item': taskList.item,
-							'complete': taskList.complete
-							}]
-				});
-				this.view.setID(this.pseudoID);
-				console.log(this.data)
-				return
-			}
-			this.delay = true;
+	// async addToDoHelp(taskList) {
+	// 	if(taskList._id == "null") {
+	// 		if (!this.isAuth) {
+	// 			this.data.push({ // after execution we get tasklist
+	// 				'_id': ++this.pseudoID,
+	// 				date: taskList.date,
+	// 				listName: taskList.name,
+	// 				todos: [{ 					// <- внутри tasks должен быть массив объектов с task и completed равным true или false)
+	// 						'item': taskList.item,
+	// 						'complete': taskList.complete
+	// 						}]
+	// 			});
+	// 			this.view.setID(this.pseudoID);
+	// 			console.log(this.data)
+	// 			return
+	// 		}
+	// 		this.delay = true;
 			
 
-			response = await this.model.addList({ // after execution we get tasklist
-				date: taskList.date,
-				listName: taskList.name,
-				todos: { 					// <- внутри tasks должен быть массив объектов с task и completed равным true или false)
-						'item': taskList.item,
-						'complete': taskList.complete
-						}
-			});
+	// 		response = await this.model.addList({ // after execution we get tasklist
+	// 			date: taskList.date,
+	// 			listName: taskList.name,
+	// 			todos: { 					// <- внутри tasks должен быть массив объектов с task и completed равным true или false)
+	// 					'item': taskList.item,
+	// 					'complete': taskList.complete
+	// 					}
+	// 		});
 
-			this.data.push(response.data);
-			this.view.setID(response.data._id);
-		} else {
-			console.log(taskList._id, this.data)
-			this.data.find((val) => val['_id'] == taskList._id).todos.push(
-				{'item': taskList.item,
-				'complete': taskList.complete
-			});
+	// 		this.data.push(response.data);
+	// 		this.view.setID(response.data._id);
+	// 	} else {
+	// 		console.log(taskList._id, this.data)
+	// 		this.data.find((val) => val['_id'] == taskList._id).todos.push(
+	// 			{'item': taskList.item,
+	// 			'complete': taskList.complete
+	// 		});
 
-			if (!this.isAuth) return
+	// 		if (!this.isAuth) return
 
-			response = await this.model.addTask({ // after execution we get tasklist
-				_id: taskList._id,
-				date: taskList.date,
-				listName: taskList.name,
-				todos: { 					// <- внутри tasks должен быть массив объектов с task и completed равным true или false)
-						'item': taskList.item,
-						'complete': taskList.complete
-						}
-			});
-		}
-	}
+	// 		response = await this.model.addTask({ // after execution we get tasklist
+	// 			_id: taskList._id,
+	// 			date: taskList.date,
+	// 			listName: taskList.name,
+	// 			todos: { 					// <- внутри tasks должен быть массив объектов с task и completed равным true или false)
+	// 					'item': taskList.item,
+	// 					'complete': taskList.complete
+	// 					}
+	// 		});
+	// 	}
+	// }
 
 	async addToDo(taskList, event) {
 		let response;
@@ -131,18 +131,19 @@ class Controller {
 						'complete': taskList.complete
 						}
 			});
-
+			
 			this.data.push(response.data);
 			this.view.setID(response.data._id);
+			this.view.createItem();
 		} else {
 			console.log(taskList._id, this.data)
 			this.data.find((val) => val['_id'] == taskList._id).todos.push(
 				{'item': taskList.item,
 				'complete': taskList.complete
 			});
-
+			
 			if (!this.isAuth) return
-
+			
 			response = await this.model.addTask({ // after execution we get tasklist
 				_id: taskList._id,
 				date: taskList.date,
@@ -152,7 +153,10 @@ class Controller {
 						'complete': taskList.complete
 						}
 			});
+			this.view.createItem();
 		}
+		
+		
 	}
 
 	async updateItem(taskList, e) {

@@ -24,11 +24,10 @@ router.route('/list')
         } catch {
             return res.json({ success: err });
         }
-        // setTimeout(()=> {
-        //     delay = false;
-        // }, 1000)
-    } else {
         setTimeout(()=> {
+            delay = false;
+        }, 1000)
+    } else {
             List.findOneAndUpdate({date: req.body.date, listName: req.body.listName}, {$push: {todos: req.body.todos}}, {new: true}, (err, doc) => {
                 console.log('lol', doc)
                 // if (doc == null) return checkData = false;
@@ -43,8 +42,6 @@ router.route('/list')
                     return true
                 }
             })
-            delay = false;
-        }, 250)
     }
     
     

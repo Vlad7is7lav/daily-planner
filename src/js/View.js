@@ -861,7 +861,7 @@ class View extends EventEmitter {
 				}
 			}
 			this.itemOut(1);
-			this.createItem();
+			// this.createItem();
 			// this.itemOut(2);
 			// this.itemOut(2, event);
 			flag = 1;
