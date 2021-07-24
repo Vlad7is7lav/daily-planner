@@ -20,7 +20,6 @@ router.route('/list')
             const list = new List({...req.body, ownID: req.user._id});
             const sdoc = await list.save();
             res.status(200).json({ success: true, data: sdoc });
-            delay = false;
             console.log('new List', sdoc);
         } catch {
             return res.json({ success: err });
@@ -44,6 +43,7 @@ router.route('/list')
                     return true
                 }
             })
+            delay = false;
         }, 400)
     }
     
