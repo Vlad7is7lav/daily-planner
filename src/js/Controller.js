@@ -101,10 +101,10 @@ class Controller {
 	// 	}
 	// }
 
-	async addToDo(taskList, event) {
+	async addToDo(taskList, cond, event) {
 		let response;
 		// let isList = this.data.find((val) => val['_id'] == taskList._id && val['date'] == taskList.date);
-
+		console.log(cond)
 		
 		if(taskList._id == "null") {
 			if (!this.isAuth) {
@@ -134,7 +134,7 @@ class Controller {
 			
 			this.data.push(response.data);
 			this.view.setID(response.data._id);
-			this.view.createItem();
+			if (cond !== 'CTRLENTER') this.view.createItem();
 		} else {
 			console.log(taskList._id, this.data)
 			this.data.find((val) => val['_id'] == taskList._id).todos.push(
@@ -153,7 +153,7 @@ class Controller {
 						'complete': taskList.complete
 						}
 			});
-			this.view.createItem();
+			if (cond !== 'CTRLENTER') this.view.createItem();
 		}
 		
 		

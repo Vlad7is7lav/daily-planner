@@ -657,13 +657,13 @@ class View extends EventEmitter {
 		// this.emit('updateCompState', {'id': this.date, 'name': this.currentName, 'index': indexItem, 'complete': complete}, e);
 	}
 
-	hAddToDo(e) {
+	hAddToDo(e, cond) {
 		e.preventDefault();
 		const date = this.date;
 		const tabID = document.querySelector('div.tabs > div.active').getAttribute('data-id');
 		const task = e.target.value;
 		console.log({'_id': tabID,'date': date, 'name': this.currentName, 'item': task, complete: 'false'})
-		this.emit('addToDo', {'_id': tabID, 'date': date, 'name': this.currentName, 'item': task, 'complete': false}, e);
+		this.emit('addToDo', {'_id': tabID, 'date': date, 'name': this.currentName, 'item': task, 'complete': false}, cond, e);
 		this.isTask();
 		this.addItem(e);
 	}
@@ -699,7 +699,7 @@ class View extends EventEmitter {
 			if ((itemAmount <= 1) && e.target.value === '' || e.target.value === prevLabelText) return;
 				// this combination of comparisons allows stop function if first item is emptied or e.target.value === text in label 
 				// or if we use (e.ctrlKey & e.keyCode) because in this case e.target.value and prevLabelText are equal.
-			console.log(e.target.value)
+			console.log(e)
 			this.hAddToDo(e);
 		}
 	}
@@ -786,7 +786,6 @@ class View extends EventEmitter {
 		let input = e.target;
 		let value = input.value;
 		let label = input.previousElementSibling;
-		
 
 		if (e.keyCode == 27) {
 			input.value = label.innerText;
@@ -809,7 +808,7 @@ class View extends EventEmitter {
 
 			if (value != label.innerText) {	// check if text didn't change
 				label.innerText = value.trim();
-				this.hAddToDo(e);
+				this.hAddToDo(e, 'CTRLENTER');
 			} else {
 				input.classList.add('input_hide');
 				input.previousElementSibling.classList.remove('label_Hide');
@@ -833,7 +832,7 @@ class View extends EventEmitter {
 				this.createItem();
 				return;
 			}
-
+			console.log(e.type, e.keyCode)
 			if (this.itemIsEmpty()) {
 				// this.createItem();
 				// this.itemOut(1); Не понянтно зачем????
