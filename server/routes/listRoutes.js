@@ -10,15 +10,36 @@ const {auth} = require('../middleware/auth');
 //// auth!!!
 router.route('/list')
 .post(auth, async (req, res, next) => {
+    console.log('req', req.body.todos)
+    var checkData = true
+    // if(req.body._id === undefined)
+    await List.findOneAndUpdate({date: req.body.date, listName: req.body.listName}, {$push: {todos: req.body.todos}}, {new: true}, (err, doc) => {
+    // await List.findOne({date: req.body.date, listName: req.body.listName}, (err, doc) => {
+        console.log('lol', doc)
+        if (doc == null) return checkData = false;
+        if (err) {
+            // next(err);
+            return res.json({success: err})
+        } else {
+            res.json({
+                success: true,
+                data: doc
+            })
+            return true
+        }
+    })
+    if (checkData == true) return
+    console.log(12)
+
     try {
         const list = new List({...req.body, ownID: req.user._id});
         const sdoc = await list.save();
         res.status(200).json({ success: true, data: sdoc });
-        console.log(s)
+        console.log('new List', sdoc)
     } catch {
         return res.json({ success: err });
     }
-
+    // const list = new List({...req.body, ownID: req.user._id});
     // list.save((err, doc) => {
     //     if (err) {
     //         return res.json({ success: err });
@@ -29,6 +50,7 @@ router.route('/list')
 })
 
 .patch(auth, async (req, res, next) => { // доработать
+    console.log('patch list')
     await List.findByIdAndUpdate({_id: req.body._id}, req.body, {new: true}, (err, doc) => {
         if (err) {
             // next(err);
@@ -86,8 +108,18 @@ router.route('/all_lists')
     })
 })
 
-router.post('/list/add_task', auth, async function(req, res){
-    await List.findByIdAndUpdate(req.body._id, {$push: {todos: req.body.todos}}, (err, doc) => {
+router.post('/list/add_task', auth, function(req, res){
+    // try {
+    //     const doc = List.findByIdAndUpdate(req.body._id, {$push: {todos: req.body.todos}}, {new:true}, (err, doc) => doc);
+    //     console.log(doc, 'add_task')
+    //     res.status(200).json({success: true, data: doc})
+    // } catch {
+    //     return res.json({success: err})
+    // }
+    
+
+    List.findByIdAndUpdate(req.body._id, {$push: {todos: req.body.todos}}, {new:true}, (err, doc) => {
+        console.log('add_task', req.body.todos)
         if(err) {
             // next(err);
             return res.json({success: err})
@@ -98,6 +130,7 @@ router.post('/list/add_task', auth, async function(req, res){
 })
 
 router.patch('/list/update_item', auth, function(req, res){
+    console.log('update_item')
     const index = req.body.index;
     List.findByIdAndUpdate(req.body._id, {$set: {[`todos.${index}`]: req.body.todos}}, {new:true}, (err, doc) => {
         if(err) {
