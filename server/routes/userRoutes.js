@@ -68,7 +68,6 @@ router.get('/auth', auth, function(req,res) {
 })
 
 router.get('/logout', auth,  function(req,res) {
-    console.log(req.token);
     req.user.deleteToken(req.token, (err, user)=>{
         if(err) return res.status(400).send(err);
         res.status(200).cookie('auth', '').json({

@@ -28,58 +28,21 @@ router.route('/list')
             delay = false;
         }, 1000)
     } else {
-            List.findOneAndUpdate({date: req.body.date, listName: req.body.listName}, {$push: {todos: req.body.todos}}, {new: true}, (err, doc) => {
-                console.log('lol', doc)
-                // if (doc == null) return checkData = false;
-                if (err) {
-                    // next(err);
-                    return res.json({success: err})
-                } else {
-                    res.json({
-                        success: true,
-                        data: doc
-                    })
-                    return true
-                }
-            })
+        List.findOneAndUpdate({date: req.body.date, listName: req.body.listName}, {$push: {todos: req.body.todos}}, {new: true}, (err, doc) => {
+            console.log('lol', doc)
+            // if (doc == null) return checkData = false;
+            if (err) {
+                // next(err);
+                return res.json({success: err})
+            } else {
+                res.json({
+                    success: true,
+                    data: doc
+                })
+                return true
+            }
+        })
     }
-    
-    
-
-    // if(req.body._id === undefined)
-    // await List.findOneAndUpdate({date: req.body.date, listName: req.body.listName}, {$push: {todos: req.body.todos}}, {new: true}, (err, doc) => {
-    //     console.log('lol', doc)
-    //     // if (doc == null) return checkData = false;
-    //     if (err) {
-    //         // next(err);
-    //         return res.json({success: err})
-    //     } else {
-    //         res.json({
-    //             success: true,
-    //             data: doc
-    //         })
-    //         return true
-    //     }
-    // })
-    // if (checkData == true) return
-    // console.log(12)
-
-    // try {
-    //     const list = new List({...req.body, ownID: req.user._id});
-    //     const sdoc = await list.save();
-    //     res.status(200).json({ success: true, data: sdoc });
-    //     console.log('new List', sdoc)
-    // } catch {
-    //     return res.json({ success: err });
-    // }
-    // const list = new List({...req.body, ownID: req.user._id});
-    // list.save((err, doc) => {
-    //     if (err) {
-    //         return res.json({ success: err });
-    //     } else {
-    //         res.status(200).json({ success: true, data: doc });
-    //     }
-    // })
 })
 
 .patch(auth, async (req, res, next) => { // доработать

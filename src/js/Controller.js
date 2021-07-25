@@ -30,7 +30,6 @@ class Controller {
 		let response = await this.model.userAuth();
 		
 		this.isAuth = response.auth;
-		console.log(this.isAuth);
 		if(response.auth) this.view.showLoginMessage(0);
 		let currentDate = new Date();	
 		this.view.changeDate(currentDate.getFullYear(), currentDate.getMonth());
@@ -38,7 +37,6 @@ class Controller {
 	}
 
 	checkDataM(id, name, event) {
-		console.log(id, name, 'checkDataM1');
 		const newData = this.model.getTaskList(id, name, 1);
 
 		if(newData) this.view.hCreateTab(event, name, newData);
@@ -46,65 +44,11 @@ class Controller {
 
 	getNeededData(id) {
 		const data = this.model.getTaskList(id);
-		console.log(data, 'checkNeededs');
 		this.view.getArray(data, id);
 	}
 
-	// async addToDoHelp(taskList) {
-	// 	if(taskList._id == "null") {
-	// 		if (!this.isAuth) {
-	// 			this.data.push({ // after execution we get tasklist
-	// 				'_id': ++this.pseudoID,
-	// 				date: taskList.date,
-	// 				listName: taskList.name,
-	// 				todos: [{ 					// <- внутри tasks должен быть массив объектов с task и completed равным true или false)
-	// 						'item': taskList.item,
-	// 						'complete': taskList.complete
-	// 						}]
-	// 			});
-	// 			this.view.setID(this.pseudoID);
-	// 			console.log(this.data)
-	// 			return
-	// 		}
-	// 		this.delay = true;
-			
-
-	// 		response = await this.model.addList({ // after execution we get tasklist
-	// 			date: taskList.date,
-	// 			listName: taskList.name,
-	// 			todos: { 					// <- внутри tasks должен быть массив объектов с task и completed равным true или false)
-	// 					'item': taskList.item,
-	// 					'complete': taskList.complete
-	// 					}
-	// 		});
-
-	// 		this.data.push(response.data);
-	// 		this.view.setID(response.data._id);
-	// 	} else {
-	// 		console.log(taskList._id, this.data)
-	// 		this.data.find((val) => val['_id'] == taskList._id).todos.push(
-	// 			{'item': taskList.item,
-	// 			'complete': taskList.complete
-	// 		});
-
-	// 		if (!this.isAuth) return
-
-	// 		response = await this.model.addTask({ // after execution we get tasklist
-	// 			_id: taskList._id,
-	// 			date: taskList.date,
-	// 			listName: taskList.name,
-	// 			todos: { 					// <- внутри tasks должен быть массив объектов с task и completed равным true или false)
-	// 					'item': taskList.item,
-	// 					'complete': taskList.complete
-	// 					}
-	// 		});
-	// 	}
-	// }
-
 	async addToDo(taskList, cond, event) {
 		let response;
-		// let isList = this.data.find((val) => val['_id'] == taskList._id && val['date'] == taskList.date);
-		console.log(cond)
 		
 		if(taskList._id == "null") {
 			if (!this.isAuth) {
@@ -136,7 +80,6 @@ class Controller {
 			this.view.setID(response.data._id);
 			if (cond !== 'CTRLENTER') this.view.createItem();
 		} else {
-			console.log(taskList._id, this.data)
 			this.data.find((val) => val['_id'] == taskList._id).todos.push(
 				{'item': taskList.item,
 				'complete': taskList.complete
@@ -174,8 +117,6 @@ class Controller {
 			'item': taskList.item,
 			'complete': taskList.complete
 			};
-		
-		console.log(this.data, 'cross')
 
 		if(e === undefined) return;
 		this.view.updateItem(e);
@@ -222,7 +163,6 @@ class Controller {
 		
 		let pos = this.data.findIndex((val) => val._id === list['_id']);
 		if(~pos) this.data.splice(pos, 1);
-		console.log(isList.data)
 		console.log(this.data)		
 
 		this.view.removeCircle(isList.data.date);
@@ -255,7 +195,6 @@ class Controller {
 		let dates = Array.from(this.data, ({date}) => date);
 		let tdCollection = [...document.querySelectorAll('tbody td')];
 		tdCollection.forEach(item => {
-			console.log(ym);
 			let itemDay = item.getAttribute('data-cell');
 			if(dates.indexOf(`${itemDay}-${ym}`) >= 0) {
 				item.classList.add('circleOn');

@@ -121,8 +121,6 @@ class View extends EventEmitter {
 		const email = document.querySelector('#email-up');
 		const password = document.querySelector('#password-up');
 		if(!email.value || !password.value || (password.value.length < 8)) return alert('Заполните все поля');
-		// formSignUp.disabled = true;
-		console.log(1)
 		this.emit('registerUser', email.value, password.value);
 	}
 
@@ -135,7 +133,6 @@ class View extends EventEmitter {
 				elem.classList.add('registerFalse');
 				elem.innerHTML = 'Sorry, this login email already exists';
 				wrapper_up.append(elem);
-				console.log(wrapper_up.firstElementChild);
 				setTimeout(()=> {
 					wrapper_up.lastElementChild.remove();
 				}, 1500)
@@ -167,7 +164,6 @@ class View extends EventEmitter {
 				elem.classList.add('loginFalse');
 				elem.innerHTML = 'You have entered an invalid email or password';
 				wrapper_in.append(elem);
-				console.log(wrapper_in.firstElementChild);
 				setTimeout(()=> {
 					// wrapper_in.lastElementChild.remove();
 				}, 2000)
@@ -275,7 +271,6 @@ class View extends EventEmitter {
 	}
 
 	getArray(data, fullDate) {
-		console.log(fullDate)
 		this.tempData = data;
 		if (data.length < 3) {
 			let {overlay, goButton, cancelButton, popupInput} = this.popupModal;
@@ -304,7 +299,6 @@ class View extends EventEmitter {
 	checkName(listName, data) {
 		if (!listName) return false;
 		let x = data.every((x) => {return x.name != listName});
-		console.log(x, 'listName');
 		return x;
 	}
 
@@ -389,10 +383,8 @@ class View extends EventEmitter {
 	}
 
 	checkDayTask(year, month, event) {
-		console.log(event.target, 'target');
 		if (event.target.tagName === 'I') return;
 		let day = event.target.getAttribute('data-cell');
-		console.log( this.date)
 		this.date = `${day}-${month}-${year}`;
 		this.emit('checkDataToOpen', this.date, event);
 	}
@@ -443,7 +435,6 @@ class View extends EventEmitter {
 		})
 		if(!event) {
 			let list = document.querySelector(`div.list[data-id="${data['_id']}"]`);
-			console.log(list);
 			list.remove();
 			return
 		}
@@ -453,12 +444,10 @@ class View extends EventEmitter {
 	removeCircle(date) {
 		let nDay;
 		(date[0] == "0") ? nDay = date.slice(1, 2) : nDay = date.slice(0, 2);
-		console.log(nDay)
 		let tdCollection = [...document.querySelectorAll('tbody td')];
 			for (let x of tdCollection) {
 				if (x.innerText === nDay) {
 					x.classList.remove('circleOn');
-					console.log(x.innerText)
 				}
 			}
 			return;
@@ -572,8 +561,6 @@ class View extends EventEmitter {
 			task = {item: '', complete: false};
 		}
 
-		console.log(task.complete)
-
 		let randomID = this.getRandomID(5000);
 		let elemLI = createElement("li", {'className' : className['li']});
 
@@ -585,7 +572,6 @@ class View extends EventEmitter {
 		let elemLIinput = createElement("input", {type : 'text', 'className' : className['input']}, task.item);
 
 		elemLI.innerHTML = "<div class=\"item_delete\"><i class=\"fas fa-times\"></i></div></li>";
-		console.log(task.complete);
 
 		if (task.complete === true) {
 			elemLILabel.style.textDecoration = 'line-through';
@@ -631,7 +617,6 @@ class View extends EventEmitter {
 		const tabID = document.querySelector('div.tabs > div.active').getAttribute('data-id');
 		const labelsCollection = [...document.querySelectorAll('section.active .item_delete i')];
 		let indexItem = labelsCollection.indexOf(e.target); // get index of removing element
-		console.log({'_id': tabID, 'index': indexItem});
 		this.emit('deleteItem', {'_id': tabID, 'index': indexItem, 'date': this.date}, e);
 		this.isTask(labelsCollection, true);
 	}
@@ -643,7 +628,6 @@ class View extends EventEmitter {
 		const tabID = document.querySelector('div.tabs > div.active').getAttribute('data-id');
 		const inputCollection = [...document.querySelectorAll('section.active input[type=text]')];
 		let indexItem = inputCollection.indexOf(e.target);
-		console.log({'_id': tabID,'date': date, 'name': this.currentName, 'item': task, 'complete': false, 'index': indexItem})
 		this.emit('updateItem', {'_id': tabID, 'date': date, 'name': this.currentName, 'item': task, 'complete': false, 'index': indexItem}, e);
 	}
 
@@ -652,7 +636,6 @@ class View extends EventEmitter {
 		const tabID = document.querySelector('div.tabs > div.active').getAttribute('data-id');
 		const labelsCollection = [...document.querySelectorAll('section.active label.label')];
 		let indexItem = labelsCollection.indexOf(label_);
-		console.log({'_id': tabID,'date': date, 'name': this.currentName, 'item': label_.innerText, 'complete': complete, 'index': indexItem})
 		this.emit('updateItem', {'_id': tabID, 'date': date, 'name': this.currentName, 'item': label_.innerText, 'complete': complete, 'index': indexItem});
 		// this.emit('updateCompState', {'id': this.date, 'name': this.currentName, 'index': indexItem, 'complete': complete}, e);
 	}
@@ -662,7 +645,6 @@ class View extends EventEmitter {
 		const date = this.date;
 		const tabID = document.querySelector('div.tabs > div.active').getAttribute('data-id');
 		const task = e.target.value;
-		console.log({'_id': tabID,'date': date, 'name': this.currentName, 'item': task, complete: 'false'})
 		this.emit('addToDo', {'_id': tabID, 'date': date, 'name': this.currentName, 'item': task, 'complete': false}, cond, e);
 		this.isTask();
 		this.addItem(e);
@@ -689,7 +671,6 @@ class View extends EventEmitter {
 
 			if (this.editFlag === true && e.target.value != prevLabelText) {
 				this.editFlag = false;
-				console.log('catch', e)
 				this.hupdateItem(e);
 				return;
 			}
@@ -699,18 +680,15 @@ class View extends EventEmitter {
 			if ((itemAmount <= 1) && e.target.value === '' || e.target.value === prevLabelText) return;
 				// this combination of comparisons allows stop function if first item is emptied or e.target.value === text in label 
 				// or if we use (e.ctrlKey & e.keyCode) because in this case e.target.value and prevLabelText are equal.
-			console.log(e)
 			this.hAddToDo(e);
 		}
 	}
 
 	closeList(event, s) {
 		if(s != undefined) {
-			console.log(s.closest('.tab'));
 			target = s.closest('.tab')
 		} else {var target = event.target}
 		const tab = target.closest('.tab');
-		console.log(tab);
 		const tabsCollection = [...document.querySelectorAll('.tab')];
 		const sectionContents = [...document.querySelectorAll('.tab_content')];
 		const index = tabsCollection.indexOf(tab); // get index of removing element
@@ -801,7 +779,6 @@ class View extends EventEmitter {
 			if (!e.target.value) return;	
 			// check editflag
 			if (this.editFlag === true) {
-				console.log('edti', e)
 				this.hupdateItem(e);
 				return;
 			}
@@ -832,10 +809,8 @@ class View extends EventEmitter {
 				this.createItem();
 				return;
 			}
-			console.log(e.type, e.keyCode)
 			if (this.itemIsEmpty()) {
 				// this.createItem();
-				// this.itemOut(1); Не понянтно зачем????
 				return;
 			}
 			return
@@ -935,11 +910,9 @@ class View extends EventEmitter {
 		if (event.target.classList == 'tab active' || event.target.parentNode.classList == 'tab active') return;
 
 		if (event.target.parentNode.classList.contains('tab')) {
-			console.log(event.target.parentNode)
 			target = event.target.parentNode;
 		} else {
 			target = cTab || event.target;
-			console.log(target)
 		}
 
 		let k = 0;

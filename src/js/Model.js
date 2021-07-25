@@ -10,13 +10,13 @@ class Model {
 		if (n === 0 && !name) return this.state.find(item => item.id == id);
 		if (n === 0 && name) {
 			let findList = this.state.find(item => item.name == name);
-			console.log(findList, 'findlist')
 			return findList;
 		}
 
-		this.state.forEach( function(element, index) {
-			// console.log(element, id, element.id == id.toString())
-		});
+		// this.state.forEach( function(element, index) {
+		// 	// console.log(element, id, element.id == id.toString())
+		// });
+		
 		let filterArray = [];
 
 		if (n === 1) {
@@ -26,7 +26,6 @@ class Model {
 					newData = {item : item.id, name: item.name, tasks: item.tasks};
 				}
 			});
-			console.log(newData, 'fil tasks');
 			return newData;
 		}
 		
@@ -35,8 +34,6 @@ class Model {
 				filterArray.push({item : item.id, name: item.name});
 			}
 		});
-
-		console.log(filterArray, 'fil');
 
 		return filterArray;
 	}
@@ -48,9 +45,6 @@ class Model {
 			var response = await this.addList(taskList);
 			return response;
 		}
-
-
-		// let isObj = this.getList(_id);
 		
 		if (isObj === undefined) {
 			this.state.push(taskList);
@@ -58,49 +52,30 @@ class Model {
 		} else {
 			isObj.tasks.push(taskList.tasks[0]);
 		}
-
-		console.log(this.state, 'add123123');
 		return taskList
 	}
 
-	// updateItem(item) {
-	// 	let isObj = this.getTaskList(item.id, item.name, 0);
-	// 	console.log(isObj, 'isObj upd');
-	// 	isObj.tasks[item.index]['item'] = item.task;
-		
-	// 	return this.state
-	// }
-
 	updateComp(item) {
-		console.log(item, 'update Compstate');
 		let isObj = this.getTaskList(item.id, item.name, 0);
 		let isObjComplete = isObj.tasks[item.index];
 		isObjComplete['completed'] = item.completed;
-		console.log(isObjComplete);
-		console.log(this.state,'updComp');
 		return this.state
 	}
 
 	// deleteItem(item) {
 	// 	let isObj = this.getTaskList(item.id, item.name, 0);
 	// 	isObj.tasks.splice(item.index, 1);
-	// 	console.log(this.state, 'rem');
 	// 	return this.state;
 	// }
-
-	
 
 	datesFromState() {
 		let dates = Array.from(this.state, ({id}) => id);
 		return dates;
 	}
 
-	
-
 	async getAllData() {
 		const request = await axios.get('/lists/all_lists')
 		.then((respone) => respone.data);
-		console.log(request)
 		let {auth, data} = request; 
 		return {auth, data}
 	}
@@ -139,11 +114,6 @@ class Model {
 		const request = await axios.patch('/lists/list/del_task', item)
 		.then((respone) => respone.data);
 		return request
-
-		// let isObj = this.getTaskList(item.id, item.name, 0);
-		// isObj.tasks.splice(item.index, 1);
-		// console.log(this.state, 'rem');
-		// return this.state;
 	}
 
 	async registerUser(data) {
@@ -158,13 +128,11 @@ class Model {
 		let {auth, message, userData} = request; 
 
 		return {auth, message, userData}
-		// console.log(request)
 	}
 
 	async logoutUser() {
 		const request = await axios.get('/user/logout')
 		.then((respone) => respone.data)
-		console.log(request)
 		let {auth, logout} = request; 
 		return {auth, logout}
 	}
@@ -177,7 +145,6 @@ class Model {
 	async userAuth(inner) {
 		const request = await axios.get('/user/auth')
 		.then(response => response.data);
-		console.log(request)
 		if (!request.auth) console.log('Please, login first', request.message);
 		return request
 		// inner(request.userData);
