@@ -107,7 +107,7 @@ function degToRad(degr) {
 function renderCircle() {
 	let now = new Date();
 	let time = now.toString().slice(0, 3);
-	let day = now.getDate();
+	let day = now.getDate() < 10 ? '0'+now.getDate() : now.getDate();
 
 	ctr.lineWidth = 2;
 	//start draw circles
@@ -130,7 +130,8 @@ function renderCircle() {
 	
 	ctr.fillText(time,84, 159);
 	ctr.fillText('/',130, 159);
-	ctr.fillText(day,142, 159);
+
+	ctr.fillText(day,145, 159);
 }
 
 function renderTime() {
