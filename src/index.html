@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>Dayly Do</title>
+	<title>Daily Do</title>
 	<% for (var css in htmlWebpackPlugin.files.css) { %>
 		<link href="<%= htmlWebpackPlugin.files.css[css] %>" rel="stylesheet">
 	<% } %>
@@ -30,7 +30,7 @@
 </head>
 <body class="body_hide" style="background: url(assets/img/MultLightGreen.jpg) center center fixed no-repeat">
 	<div class="header">
-		<div class="logo"> Dayly calendar</div>
+		<div class="logo"> Daily calendar</div>
 		<div class="login">
 			<i class="fas fa-sign-in-alt" style="margin-right: 5px;"></i></i> Войти
 		</div>
@@ -53,7 +53,7 @@
 				<div class="logreg-wrapper">
 					<div class="hello">
 						<h4>Hello guys!</h4> 
-						<h4>Welcome to my dayly calendar!</h4>
+						<h4>Welcome to my daily calendar!</h4>
 						<h4>Login or Sign up, please!</h4>
 					</div>
 					<div class="button1"> SIGN IN </div>
@@ -137,14 +137,14 @@
 
 		<section class="calendar">
 			<div class="calendarDate textHead">
-				<div class="calendarDate_year">2019</div>
+				<div class="calendarDate_year">2021</div>
 				<div class="selectYear">
-					<div class="cells">2018</div>
-					<div class="cells">2019</div>
 					<div class="cells">2020</div>
 					<div class="cells">2021</div>
 					<div class="cells">2022</div>
 					<div class="cells">2023</div>
+					<div class="cells">2024</div>
+					<div class="cells">2025</div>
 				</div>	
 				<div class="calendarDate_month"></div>
 				<div class="selectMonth">
@@ -180,10 +180,7 @@
 				</table>
 			</div>
 			<div class="selectList">
-				<div class="lists">
-					<div class="list list_1"><span>Фрукты</span><i class="fas fa-times"></i></div>		
-					<div class="list list_2"><span>Овощи</span><i class="fas fa-times"></i></div>		
-					<div class="list list_3"><span>Фильмы</span><i class="fas fa-times"></i></div>		
+				<div class="lists">	
 				</div>
 			</div>
 		</section>
