@@ -78,7 +78,7 @@ class Controller {
 			
 			this.data.push(response.data);
 			this.view.setID(response.data._id);
-			if (cond !== 'CTRLENTER') this.view.createItem();
+			if ((cond !== 'FOCUSOUT') && (cond !== 'CTRLENTER')) this.view.createItem();
 		} else {
 			this.data.find((val) => val['_id'] == taskList._id).todos.push(
 				{'item': taskList.item,
@@ -96,7 +96,7 @@ class Controller {
 						'complete': taskList.complete
 						}
 			});
-			if (cond !== 'CTRLENTER') this.view.createItem();
+			if ((cond !== 'FOCUSOUT') && (cond !== 'CTRLENTER')) this.view.createItem();
 		}
 		
 		

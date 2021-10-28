@@ -264,6 +264,7 @@ class View extends EventEmitter {
 	addNameForTab(t) {
 		let day = t.target.innerText;
 		let fullDate = this.date;
+		console.log(fullDate)
 		if (day < 10) {day = '0' + day};
 		if(this.date.length > 7) {fullDate = this.date.slice(3)};
 		fullDate = `${day}-${fullDate}`;
@@ -367,7 +368,7 @@ class View extends EventEmitter {
 		this.varsObject.calendarDate_year.innerText = year;
 		
 		let tdCollection = [...document.querySelectorAll('tbody td')];
-		month < 10 ? month = '0' + (+month + 1) : month = +month + 1;
+		month < 9 ? month = '0' + (+month + 1) : month = month + 1;
 		for(let x of tdCollection) {
 			if (x.getAttribute('data-cell')) {
 				x.addEventListener('click', this.checkDayTask.bind(this, year, month));
@@ -651,6 +652,7 @@ class View extends EventEmitter {
 	}
 
 	catch_focusOut(e) {
+		
 		if(e.type == 'focusout') { // && e.relatedTarget == null 
 			
 			if (e.target.value == '') {
@@ -680,7 +682,7 @@ class View extends EventEmitter {
 			if ((itemAmount <= 1) && e.target.value === '' || e.target.value === prevLabelText) return;
 				// this combination of comparisons allows stop function if first item is emptied or e.target.value === text in label 
 				// or if we use (e.ctrlKey & e.keyCode) because in this case e.target.value and prevLabelText are equal.
-			this.hAddToDo(e);
+			this.hAddToDo(e, 'FOCUSOUT');
 		}
 	}
 
@@ -819,13 +821,13 @@ class View extends EventEmitter {
 		else if (e.keyCode == 13) {
 			e.preventDefault();
 			if (!e.target.value) return;
-
+			
 			const inputs = document.querySelectorAll('section.active > .tabs_content_list input[type=text]');
 
 			// Clear empty space before and after
 			let trimValue = event.target.value.trim();
 			e.target.value = trimValue;
-			 
+			console.log(830, 'enter')
 			for (let element of inputs) {
 				if(!this.itemIsEmpty(element)) {						
 					element.classList.remove('input_hide');
@@ -835,7 +837,7 @@ class View extends EventEmitter {
 				}
 			}
 			this.itemOut(1);
-			// this.createItem();
+			this.createItem();
 			// this.itemOut(2);
 			// this.itemOut(2, event);
 			flag = 1;
@@ -893,6 +895,7 @@ class View extends EventEmitter {
 
 	// function for change active tab on click
 	changeTab(event, cTab) {
+		console.log(event.target.innerText)
 		let target;
 		const tab = document.querySelectorAll('.tabs > .tab');
 		const content = document.querySelectorAll('.tabs_content > .tab_content');
