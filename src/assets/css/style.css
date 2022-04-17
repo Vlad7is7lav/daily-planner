@@ -5,3 +5,7 @@
 .wrapper {
 	display: flex
 } */
+
+.title {
+  color: red;
+}

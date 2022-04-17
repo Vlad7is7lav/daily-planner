@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>Document</title>
+	<title>Daily Do</title>
 	<% for (var css in htmlWebpackPlugin.files.css) { %>
 		<link href="<%= htmlWebpackPlugin.files.css[css] %>" rel="stylesheet">
 	<% } %>
@@ -30,7 +30,7 @@
 </head>
 <body class="body_hide" style="background: url(assets/img/MultLightGreen.jpg) center center fixed no-repeat">
 	<div class="header">
-		<div class="logo"> Dayly calendar</div>
+		<div class="logo"> Daily calendar</div>
 		<div class="login">
 			<i class="fas fa-sign-in-alt" style="margin-right: 5px;"></i></i> Войти
 		</div>
@@ -43,9 +43,9 @@
 					<h5>SIGN IN using your email and password</h5>
 					<form method="post" class="form-sign-in" id="form-sign-in">
 						<label for="email-in">EMail</label>
-						<div><input type="email" name="email" id="email-in" placeholder="" required value="uthiq@mail.ru"/></div>
+						<div><input type="email" name="email" id="email-in" placeholder="email" required/></div>
 						<label for="password-in">Password</label>
-						<div><input type="password" name="password" id="password-in" placeholder="" required/></div>
+						<div><input type="password" name="password" id="password-in" placeholder="password" required/></div>
 						<input type="submit" value="Sign in">
 					</form>
 					
@@ -53,7 +53,7 @@
 				<div class="logreg-wrapper">
 					<div class="hello">
 						<h4>Hello guys!</h4> 
-						<h4>Welcome to my dayly calendar!</h4>
+						<h4>Welcome to my daily calendar!</h4>
 						<h4>Login or Sign up, please!</h4>
 					</div>
 					<div class="button1"> SIGN IN </div>
@@ -65,9 +65,9 @@
 					<h5>SIGN UP using your email and password</h5>
 					<form method="post" class="form-sign-up" id="form-sign-up">
 						<label for="email-up">EMail</label>
-						<div><input type="email" name="email" id="email-up" placeholder="" value="uthiq@mail.ru" required /></div>
+						<div><input type="email" name="email" id="email-up" placeholder="email" required /></div>
 						<label for="pass-up">Password</label>
-						<div><input type="password" name="password" id="password-up" placeholder="" required/></div>
+						<div><input type="password" name="password" id="password-up" placeholder="password" required/></div>
 						<input type="submit" value="SIGN UP">
 					</form>
 				</div>
@@ -98,7 +98,6 @@
 				</div>
 			</div>
 			<div class="infoDesk_clock">
-				<!-- <div class="infoDesk_clockName textHead"> Clock </div> -->
 				<div class="infoDesk_clockSVG">		
 					<canvas id="canvas" width="200" height="200"></canvas>
 					<canvas id="circle" width="200" height="200"></canvas>
@@ -137,14 +136,14 @@
 
 		<section class="calendar">
 			<div class="calendarDate textHead">
-				<div class="calendarDate_year">2019</div>
+				<div class="calendarDate_year">2021</div>
 				<div class="selectYear">
-					<div class="cells">2018</div>
-					<div class="cells">2019</div>
 					<div class="cells">2020</div>
 					<div class="cells">2021</div>
 					<div class="cells">2022</div>
 					<div class="cells">2023</div>
+					<div class="cells">2024</div>
+					<div class="cells">2025</div>
 				</div>	
 				<div class="calendarDate_month"></div>
 				<div class="selectMonth">
@@ -180,25 +179,15 @@
 				</table>
 			</div>
 			<div class="selectList">
-				<div class="lists">
-					<div class="list list_1"><span>Фрукты</span><i class="fas fa-times"></i></div>		
-					<div class="list list_2"><span>Овощи</span><i class="fas fa-times"></i></div>		
-					<div class="list list_3"><span>Фильмы</span><i class="fas fa-times"></i></div>		
+				<div class="lists">	
 				</div>
 			</div>
 		</section>
 	</div>
 
-	
-
-	
-
-	
 	<% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
 	<script src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
 	<% } %>
-	
-	
 
 </body>
 </html>

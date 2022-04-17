@@ -1,0 +1,12 @@
+# Ignore artifacts:
+node_modules
+/server/node_modules
+CLONE
+Design
+.vscode
+test
+scripts
+public
+
+# Ignore all HTML files:
+*.html
