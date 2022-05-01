@@ -9,7 +9,7 @@ At the beginning, this project was conceived as a regular to-do list, but the th
 Then I decided to add a calendar that help to write to-do list in different days and user can save if login.
   
 <h3> Technology stack </h3>
-HTML5 SCSS Webpack JavaScript Node Express Mongoose 
+HTML5 SASS Webpack JavaScript Node Express Mongoose 
 
 <h3> How to use </h3>
 - You can use it both when you logged-in or logged-out. But if you don't login you can't save to-do-list.
