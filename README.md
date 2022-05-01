@@ -24,11 +24,9 @@ You can write no more than 17 tasks.
 - When you crate your task you will see the yellow mark on the calendar. This gives a clear understanding of what day you have the to-do-list for.
  
 <h2> Project setup </h2>
-```
-	<p> npm install - for client folder</p>
-	<p> npm install - for server folder</p> 
-	<p> npm run dev </p>
-	```
+<p> npm install - for client folder</p>
+<p> npm install - for server folder</p> 
+<p> npm run dev </p>
 	
 
 	
