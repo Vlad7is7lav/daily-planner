@@ -24,19 +24,11 @@ module.exports = {
 
 	entry: {
 		app: `${PATHS.src}/index.js`,
-<<<<<<< HEAD
-=======
-		// lk: `${PATHS.src}/lk.js`
->>>>>>> f1ffc2bf00d9682f8b6f2eef41d63b7e8508b5e3
 
 	},
 	output: {
 		path: PATHS.dist,
 		filename: `${PATHS.assets}js/[name].[hash].js`,
-<<<<<<< HEAD
-=======
-		// publicPath: '/'
->>>>>>> f1ffc2bf00d9682f8b6f2eef41d63b7e8508b5e3
 	},
 
 	optimization: {
@@ -136,17 +128,4 @@ module.exports = {
 	    	
     	])
 	]
-<<<<<<< HEAD
 }
-=======
-}
-
-// module.exports = (env, options) => {
-// 	// let production = options.mode === 'production';
-
-// 	// conf.devtool = production
-// 	// 				? 'source-map' // or 'false' that nobody can see the sorce-map of .js file in production
-// 	// 				: 'eval-sourcemap';
-// 	return conf  
-// };
->>>>>>> f1ffc2bf00d9682f8b6f2eef41d63b7e8508b5e3

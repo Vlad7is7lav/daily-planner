@@ -2,6 +2,7 @@ const express = require("express")
 const bodyParser = require("body-parser")
 const coockieParser = require("cookie-parser")
 const app = express()
+const dotenv = require('dotenv');
 
 const mongoose = require("mongoose")
 const config = require("./config/config").get(process.env.NODE_ENV)
@@ -36,15 +37,11 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: err.stack })
 })
 
-mongoose.connect(config.DATABASE, {
+// mongoose.connect(config.DATABASE, {
+mongoose.connect(dotenv.config().parsed.DATABASE_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
 })
-
-mongoose.set("useCreateIndex", true)
-mongoose.set("useUnifiedTopology", true)
 
 const port = process.env.PORT || 3003
 
