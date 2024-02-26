@@ -141,7 +141,10 @@ class Model {
     const request = await axios
       .get("/user/auth")
       .then((response) => response.data)
-    if (!request.auth) console.log("Please, login first", request.message)
+      .catch((err) => {
+        console.log("Please, login first", err)
+        return false
+      })
     return request
   }
 }

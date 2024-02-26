@@ -22,7 +22,7 @@ const listScheme = mongoose.Schema({
   ownID: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true,
+    required: false,
   },
 })
 

@@ -10,19 +10,22 @@ var delay = false
 //// auth!!!
 router
   .route("/list")
-  .post(auth, async (req, res, next) => {
+  .post(async (req, res, next) => {
     console.log("req", req.body.todos)
     console.log("delay", delay)
     var checkData = true
     if (delay === false) {
       delay = true
-
+      console.log(1)
       try {
-        const list = new List({ ...req.body, ownID: req.user._id })
+        // const list = new List({ ...req.body, ownID: req.user._id || "" })
+        const list = new List({ ...req.body })
         const sdoc = await list.save()
+        console.log({ success: true, data: sdoc })
         res.status(200).json({ success: true, data: sdoc })
         console.log("new List", sdoc)
-      } catch {
+      } catch (err) {
+        console.log(err)
         return res.json({ success: err })
       }
       setTimeout(() => {
@@ -51,7 +54,7 @@ router
     }
   })
 
-  .patch(auth, async (req, res, next) => {
+  .patch(async (req, res, next) => {
     // доработать
     console.log("patch list")
     await List.findByIdAndUpdate(

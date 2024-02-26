@@ -1,17 +1,17 @@
 @font-face {
 	font-family: "Borea__";
-	src: url('/assets/fonts/Borea/Borea___.eot') format('embedded-opentype');
-	src: url('/assets/fonts/Borea/Borea___.eot?#iefix') format('embedded-opentype'),
-	url('/assets/fonts/Borea/Borea___.woff') format('wpff'),
-	url('/assets/fonts/Borea/Borea___.ttf') format('truetype'),
-	url('/assets/fonts/Borea/Borea___.svg') format('svg');
+	src: url('../fonts/Borea/Borea___.eot') format('embedded-opentype');
+	src: url('../fonts/Borea/Borea___.eot?#iefix') format('embedded-opentype'),
+	url('../fonts/Borea/Borea___.woff') format('wpff'),
+	url('../fonts/Borea/Borea___.ttf') format('truetype'),
+	url('../fonts/Borea/Borea___.svg') format('svg');
 
 	font-family: 'Segoe Print';
-	src: url('/assets/fonts/SegoePrint/SegoePrint.eot');
+	src: url('../fonts/SegoePrint/SegoePrint.eot');
 	src: local('Segoe Print'), local('SegoePrint'),
-		url('/assets/fonts/SegoePrint/SegoePrint.eot?#iefix') format('embedded-opentype'),
-		url('/assets/fonts/SegoePrint/SegoePrint.woff') format('woff'),
-		url('/assets/fonts/SegoePrint/SegoePrint.ttf') format('truetype');
+		url('../fonts/SegoePrint/SegoePrint.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/SegoePrint/SegoePrint.woff') format('woff'),
+		url('../fonts/SegoePrint/SegoePrint.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }

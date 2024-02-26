@@ -1,7 +1,10 @@
+const dotenv = require('dotenv');
 const config = {
   production: {
     SECRET: process.env.SECRET,
-    DATABASE: process.env.DATABASE_URI,
+    DATABASE: dotenv.config().parsed.DATABASE_URI,
+    // SECRET: process.env.SECRET,
+    // DATABASE: process.env.DATABASE_URI,
   },
 
   default: {
