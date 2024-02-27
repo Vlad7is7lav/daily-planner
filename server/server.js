@@ -38,10 +38,7 @@ app.use((err, req, res, next) => {
 })
 
 // mongoose.connect(config.DATABASE, {
-mongoose.connect(dotenv.config().parsed.DATABASE_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect("mongodb://localhost:27017/TestToDo")
 
 const port = process.env.PORT || 3003
 

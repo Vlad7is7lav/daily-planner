@@ -23,10 +23,15 @@ class Controller {
   }
 
   async auth() {
+    console.log(11111)
     let response = await this.model.userAuth()
+    if (!!response) {
+      this.view.showLoginMessage(0)
+      this.isAuth = response.auth
+    }
 
-    this.isAuth = response.auth
-    if (response.auth) this.view.showLoginMessage(0)
+    // this.isAuth = response.auth
+    // if (response.auth) this.view.showLoginMessage(0)
     let currentDate = new Date()
     this.view.changeDate(currentDate.getFullYear(), currentDate.getMonth())
   }

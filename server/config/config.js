@@ -1,7 +1,10 @@
+const dotenv = require('dotenv');
 const config = {
   production: {
     SECRET: process.env.SECRET,
-    DATABASE: "mongodb+srv://admin_user:VvClpZJKf1vj1yxr@cluster0.mtymc2u.mongodb.net/?retryWrites=true&w=majority",
+    DATABASE: dotenv.config().parsed.DATABASE_URI,
+    // SECRET: process.env.SECRET,
+    // DATABASE: process.env.DATABASE_URI,
   },
 
   default: {

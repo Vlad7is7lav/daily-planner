@@ -247,7 +247,7 @@ function showActive(self, reset) {
 //---------------
 //OPENWEATHER API
 
-;(function () {
+(function () {
   const API_KEY = "08376460c140cfb4ce2efbb062ba72c3"
 
   let grad = document.querySelector(".weatherAPI_grad")

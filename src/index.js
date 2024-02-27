@@ -1,8 +1,8 @@
+import "./assets/css/style.css"
+import "./assets/scss/main.scss"
 import "./js/addition.js"
 import "./js/View.js"
 import "./js/Controller.js"
-import "./assets/css/style.css"
-import "./assets/scss/main.scss"
 
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css"
 
