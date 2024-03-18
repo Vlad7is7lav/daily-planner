@@ -512,14 +512,17 @@ class View extends EventEmitter {
     const inputCompleted = document.getElementById("completed")
     completed(inputCompleted, true)
     showActive(inputActive, true)
+    let date = !data ? this.date : data.date
+    console.log(date)
 
     //   Check if this day already open in tabs
     if (tabsArray.length > 0) {
       let tmp = 0
       for (let i = 0; i < tabsArray.length; i++) {
+        
         if (
           tmp == 0 &&
-          tabsArray[i].firstChild.textContent == this.date &&
+          tabsArray[i].firstChild.textContent == date &&
           tabsArray[i].firstElementChild.textContent == listName
         ) {
           tabsArray[i].classList.add("active")
@@ -1017,7 +1020,6 @@ class View extends EventEmitter {
 
   // function for change active tab on click
   changeTab(event, cTab) {
-    console.log(event.target.innerText)
     let target
     const tab = document.querySelectorAll(".tabs > .tab")
     const content = document.querySelectorAll(".tabs_content > .tab_content")

@@ -10,7 +10,7 @@ var delay = false
 //// auth!!!
 router
   .route("/list")
-  .post(async (req, res, next) => {
+  .post(auth, async (req, res, next) => {
     console.log("req", req.body.todos)
     console.log("delay", delay)
     var checkData = true
@@ -57,50 +57,48 @@ router
   .patch(async (req, res, next) => {
     // доработать
     console.log("patch list")
-    await List.findByIdAndUpdate(
-      { _id: req.body._id },
-      req.body,
-      { new: true },
-      (err, doc) => {
-        if (err) {
-          // next(err);
-          return res.json({ success: err })
-        } else {
-          res.json({
-            success: true,
-            data: doc,
-          })
-        }
-      }
-    )
-  })
-
-  .get(auth, async (req, res, next) => {
-    try {
-      await List.findById({ _id: req.query.id }, (err, doc) => {
-        res.json({
-          success: true,
-          data: doc,
-          auth: true,
-        })
-      })
-    } catch {
-      return res.json({ success: err })
-    }
-  })
-
-  .delete(auth, (req, res, next) => {
-    List.findByIdAndRemove({ _id: req.query.id }, { new: true }, (err, doc) => {
+    await List.findByIdAndUpdate({ _id: req.body._id }, req.body, {
+      new: true,
+    }).then((err, doc) => {
       if (err) {
         // next(err);
         return res.json({ success: err })
       } else {
         res.json({
           success: true,
-          message: "Deleted successfull",
+          data: doc,
         })
       }
     })
+  })
+
+  .get(auth, async (req, res, next) => {
+    console.log(req.query.id)
+    try {
+      await List.findById(req.query.id).then((doc) => {
+        console.log("doc ", doc)
+        res.json({
+          success: true,
+          data: doc,
+          auth: true,
+        })
+      })
+    } catch (err) {
+      return res.json({ Error: err })
+    }
+  })
+
+  .delete(auth, (req, res, next) => {
+    List.findByIdAndDelete({ _id: req.query.id }, { new: true })
+      .then(() => {
+        res.json({
+          success: true,
+          message: "Deleted successfull",
+        })
+      })
+      .catch((err) => {
+        return res.json({ Error: err })
+      })
   })
 
 router.route("/all_lists").get(auth, (req, res) => {
@@ -135,7 +133,7 @@ router.post("/list/add_task", auth, function (req, res) {
       console.log("add_task", req.body.todos)
       if (err) {
         // next(err);
-        return res.json({ success: err })
+        return res.json({ Error: err })
       } else {
         res.status(200).json({ success: true, data: doc })
       }
@@ -143,29 +141,25 @@ router.post("/list/add_task", auth, function (req, res) {
   )
 })
 
-router.patch("/list/update_item", auth, function (req, res) {
-  console.log("update_item")
+router.patch("/list/update_task", auth, function (req, res) {
   const index = req.body.index
   List.findByIdAndUpdate(
     req.body._id,
     { $set: { [`todos.${index}`]: req.body.todos } },
-    { new: true },
-    (err, doc) => {
-      if (err) {
-        // next(err);
-        return res.json(err)
-      } else {
-        res.status(200).json({ success: true, data: doc })
-      }
-    }
+    { new: true }
   )
+    .then((doc) => {
+      res.status(200).json({ success: true, data: doc })
+    })
+    .catch((err) => {
+      return res.json(err)
+    })
 })
 
 router.patch("/list/del_task", auth, (req, res, next) => {
   const index = req.body.index
   List.findByIdAndUpdate(
     { _id: req.body._id },
-    [
       {
         $set: {
           todos: {
@@ -176,30 +170,58 @@ router.patch("/list/del_task", auth, (req, res, next) => {
           },
         },
       },
-    ],
-    { new: true },
-    (err, doc) => {
-      if (err) {
-        next(err)
-      } else {
-        // let doc1 = doc;
-        // if(doc.todos.length === 0) {
-        //     List.findByIdAndRemove({_id: req.body.id}, {new: true}, (err,doc) => {
-        //         res.json({
-        //             success: true,
-        //             message: "List deleted successfull",
-        //             data: doc1
-        //         })
-        //     })
-        //     return
-        // }
-        res.json({
-          success: true,
-          data: doc,
-        })
-      }
-    }
+    { new: true }
   )
+    .then(() => {
+      res.json({
+        success: true,
+        data: doc,
+      })
+    })
+    .catch((err) => {
+      console.log(err)
+      res.json({ Error: err })
+      next(err)
+    })
+
+  //---------------------
+  // List.findByIdAndUpdate(
+  //   { _id: req.body._id },
+  //   [
+  //     {
+  //       $set: {
+  //         todos: {
+  //           $concatArrays: [
+  //             { $slice: ["$todos", index] },
+  //             { $slice: ["$todos", { $add: index + 1 }, { $size: "$todos" }] },
+  //           ],
+  //         },
+  //       },
+  //     },
+  //   ],
+  //   { new: true },
+  //   (err, doc) => {
+  //     if (err) {
+  //       next(err)
+  //     } else {
+  //       // let doc1 = doc;
+  //       // if(doc.todos.length === 0) {
+  //       //     List.findByIdAndRemove({_id: req.body.id}, {new: true}, (err,doc) => {
+  //       //         res.json({
+  //       //             success: true,
+  //       //             message: "List deleted successfull",
+  //       //             data: doc1
+  //       //         })
+  //       //     })
+  //       //     return
+  //       // }
+  //       res.json({
+  //         success: true,
+  //         data: doc,
+  //       })
+  //     }
+  //   }
+  // )
 })
 
 module.exports = router

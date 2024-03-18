@@ -1,5 +1,7 @@
 import axios from "axios"
 
+axios.defaults.baseURL = 'http://localhost:3003'
+
 class Model {
   constructor(state = []) {
     this.state = state
@@ -98,9 +100,9 @@ class Model {
     return request
   }
 
-  async updateItem(taskList) {
+  async updateItem(task) {
     const request = await axios
-      .patch("/lists/list/update_item", taskList)
+      .patch("/lists/list/update_task", task)
       .then((respone) => respone.data)
     return request
   }

@@ -1,8 +1,15 @@
 const express = require("express")
 const bodyParser = require("body-parser")
 const coockieParser = require("cookie-parser")
+const cors = require("cors");
 const app = express()
 const dotenv = require('dotenv');
+
+var corsOptions = {
+  origin: "http://localhost:3003"
+};
+
+app.use(cors(corsOptions));
 
 const mongoose = require("mongoose")
 const config = require("./config/config").get(process.env.NODE_ENV)
@@ -39,6 +46,7 @@ app.use((err, req, res, next) => {
 
 // mongoose.connect(config.DATABASE, {
 mongoose.connect("mongodb://localhost:27017/TestToDo")
+// mongoose.connect("mongodb+srv://admin_user:VvClpZJKf1vj1yxr@cluster0.mtymc2u.mongodb.net/?retryWrites=true&w=majority")
 
 const port = process.env.PORT || 3003
 
