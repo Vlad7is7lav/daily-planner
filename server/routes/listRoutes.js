@@ -11,15 +11,12 @@ var delay = false
 router
   .route("/list")
   .post(auth, async (req, res, next) => {
-    console.log("req", req.body.todos)
-    console.log("delay", delay)
     var checkData = true
     if (delay === false) {
       delay = true
       console.log(1)
       try {
-        // const list = new List({ ...req.body, ownID: req.user._id || "" })
-        const list = new List({ ...req.body })
+        const list = new List({ ...req.body,  ownID: req.user._id || ""})
         const sdoc = await list.save()
         console.log({ success: true, data: sdoc })
         res.status(200).json({ success: true, data: sdoc })
@@ -109,36 +106,34 @@ router.route("/all_lists").get(auth, (req, res) => {
   // let order = req.query.order ? req.query.order : 'asc';
   // let byOwner=req.query.owner ? {ownerId: req.query.owner} : {}
 
-  List.find({ ownID: req.user._id }).exec((err, doc) => {
-    if (err) return res.status(400).send(err)
-    // res.send(doc);
-    res.json({ auth: true, data: doc })
+  List.find({ ownID: req.user._id })
+  .exec()
+  .then((doc) => {
+    return res.json({ auth: true, data: doc })
   })
+  .catch((err) => {
+    return res.status(400).send(err)
+  })
+
+  // List.find({ ownID: req.user._id }).exec((err, doc) => {
+  //   if (err) return res.status(400).send(err)
+  //   // res.send(doc);
+  //   res.json({ auth: true, data: doc })
+  // })
 })
 
 router.post("/list/add_task", auth, function (req, res) {
-  // try {
-  //     const doc = List.findByIdAndUpdate(req.body._id, {$push: {todos: req.body.todos}}, {new:true}, (err, doc) => doc);
-  //     console.log(doc, 'add_task')
-  //     res.status(200).json({success: true, data: doc})
-  // } catch {
-  //     return res.json({success: err})
-  // }
-
   List.findByIdAndUpdate(
     req.body._id,
     { $push: { todos: req.body.todos } },
-    { new: true },
-    (err, doc) => {
-      console.log("add_task", req.body.todos)
-      if (err) {
-        // next(err);
-        return res.json({ Error: err })
-      } else {
-        res.status(200).json({ success: true, data: doc })
-      }
-    }
+    { new: true }
   )
+    .then((doc) => {
+      res.status(200).json({ success: true, data: doc })
+    })
+    .catch((err) => {
+      return res.json({ Error: err })
+    })
 })
 
 router.patch("/list/update_task", auth, function (req, res) {
@@ -158,8 +153,10 @@ router.patch("/list/update_task", auth, function (req, res) {
 
 router.patch("/list/del_task", auth, (req, res, next) => {
   const index = req.body.index
+  console.log(index)
   List.findByIdAndUpdate(
     { _id: req.body._id },
+    [
       {
         $set: {
           todos: {
@@ -170,9 +167,10 @@ router.patch("/list/del_task", auth, (req, res, next) => {
           },
         },
       },
+    ],
     { new: true }
   )
-    .then(() => {
+    .then((doc) => {
       res.json({
         success: true,
         data: doc,
