@@ -60,19 +60,31 @@ userScheme.methods.generateToken = function (cb) {
   let token = jwt.sign(user._id.toHexString(), config.SECRET)
   user.token = token
 
-  user.save((err, user) => {
-    if (err) return cb(err)
-    cb(null, user)
-  })
+  user
+    .save()
+    .then((user) => {
+      cb(null, user)
+    })
+    .catch((err) => {
+      cb(err)
+    })
 }
 
 userScheme.statics.findByToken = function (token, cb) {
   var user = this
   jwt.verify(token, config.SECRET, (err, decoded) => {
-    user.findOne({ _id: decoded, token: token }, (err, user) => {
-      if (err) cb(err)
-      cb(null, user)
-    })
+    user
+      .findOne({ _id: decoded, token: token })
+      .then((user) => {
+        cb(null, user)
+      })
+      .catch((err) => {
+        cb(err)
+      })
+    // user.findOne({ _id: decoded, token: token }, (err, user) => {
+    //   if (err) cb(err)
+    //   cb(null, user)
+    // })
   })
 }
 

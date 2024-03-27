@@ -23,12 +23,19 @@ class Controller {
   }
 
   async auth() {
-    console.log(11111)
-    let response = await this.model.userAuth()
-    if (!!response) {
-      this.view.showLoginMessage(0)
+    let auth = document.cookie.replace(
+      /(?:(?:^|.*;\s*)auth\s*\=\s*([^;]*).*$)|^.*$/,
+      "$1"
+    )
+    console.log(auth.length)
+    let response
+    if (auth.length > 0) {
+      response = await this.model.userAuth()
       this.isAuth = response.auth
+      this.view.showLoginMessage(0)
     }
+
+    
 
     // this.isAuth = response.auth
     // if (response.auth) this.view.showLoginMessage(0)
@@ -160,8 +167,17 @@ class Controller {
   }
 
   async deleteList(list, e) {
-    let isList = await this.model.getList(list)
-
+    let isList
+    // if (!this.isAuth) {
+    //   isList = await this.model.getList(list)
+    //   if (isList["success"] === true) {
+    //     const removeItem = await this.model.deleteList(list)
+    //   }
+    // }
+    console.log("isList")
+    isList = await this.model.getList(list)
+    console.log(isList)
+    // let isList = await this.model.getList(list)
     if (isList["success"] === true) {
       const removeItem = await this.model.deleteList(list)
     }
@@ -181,9 +197,14 @@ class Controller {
 
   async getAllData(month, year) {
     let ym = `${month}-${year}`
-    let allData = await this.model.getAllData()
-    this.data = allData.data
-    this.isAuth = allData.auth
+    let allData
+    if (this.isAuth) {
+      allData = await this.model.getAllData()
+      this.data = allData.data
+      this.isAuth = allData.auth
+    }
+    // this.data = allData.data
+
     let dates = Array.from(this.data, ({ date }) => date)
     let tdCollection = [...document.querySelectorAll("tbody td")]
     tdCollection.forEach((item) => {

@@ -73,6 +73,7 @@
     "bootstrap": "^5.3.3",
     "browserslist": "^4.23.0",
     "concurrently": "^8.2.2",
+    "cors": "^2.8.5",
     "http-proxy-middleware": "^2.0.6",
     "jquery": "^3.7.1",
     "mongoose": "^8.1.3"
